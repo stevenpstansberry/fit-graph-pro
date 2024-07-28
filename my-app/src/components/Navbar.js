@@ -13,6 +13,7 @@ function Navbar() {
           FitGraphPro
         </Typography>
         <Button color="inherit">Home</Button>
+        <Button color="inherit">Login</Button>
         <Button color="inherit">Features</Button>
         <Button color="inherit">About</Button>
         <Button color="inherit">Contact</Button>
