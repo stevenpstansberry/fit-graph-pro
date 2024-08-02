@@ -63,7 +63,7 @@ async function getUser(username){
     }, error => {
         console.error('Error occured getting user', error)
     }
-)
+);
 }
 
 async function saveUser(user){
@@ -73,7 +73,10 @@ async function saveUser(user){
     }
     return await dynamodb.put(params).promise().then(() => {
         return true;
-    }, console.error ('Error occured saving the user', error));
+    }, error => {
+        console.error('Error occured getting user', error)
+    }
+);
 }
 
 module.exports.register = register;

@@ -30,6 +30,9 @@ export const handler = async (event) => {
         break;
 
     case event.httpMethod === 'POST' && event.path === verifyPath:
+        const verifyBody = JSON.parse(event.body);
+        response = verifyService.verify(verifyBody)
+
         response = util.buildResponse(200, { message: 'Verify successful' });
         break;
 
