@@ -49,6 +49,16 @@ function SignUp() {
               id="password"
               autoComplete="current-password"
             />
+                        <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="confirm-password"
+              label="Confirm password"
+              type="password"
+              id="confirm-password"
+              autoComplete="current-password"
+            />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
