@@ -1,6 +1,10 @@
 import React, {useState} from 'react';
 import { Container, Typography, Box, FormControl, InputLabel, Input, FormHelperText, Button, TextField, FormControlLabel, Checkbox, Link, Grid, Alert } from '@mui/material';
-import axrios from 'axios'
+import axios from 'axios'
+
+const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
+const registerURL = fitGraphProd + "/register";
+
 
 function SignUp() {
     const [message, setMessage] = useState(null);
@@ -21,14 +25,24 @@ function SignUp() {
         setMessage('All fields are required');
         return;
       }
-      console.log({
-        name: name,
+
+      const requestConfig = {
+        headers: {
+          'x-api-key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY
+        }
+      }
+      const requestBody = {
         username: username,
         email: email,
-        password: password,
-      });
-      console.log('success');
-      
+        name: name,
+        password: password
+      }
+      console.log(registerURL);
+      console.log(requestBody);
+      console.log(requestConfig);
+
+
+
     };
   
     return (

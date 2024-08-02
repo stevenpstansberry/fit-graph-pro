@@ -6,6 +6,7 @@ import Success from './pages/Success'
 import NoPage from './pages/NoPage';
 import Register from './pages/Register'
 import Login from './pages/Login'
+import Test from './pages/Test';
 import {BrowserRouter, Routes, Route } from 'react-router-dom'
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path = "/success" element={<Success/>} />
           <Route path = "/register" element={<Register/>} />
           <Route path = "/login" element={<Login/>} />
+          <Route path = "/test" element={<Test/>} />
         </Routes>
       </BrowserRouter>
     </div>
