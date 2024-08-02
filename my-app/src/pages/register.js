@@ -2,7 +2,7 @@ import React from 'react';
 import Footer from '../components/Footer'
 import Navbar from '../components/Navbar'
 
-import { Container, Typography, Box } from '@mui/material';
+import { Container, Typography, Box , FormControl, InputLabel, Input, FormHelperText} from '@mui/material';
 
 
 function Register() {
@@ -11,12 +11,11 @@ function Register() {
           <Navbar></Navbar>
           <Container maxWidth="md">
             <Box sx={{ my: 4 }}>
-            <Typography variant="h2" component="h1" gutterBottom>
-              Welcome to Register
-              </Typography>
-              <Typography variant="h5" component="p" gutterBottom>
-              Your ultimate fitness tracking and graphing app!
-              </Typography>
+            <FormControl>
+              <InputLabel htmlFor="my-input">Email address</InputLabel>
+              <Input id="my-input" aria-describedby="my-helper-text" />
+              <FormHelperText id="my-helper-text">We'll never share your email.</FormHelperText>
+            </FormControl>
             </Box>
           </Container>
         <Footer></Footer>
