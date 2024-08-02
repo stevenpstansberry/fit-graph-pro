@@ -1,14 +1,34 @@
-import React from 'react';
-import { Container, Typography, Box, FormControl, InputLabel, Input, FormHelperText, Button, TextField, FormControlLabel, Checkbox, Link, Grid } from '@mui/material';
+import React, {useState} from 'react';
+import { Container, Typography, Box, FormControl, InputLabel, Input, FormHelperText, Button, TextField, FormControlLabel, Checkbox, Link, Grid, Alert } from '@mui/material';
+import axrios from 'axios'
 
 function SignUp() {
+    const [message, setMessage] = useState(null);
+
+    
+
     const handleSubmit = (event) => {
+    
       event.preventDefault();
       const data = new FormData(event.currentTarget);
+      const name = data.get("name");
+      const username = data.get("username");
+      const email = data.get("email");
+      const password = data.get("password");
+
+
+      if (name.trim() === '' || username.trim() === '' || email.trim() === '' || password.trim() === ''){
+        setMessage('All fields are required');
+        return;
+      }
       console.log({
-        email: data.get("email"),
-        password: data.get("password"),
+        name: name,
+        username: username,
+        email: email,
+        password: password,
       });
+      console.log('success');
+      
     };
   
     return (
@@ -29,6 +49,26 @@ function SignUp() {
             Sign Up
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="name"
+              label="Name"
+              name="name"
+              autoComplete="name"
+              autoFocus
+            />
+          <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
+              autoFocus
+            />            
             <TextField
               margin="normal"
               required
@@ -69,7 +109,7 @@ function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Sign Up
             </Button>
             <Grid container>
               <Grid item xs>
@@ -85,7 +125,8 @@ function SignUp() {
             </Grid>
           </Box>
         </Box>
-      </Container>
+        {message && <Alert severity="info" sx={{ mb: 2, width: '100%' }}>{message}</Alert>}
+        </Container>
     );
   }
 
