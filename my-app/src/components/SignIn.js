@@ -7,15 +7,47 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import { Alert } from "@mui/material";
+
+import React, {useState, useEffect} from 'react';
+import axios from 'axios';
+const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
+const loginURL = fitGraphProd + "/login";
 
 function SignIn() {
+  axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PROD_KEY;
+
+
+  const [message,setMessage] = useState(null);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+
+    const username = data.get('username');
+    const password = data.get('password');
+
+    if (username.trim() === '' || password.trim() === ''){
+      setMessage('Fields must be filled')
+      return;
+    }
+
+    const requestBody = {
+      username: username,
+      password: password
+    }
+    const requestCofig = {
+      headers : {
+        'x-api-key' :  process.env.REACT_APP_FIT_GRAPH_PROD_KEY
+      }
+    }
+
+    axios.post(loginURL,requestBody).then(response => {
+      setMessage('success')
+    }).catch(error => {
+      setMessage('error')
+    })
+
   };
 
   return (
@@ -40,10 +72,10 @@ function SignIn() {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
             autoFocus
           />
           <TextField
@@ -82,6 +114,7 @@ function SignIn() {
           </Grid>
         </Box>
       </Box>
+      {message && <Alert severity="info" sx={{ mb: 2, width: '100%' }}>{message}</Alert>}
     </Container>
   );
 }
