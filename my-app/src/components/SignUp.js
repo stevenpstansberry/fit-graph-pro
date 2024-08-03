@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Container, Typography, Box, FormControl, InputLabel, Input, FormHelperText, Button, TextField, FormControlLabel, Checkbox, Link, Grid, Alert } from '@mui/material';
 import axios from 'axios'
 
@@ -6,8 +6,14 @@ const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const registerURL = fitGraphProd + "/register";
 
 
+
 function SignUp() {
+
+
     const [message, setMessage] = useState(null);
+
+    console.log(axios.get(`${process.env.REACT_APP_FIT_GRAPH_PROD}/health` ))
+
 
     
 
@@ -26,11 +32,6 @@ function SignUp() {
         return;
       }
 
-      const requestConfig = {
-        headers: {
-          'x-api-key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY
-        }
-      }
       const requestBody = {
         username: username,
         email: email,
@@ -39,9 +40,14 @@ function SignUp() {
       }
       console.log(registerURL);
       console.log(requestBody);
-      console.log(requestConfig);
+      
 
 
+      axios.post(registerURL, requestBody).then(response => {
+        setMessage('success');
+      }).catch(error => {
+        setMessage('error')
+      })
 
     };
   

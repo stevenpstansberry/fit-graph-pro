@@ -2,15 +2,20 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Box, Typography } from '@mui/material';
 
+
+
+
+// move this somewhere else?
+ axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PROD_KEY;
+
 function Test() {
+
+
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const requestConfig = {
-        headers: {
-          'x-api-key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY
-        }
-      }
+
+
 
     useEffect(() => {
         const fetchData = async () => {
