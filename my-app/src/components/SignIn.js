@@ -1,21 +1,15 @@
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { Alert } from "@mui/material";
-
+import { Alert, Button, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container } from "@mui/material";
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
+import { setUserSession } from "../services/AuthService";
+import { useNavigate} from 'react-router-dom';
+
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const loginURL = fitGraphProd + "/login";
 
-function SignIn() {
+function SignIn(props) {
   axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PROD_KEY;
+  const navigate = useNavigate();
 
 
   const [message,setMessage] = useState(null);
@@ -42,9 +36,11 @@ function SignIn() {
       }
     }
 
-    axios.post(loginURL,requestBody).then(response => {
+    axios.post(loginURL,requestBody).then((response) => {
       setMessage('success')
-    }).catch(error => {
+      setUserSession(response.data.user, response.data.token);
+      navigate('/success');
+    }).catch((error) => {
       setMessage('error')
     })
 

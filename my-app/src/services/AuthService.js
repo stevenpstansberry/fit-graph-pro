@@ -15,6 +15,7 @@ module.exports = {
     setUserSession: function (user,token){
         sessionStorage.setItem('user', JSON.stringify(user));
         sessionStorage.setItem('token', token);
+        console.log(sessionStorage);
     },
     resetUserSession: function(){
         sessionStorage.removeItem('user');
