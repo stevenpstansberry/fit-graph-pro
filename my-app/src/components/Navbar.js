@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppBar,Toolbar,Typography,Button, IconButton, Icon } from '@mui/material';
+import {Link} from 'react-router-dom';
 
 
 function Navbar() {
@@ -12,11 +13,13 @@ function Navbar() {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           FitGraphPro
         </Typography>
-        <Button color="inherit">Home</Button>
-        <Button color="inherit">Login</Button>
-        <Button color="inherit">Features</Button>
-        <Button color="inherit">About</Button>
-        <Button color="inherit">Contact</Button>
+        <Button color="inherit" component = {Link} to ='/'>Home</Button>
+        <Button color="inherit" component = {Link} to ='/Login'>Login</Button>
+        <Button color="inherit" component = {Link} to ='/'>Features</Button>
+        <Button color="inherit" component = {Link} to ='/About'>About</Button>
+        <Button color="inherit" component = {Link} to ='/Contact'>Contact</Button>
+        <Button color="inherit" component = {Link} to ='/Success'>Profile</Button>
+
       </Toolbar>
     </AppBar>
   );

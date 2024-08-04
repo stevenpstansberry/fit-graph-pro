@@ -7,7 +7,7 @@ import { useNavigate} from 'react-router-dom';
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const loginURL = fitGraphProd + "/login";
 
-function SignIn(props) {
+function SignIn() {
   axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PROD_KEY;
   const navigate = useNavigate();
 
