@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar'
 import { getUser, resetUserSession } from '../services/AuthService';
 import { useNavigate} from 'react-router-dom';
 
-import { Container, Typography, Box } from '@mui/material';
+import { Container, Typography, Box, Button } from '@mui/material';
 
 function Success(){
     const navigate = useNavigate();
@@ -14,7 +14,7 @@ function Success(){
 
     const logoutHandler = () => {
         resetUserSession();
-        navigate('/signin');
+        navigate('/Login');
     }
 
     return (
@@ -23,6 +23,15 @@ function Success(){
         <Typography component="p">
             {name}
         </Typography>
+        <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            onClick={logoutHandler}
+          >
+            logout
+          </Button>
         <Footer></Footer>
   
     </Container>

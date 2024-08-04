@@ -1,9 +1,14 @@
 import React from 'react';
 import { AppBar,Toolbar,Typography,Button, IconButton, Icon } from '@mui/material';
 import {Link} from 'react-router-dom';
+import { getUser} from '../services/AuthService';
 
 
 function Navbar() {
+
+  const user = getUser();
+  
+  
   return (
     <AppBar position="static">
       <Toolbar>
