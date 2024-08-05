@@ -53,7 +53,7 @@ function App() {
           <Route path="/workouts" element={<Workouts />} />
 
           <Route
-          path="/Success"
+          path="/profile"
           element={
             <PrivateRoute>
               <Success />

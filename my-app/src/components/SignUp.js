@@ -50,7 +50,7 @@ function SignUp() {
       axios.post(registerURL, requestBody).then(response => {
         setMessage('success');
         setUserSession(response.data.user, response.data.token);
-        navigate('/success');
+        navigate('/profile');
       }).catch(error => {
         setMessage('error')
       })
