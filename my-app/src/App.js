@@ -1,5 +1,6 @@
 import './App.css';
-import React from 'react';
+import React, {useEffect} from 'react';
+import axios from 'axios';
 import Home from './pages/Home';
 import About from './pages/About';
 import Success from './pages/Success'
@@ -11,9 +12,32 @@ import Contact from './pages/Contact';
 import PublicRoute from './routes/PublicRoute';
 import PrivateRoute from './routes/PrivateRoute';
 import {BrowserRouter, Routes, Route } from 'react-router-dom'
+import {getUser, getToken, setUserSession, resetUserSession} from './services/AuthService'
 //<Route path="/login" component={Login} />
 
+const verifyTokenAPIURL = process.env.REACT_APP_FIT_GRAPH_PROD + "/verify";
+
 function App() {
+  axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PROD_KEY;
+
+  useEffect (() => {
+    const token = getToken();
+    if (token === 'undefined' || token === undefined || token === null || !token){
+      return;
+    }
+
+    const requestBody = {
+      user: getUser(),
+      token: getToken()
+    }
+
+    axios.post(verifyTokenAPIURL, requestBody).then(response => {
+      setUserSession(response.data.user, response.data.token);
+    }).catch(() => {
+      resetUserSession();
+    })
+  }, [])
+
   return (
     <BrowserRouter>
       <div className="content">
