@@ -52,6 +52,15 @@ function Navbar()  {
     navigate('/Login');
 }
 
+const handleMenuClick = (setting) => {
+  if (setting === 'Logout') {
+    logoutHandler();
+  } else {
+    navigate(`/${setting.toLowerCase()}`);
+    handleCloseUserMenu();
+  }
+};
+
 return (
   <AppBar position="static">
     <Container maxWidth="xl">
@@ -177,7 +186,7 @@ return (
             onClose={handleCloseUserMenu}
           >
             {settings.map((setting) => (
-              <MenuItem key={setting}  href = {setting} onClick={setting === 'Logout' ? logoutHandler : handleCloseUserMenu}>
+              <MenuItem key={setting}   onClick={() => handleMenuClick(setting)} >
                 <Typography textAlign="center">{setting}</Typography>
               </MenuItem>
             ))}
