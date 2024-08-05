@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import { Container, Typography, Box, FormControl, InputLabel, Input, FormHelperText, Button, TextField, FormControlLabel, Checkbox, Link, Grid, Alert } from '@mui/material';
 import axios from 'axios'
+import { setUserSession } from "../services/AuthService";
+import { useNavigate} from 'react-router-dom';
 
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const registerURL = fitGraphProd + "/register";
@@ -11,6 +13,8 @@ function SignUp() {
 
 
     const [message, setMessage] = useState(null);
+    const navigate = useNavigate();
+
 
     console.log(axios.get(`${process.env.REACT_APP_FIT_GRAPH_PROD}/health` ))
 
@@ -45,6 +49,8 @@ function SignUp() {
 
       axios.post(registerURL, requestBody).then(response => {
         setMessage('success');
+        setUserSession(response.data.user, response.data.token);
+        navigate('/success');
       }).catch(error => {
         setMessage('error')
       })
