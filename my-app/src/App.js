@@ -51,7 +51,6 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/test" element={<Test />} />
           <Route path="/workouts" element={<Workouts />} />
-
           <Route
           path="/profile"
           element={
@@ -59,7 +58,7 @@ function App() {
               <Success />
             </PrivateRoute>
           }
-        />
+        />        
           <Route
           path="/login"
           element={
