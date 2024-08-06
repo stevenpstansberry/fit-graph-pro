@@ -1,9 +1,9 @@
 
 import React from "react";
-import { Modal,Card, CardActions,CardContent, CardMedia, Button, Typography } from "@mui/material";
+import { IconButton, Box, Modal,Card, CardActions,CardContent, CardMedia, Button, Typography } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 
-
-function Workout_Card(open, onClose){
+function Workout_Card({open, onClose}){
 
 
     return (
@@ -22,15 +22,24 @@ function Workout_Card(open, onClose){
                 width: 400,
                 bgcolor: 'background.paper',
                 border: '2px solid #000',
-                boxShadow: 24,
+                boxShadow: 12,
                 p: 4,
 
             }}>
-            <CardMedia
-                sx={{ height: 140 }}
-                image="/static/images/cards/contemplative-reptile.jpg"
-                title="green iguana"
-            />
+            <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx = {{
+                position:'absolute',
+                left:8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+            }}
+            >
+            <CloseIcon></CloseIcon>
+
+
+            </IconButton>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                 Lizard
@@ -41,7 +50,7 @@ function Workout_Card(open, onClose){
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button size="small" onClick={onClose}>Close</Button>
+                <Button size ="small" sx = {{marginLeft: 'auto'}}>Submit</Button>
             </CardActions>
             </Card>
         </Modal>
