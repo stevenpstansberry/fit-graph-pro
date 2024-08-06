@@ -4,11 +4,14 @@ import { Autocomplete, TextField, IconButton, Box, Modal,Card, CardActions,CardC
 import CloseIcon from '@mui/icons-material/Close';
 
 function Workout_Card({open, onClose}){
-    const [message,setMessage] = useState(null)
+    const [message,setMessage] = useState(null);
+    const [inputValue,setInputValue] = useState('');
 
     const createWorkout = (event) => {
         event.preventDefault();
         console.log("button pushed");
+
+        console.log(inputValue);
 
 
         // TODO: add logic to check to see if workout is empty, flash message if so
@@ -62,11 +65,14 @@ function Workout_Card({open, onClose}){
                 </Typography>
                 <Autocomplete
                 disablePortal
-                id="combo-box-demo"
+                id="combo-box"
                 options={top100Films}
                 sx={{ width: 300 }}
+                onInputChange={(event, newInputValue) => {
+                    setInputValue(newInputValue);
+                }}
                 renderInput={(params) => <TextField {...params} label="Movie" />}
-                />
+            />
             </CardContent>
             <CardActions>
                 <Button 
