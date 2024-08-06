@@ -39,7 +39,7 @@ function SignIn() {
     axios.post(loginURL,requestBody).then((response) => {
       setMessage('success')
       setUserSession(response.data.user, response.data.token);
-      navigate('/profile');
+      navigate('/success');
     }).catch((error) => {
       setMessage('error')
     })

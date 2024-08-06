@@ -1,11 +1,16 @@
 
-import React from "react";
+import React, {useState} from "react";
 import { IconButton, Box, Modal,Card, CardActions,CardContent, CardMedia, Button, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 
 function Workout_Card({open, onClose}){
+    const [message,setMessage] = useState(null)
 
+    const createWorkout = (event) => {
+        event.preventDefault();
+        console.log("button pushed");
 
+    }
     return (
         <Modal
             open = {open}
@@ -14,7 +19,10 @@ function Workout_Card({open, onClose}){
                 style : {backgroundColor: 'rgba(0,0,0,0.5' },
             }}     
         >
-            <Card sx={{ maxWidth: 345,
+            <Card sx={{ maxWidth: 1000,
+                minWidth: 1000,
+                maxHeight: 500,
+                minHeight: 500,
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
@@ -42,7 +50,7 @@ function Workout_Card({open, onClose}){
             </IconButton>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                Lizard
+                Add a Workout
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                 Lizards are a widespread group of squamate reptiles, with over 6,000
@@ -50,7 +58,19 @@ function Workout_Card({open, onClose}){
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button size ="small" sx = {{marginLeft: 'auto'}}>Submit</Button>
+                <Button 
+                size ="large"
+                variant='contained'
+                onClick={createWorkout}
+                sx = {{
+                    position: 'absolute',
+                    bottom: 16,
+                    right: 16,
+                    boxShadow: 4
+                
+                }}
+                     >
+                        Create Workout</Button>
             </CardActions>
             </Card>
         </Modal>
