@@ -2,10 +2,28 @@
 import React, {useState} from "react";
 import { Autocomplete, TextField, IconButton, Box, Modal,Card, CardActions,CardContent, CardMedia, Button, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
+import ExerciseSubcard from "./Exercise_Sub_Card";
 
 function Workout_Card({open, onClose}){
     const [message,setMessage] = useState(null);
     const [inputValue,setInputValue] = useState('');
+    const [exercises, setExercises] = useState([]);
+    const [selectedExercise, setSelectedExercise] = useState(null);
+
+
+    const addExercise = () => {
+        setExercises([...exercises, { label: '', bodyPart: '', sets: '', weight: '', time: '' }]);
+      };
+    
+      const removeExercise = (index) => {
+        const newExercises = exercises.filter((_, i) => i !== index);
+        setExercises(newExercises);
+      };
+    
+      const updateExercise = (index, updatedExercise) => {
+        const newExercises = exercises.map((exercise, i) => (i === index ? updatedExercise : exercise));
+        setExercises(newExercises);
+      };
 
     const createWorkout = (event) => {
         event.preventDefault();
@@ -20,76 +38,94 @@ function Workout_Card({open, onClose}){
     }
     return (
         <Modal
-            open = {open}
-            onclose = {onClose}
-            backdropProps = {{
-                style : {backgroundColor: 'rgba(0,0,0,0.5' },
-            }}     
+          open={open}
+          onClose={onClose}
+          BackdropProps={{
+            style: { backgroundColor: 'rgba(0,0,0,0.5)' },
+          }}
         >
-            <Card sx={{ maxWidth: 1000,
-                minWidth: 1000,
-                maxHeight: 500,
-                minHeight: 500,
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 400,
-                bgcolor: 'background.paper',
-                border: '2px solid #000',
-                boxShadow: 12,
-                p: 4,
-
-            }}>
+          <Card
+            sx={{
+              maxWidth: 1000,
+              minWidth: 1000,
+              maxHeight: 600,
+              minHeight: 600,
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              bgcolor: 'background.paper',
+              border: '2px solid #000',
+              boxShadow: 12,
+              p: 4,
+              overflowY: 'auto',
+            }}
+          >
             <IconButton
-            aria-label="close"
-            onClick={onClose}
-            sx = {{
-                position:'absolute',
-                left:8,
+              aria-label="close"
+              onClick={onClose}
+              sx={{
+                position: 'absolute',
+                left: 8,
                 top: 8,
                 color: (theme) => theme.palette.grey[500],
-            }}
+              }}
             >
-            <CloseIcon></CloseIcon>
-
-
+              <CloseIcon />
             </IconButton>
             <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
+              <Typography gutterBottom variant="h5" component="div">
                 Add a Workout
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                Lizards are a widespread group of squamate reptiles, with over 6,000
-                species, ranging across all continents except Antarctica
-                </Typography>
-                <Autocomplete
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Add exercises to your workout from the list below.
+              </Typography>
+              <Autocomplete
                 disablePortal
-                id="combo-box"
+                id="combo-box-demo"
                 options={strengthWorkouts}
-                sx={{ width: 300 }}
-                onInputChange={(event, newInputValue) => {
-                    setInputValue(newInputValue);
+                value={selectedExercise}
+                onChange={(event, newValue) => {
+                  setSelectedExercise(newValue);
                 }}
+                inputValue={inputValue}
+                onInputChange={(event, newInputValue) => {
+                  setInputValue(newInputValue);
+                }}
+                sx={{ width: 300, mb: 2 }}
                 renderInput={(params) => <TextField {...params} label="Exercise" />}
-            />
+              />
+              <Button onClick={addExercise} variant="contained" sx={{ mb: 2 }}>
+                Add Exercise
+              </Button>
+              <Box>
+                {exercises.map((exercise, index) => (
+                  <ExerciseSubcard
+                    key={index}
+                    exercise={exercise}
+                    index={index}
+                    removeExercise={removeExercise}
+                    updateExercise={updateExercise}
+                  />
+                ))}
+              </Box>
             </CardContent>
             <CardActions>
-                <Button 
-                size ="large"
+              <Button
+                size="large"
                 variant='contained'
                 onClick={createWorkout}
-                sx = {{
-                    position: 'absolute',
-                    bottom: 16,
-                    right: 16,
-                    boxShadow: 4
-                
+                sx={{
+                  position: 'absolute',
+                  bottom: 16,
+                  right: 16,
+                  boxShadow: 4
                 }}
-                     >
-                        Create Workout</Button>
+              >
+                Create Workout
+              </Button>
             </CardActions>
-            </Card>
+          </Card>
         </Modal>
       );
     }
