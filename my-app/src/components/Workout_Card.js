@@ -12,7 +12,7 @@ function Workout_Card({open, onClose}){
 
 
     const addExercise = () => {
-        setExercises([...exercises, { label: '', bodyPart: '', sets: '', weight: '', time: '' }]);
+        setExercises([...exercises, { label: selectedExercise.label, bodyPart: selectedExercise.bodyPart, sets: '', weight: '', time: '' }]);
       };
     
       const removeExercise = (index) => {
@@ -73,31 +73,52 @@ function Workout_Card({open, onClose}){
             >
               <CloseIcon />
             </IconButton>
+    
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
                 Add a Workout
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                 Add exercises to your workout from the list below.
               </Typography>
-              <Autocomplete
-                disablePortal
-                id="combo-box-demo"
-                options={strengthWorkouts}
-                value={selectedExercise}
-                onChange={(event, newValue) => {
-                  setSelectedExercise(newValue);
+    
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  mb: 2,
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 10,
+                  backgroundColor: 'white',
+                  paddingBottom: 2,
+                  borderBottom: '1px solid #ccc',
                 }}
-                inputValue={inputValue}
-                onInputChange={(event, newInputValue) => {
-                  setInputValue(newInputValue);
-                }}
-                sx={{ width: 300, mb: 2 }}
-                renderInput={(params) => <TextField {...params} label="Exercise" />}
-              />
-              <Button onClick={addExercise} variant="contained" sx={{ mb: 2 }}>
-                Add Exercise
-              </Button>
+              >
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  options={strengthWorkouts}
+                  value={selectedExercise}
+                  onChange={(event, newValue) => {
+                    setSelectedExercise(newValue);
+                  }}
+                  inputValue={inputValue}
+                  onInputChange={(event, newInputValue) => {
+                    setInputValue(newInputValue);
+                  }}
+                  sx={{ width: 300, mr: 2 }}
+                  renderInput={(params) => <TextField {...params} label="Exercise" />}
+                />
+                <Button
+                  onClick={addExercise}
+                  variant="contained"
+                  color="primary"
+                >
+                  Add Exercise
+                </Button>
+              </Box>
+    
               <Box>
                 {exercises.map((exercise, index) => (
                   <ExerciseSubcard
@@ -110,16 +131,15 @@ function Workout_Card({open, onClose}){
                 ))}
               </Box>
             </CardContent>
-            <CardActions>
+    
+            <CardActions sx={{ position: 'sticky', bottom: 0, backgroundColor: 'white', zIndex: 10, p: 2 }}>
               <Button
                 size="large"
-                variant='contained'
+                variant="contained"
                 onClick={createWorkout}
                 sx={{
-                  position: 'absolute',
-                  bottom: 16,
-                  right: 16,
-                  boxShadow: 4
+                  boxShadow: 4,
+                  ml: 'auto',
                 }}
               >
                 Create Workout
