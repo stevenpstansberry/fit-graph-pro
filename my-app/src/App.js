@@ -14,6 +14,7 @@ import PrivateRoute from './routes/PrivateRoute';
 import {BrowserRouter, Routes, Route } from 'react-router-dom'
 import {getUser, getToken, setUserSession, resetUserSession} from './services/AuthService'
 import Workouts from './pages/Workouts';
+import ExerciseSubcard from './components/Exercise_Sub_Card';
 //<Route path="/login" component={Login} />
 
 const verifyTokenAPIURL = process.env.REACT_APP_FIT_GRAPH_PROD + "/verify";
@@ -51,6 +52,8 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/test" element={<Test />} />
           <Route path="/workouts" element={<Workouts />} />
+          <Route path="/testcard" element={<ExerciseSubcard />} />
+
           <Route
           path="/profile"
           element={
