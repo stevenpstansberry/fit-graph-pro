@@ -37,6 +37,10 @@ const ExerciseSubcard = ({ exercise, index, removeExercise }) => {
 
         {sets.map((set, setIndex) => (
           <Box key={setIndex} sx={{ display: 'flex', gap: 2, mt: 2 }}>
+            <Typography>
+            Set {setIndex + 1}
+
+            </Typography>
             <TextField
               name="weight"
               label="Weight"
