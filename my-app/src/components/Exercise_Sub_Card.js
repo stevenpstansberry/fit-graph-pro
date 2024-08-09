@@ -1,25 +1,19 @@
-import React, { useState } from "react";
-import { Box, Card, CardContent, TextField, Typography, IconButton } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React from "react";
+import { Card, CardContent, Box, TextField, Button, Typography, IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 
-const ExerciseSubcard = ({ exercise, index, removeExercise }) => {
-  const [sets, setSets] = useState([{ weight: '', reps: '' }]);
-
-  const handleAddSet = () => {
-    setSets([...sets, { weight: '', reps: '' }]);
-  };
-
-  const handleSetChange = (setIndex, field, value) => {
-    const updatedSets = sets.map((set, i) => 
-      i === setIndex ? { ...set, [field]: value } : set
+function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets }) {
+  const handleSetChange = (setIndex, key, value) => {
+    const newSets = exercise.sets.map((set, i) =>
+      i === setIndex ? { ...set, [key]: value } : set
     );
-    setSets(updatedSets);
+    updateExerciseSets(index, newSets); // Update sets in the parent component
   };
 
-  const handleRemoveSet = (setIndex) => {
-    const updatedSets = sets.filter((_, i) => i !== setIndex);
-    setSets(updatedSets);
+  const addSet = () => {
+    const newSets = [...exercise.sets, { weight: "", reps: "" }];
+    updateExerciseSets(index, newSets); // Add new set to the sets array
   };
 
   return (
@@ -29,24 +23,20 @@ const ExerciseSubcard = ({ exercise, index, removeExercise }) => {
           <Typography variant="h6" component="div">
             {exercise.label} - {exercise.bodyPart}
           </Typography>
-          <IconButton edge='end' onClick={handleAddSet} sx={{ color: 'primary.main' }}>
-            <AddIcon />
-            <Typography variant="body2" sx={{ marginLeft: 0.5 }}>Add Set</Typography>
-          </IconButton>
+          <Button onClick={addSet} startIcon={<AddIcon />} variant="outlined">
+            Add Set
+          </Button>
         </Box>
 
-        {sets.map((set, setIndex) => (
+        {exercise.sets.map((set, setIndex) => (
           <Box key={setIndex} sx={{ display: 'flex', gap: 2, mt: 2 }}>
-            <Typography>
-            Set {setIndex + 1}
-
-            </Typography>
+            <Typography>Set {setIndex + 1}</Typography>
             <TextField
               name="weight"
               label="Weight"
               variant="outlined"
               value={set.weight}
-              onChange={(e) => handleSetChange(setIndex, 'weight', e.target.value)}
+              onChange={(e) => handleSetChange(setIndex, "weight", e.target.value)}
               sx={{ flex: 1 }}
             />
             <TextField
@@ -54,12 +44,9 @@ const ExerciseSubcard = ({ exercise, index, removeExercise }) => {
               label="Reps"
               variant="outlined"
               value={set.reps}
-              onChange={(e) => handleSetChange(setIndex, 'reps', e.target.value)}
+              onChange={(e) => handleSetChange(setIndex, "reps", e.target.value)}
               sx={{ flex: 1 }}
             />
-            <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveSet(setIndex)}>
-              <DeleteIcon />
-            </IconButton>
           </Box>
         ))}
         <IconButton edge="end" aria-label="delete" onClick={() => removeExercise(index)} sx={{ mt: 2 }}>
@@ -68,6 +55,6 @@ const ExerciseSubcard = ({ exercise, index, removeExercise }) => {
       </CardContent>
     </Card>
   );
-};
+}
 
 export default ExerciseSubcard;
