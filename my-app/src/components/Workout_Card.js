@@ -12,8 +12,8 @@ function Workout_Card({open, onClose}){
 
 
     const addExercise = () => {
-        setExercises([...exercises, { label: selectedExercise.label, bodyPart: selectedExercise.bodyPart, sets: '', weight: '', time: '' }]);
-      };
+        setExercises([...exercises, { label: selectedExercise.label, bodyPart: selectedExercise.bodyPart}]);
+    };
     
       const removeExercise = (index) => {
         const newExercises = exercises.filter((_, i) => i !== index);
