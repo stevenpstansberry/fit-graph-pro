@@ -21,7 +21,7 @@ function Workout_Card({ open, onClose }) {
 
   const addExercise = () => {
     if (selectedExercise) {
-      setExercises([...exercises, { label: selectedExercise.label, bodyPart: selectedExercise.bodyPart, sets: [] }]);
+      setExercises([...exercises, { label: selectedExercise.label, bodyPart: selectedExercise.bodyPart, sets: [{ weight: "", reps: "" }] }]);
     }
   };
 
