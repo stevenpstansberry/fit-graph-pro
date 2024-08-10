@@ -16,6 +16,11 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets }
     updateExerciseSets(index, newSets); // Add new set to the sets array
   };
 
+  const handleRemoveSet = (setIndex) => {
+    const newSets = exercise.sets.filter((_, i) => i !== setIndex);
+    updateExerciseSets(index, newSets); // Remove the set from the sets array
+  };
+
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
@@ -47,6 +52,9 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets }
               onChange={(e) => handleSetChange(setIndex, "reps", e.target.value)}
               sx={{ flex: 1 }}
             />
+            <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveSet(setIndex)}>
+              <DeleteIcon />
+            </IconButton>
           </Box>
         ))}
         <IconButton edge="end" aria-label="delete" onClick={() => removeExercise(index)} sx={{ mt: 2 }}>
