@@ -16,6 +16,7 @@ import ExerciseSubcard from "./Exercise_Sub_Card";
 
 function Workout_Card({ open, onClose }) {
   const [inputValue, setInputValue] = useState('');
+  const [message, setMessage] = useState('');
   const [exercises, setExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
 
@@ -39,8 +40,29 @@ function Workout_Card({ open, onClose }) {
 
   const createWorkout = (event) => {
     event.preventDefault();
+
+    // Check to see if exercise is empty
+    if (exercises.length === 0){
+      setMessage("workout is empty, add sets");
+      console.log(message);
+      return;
+    }
+
+    // Check to see if any of the reps or sets are empty
+    const isAnyExerciseEmpty = exercises.some(exercise => 
+      exercise.sets.length === 0 || exercise.sets.some(set => set.weight === '' || set.reps === '')
+    );
+  
+    if (isAnyExerciseEmpty) {
+      setMessage("One or more exercises have empty sets, please fill them in.");
+      console.log(message);
+      return;
+    }
+
+
     console.log("Workout Created: ", exercises);
-    // Add logic to check if workout is empty and display a message if needed.
+
+   
   };
 
   return (
