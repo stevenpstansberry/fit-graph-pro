@@ -42,6 +42,7 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets }
               variant="outlined"
               value={set.weight}
               onChange={(e) => handleSetChange(setIndex, "weight", e.target.value)}
+              type='number'
               sx={{ flex: 1 }}
             />
             <TextField
@@ -50,6 +51,7 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets }
               variant="outlined"
               value={set.reps}
               onChange={(e) => handleSetChange(setIndex, "reps", e.target.value)}
+              type='number'
               sx={{ flex: 1 }}
             />
             <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveSet(setIndex)}>
