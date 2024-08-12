@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Autocomplete,
   TextField,
@@ -14,23 +14,33 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./Exercise_Sub_Card";
 
-function Workout_Card({ open, onClose }) {
-  const [inputValue, setInputValue] = useState('');
-  const [message, setMessage] = useState('');
-  const [exercises, setExercises] = useState([]);
-  const [selectedExercise, setSelectedExercise] = useState(null);
+function Workout_Card({ open, onClose, preloadedExercises }) {
+  const [inputValue, setInputValue] = useState(''); // State for the input value in the autocomplete
+  const [message, setMessage] = useState(''); // State for the error message
+  const [exercises, setExercises] = useState([]); // State to store exercises
+  const [selectedExercise, setSelectedExercise] = useState(null); // State for selected exercise in the autocomplete
 
+  // UseEffect to preload exercises when the modal opens
+  useEffect(() => {
+    if (open) {
+      setExercises(preloadedExercises); // Load preloaded exercises when modal opens
+    }
+  }, [open, preloadedExercises]);
+
+  // Function to add a new exercise to the exercises list
   const addExercise = () => {
     if (selectedExercise) {
       setExercises([...exercises, { label: selectedExercise.label, bodyPart: selectedExercise.bodyPart, sets: [{ weight: "", reps: "" }] }]);
     }
   };
 
+  // Function to remove an exercise from the exercises list
   const removeExercise = (index) => {
     const newExercises = exercises.filter((_, i) => i !== index);
     setExercises(newExercises);
   };
 
+  // Function to update the sets of an exercise
   const updateExerciseSets = (index, sets) => {
     const updatedExercises = exercises.map((exercise, i) =>
       i === index ? { ...exercise, sets } : exercise
@@ -38,20 +48,18 @@ function Workout_Card({ open, onClose }) {
     setExercises(updatedExercises);
   };
 
+  // Function to create the workout and validate inputs
   const createWorkout = (event) => {
     event.preventDefault();
 
-    // Check to see if exercise is empty
+    // Check to see if any exercises have been added
     if (exercises.length === 0){
-      setMessage("workout is empty, add sets");
+      setMessage("Workout is empty, add sets.");
       console.log(message); 
-
-      // change to flash the message to the user 
       return;
-
     }
 
-    // Check to see if any of the reps or sets are empty
+    // Check to see if any of the reps or weights are empty
     const isAnyExerciseEmpty = exercises.some(exercise => 
       exercise.sets.length === 0 || exercise.sets.some(set => set.weight === '' || set.reps === '')
     );
@@ -62,10 +70,7 @@ function Workout_Card({ open, onClose }) {
       return;
     }
 
-
     console.log("Workout Created: ", exercises);
-
-   
   };
 
   return (
@@ -179,9 +184,6 @@ function Workout_Card({ open, onClose }) {
 }
 
 export default Workout_Card;
-
-
-
 
 const strengthWorkouts = [
     { label: 'Bench Press', type: 'Strength', bodyPart: 'Chest' },
