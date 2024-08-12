@@ -14,6 +14,10 @@ function Workouts() {
 
   const [workouts, setWorkouts] =[
     {
+    "WorkoutId": 1,
+    "date" : new Date (2024,7,11),
+    "Exercises":[ 
+    {
         "label": "Bench Press",
         "bodyPart": "Chest",
         "sets": [
@@ -90,7 +94,8 @@ function Workouts() {
                 "reps": "10"
             }
         ]
-    }
+    }]
+  }
   ];
 
   // State to hold the predefined workouts
