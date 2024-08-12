@@ -44,8 +44,11 @@ function Workout_Card({ open, onClose }) {
     // Check to see if exercise is empty
     if (exercises.length === 0){
       setMessage("workout is empty, add sets");
-      console.log(message);
+      console.log(message); 
+
+      // change to flash the message to the user 
       return;
+
     }
 
     // Check to see if any of the reps or sets are empty
