@@ -39,6 +39,14 @@ function Workouts() {
   
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+    const handleGraphButtonClick = () => {
+      // TODO:
+      // Logic to graph the workouts for the selected month
+      console.log(`Graphing workouts for ${monthNames[selectedMonth - 1]} ${selectedYear}`);
+    };
+
+
+
     return (
       <Container sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <Navbar />
@@ -48,7 +56,7 @@ function Workouts() {
             Your Workouts
           </Typography>
   
-          {/* Month and Year Selectors */}
+          {/* Month and Year Selectors with Graph Button */}
           <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Select
               value={selectedMonth}
@@ -70,6 +78,14 @@ function Workouts() {
                 </MenuItem>
               ))}
             </Select>
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              onClick={handleGraphButtonClick}
+              sx={{ padding: '8px 16px', fontSize: '14px' }}
+            >
+              Graph This Month
+            </Button>
           </Box>
   
           {/* Display filtered workouts */}

@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Success from './pages/Success'
 import NoPage from './pages/NoPage';
+import StrengthChart from './components/StrengthChart';
 import Register from './pages/Register'
 import Login from './pages/Login'
 import Test from './pages/Test';
@@ -52,7 +53,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/test" element={<Test />} />
           <Route path="/workouts" element={<Workouts />} />
-          <Route path="/testcard" element={<ExerciseSubcard />} />
+          <Route path="/testchart" element={<StrengthChart />} />
 
           <Route
           path="/profile"
