@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Typography, Button, Box } from '@mui/material';
+import { Container, Typography, Button, Box, Select, MenuItem } from '@mui/material';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import Workout_Card from '../components/Workout_Card';
@@ -12,27 +12,13 @@ function Workouts() {
 
   // State to manage the visibility of the Workout Card
   const [isCardVisible, setIsCardVisible] = useState(false);
+  const [workouts, setWorkouts] = useState(sampleWorkoutsTesting);
 
-  const [workouts, setWorkouts] = useState([
-    {
-      date: new Date(2024, 7, 14), 
-      type: 'Push Workout',
-      exercises: [
-        { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: '10', reps: '8' }, { weight: '15', reps: '6' }] },
-        { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: '5', reps: '10' }, { weight: '7', reps: '8' }] },
-      ],
-    },
-    {
-      date: new Date(2024, 7, 16), 
-      type: 'Pull Workout',
-      exercises: [
-        { label: 'Pull Up', bodyPart: 'Back', sets: [{ weight: '0', reps: '10' }] },
-        { label: 'Barbell Row', bodyPart: 'Back', sets: [{ weight: '12', reps: '8' }, { weight: '15', reps: '6' }] },
-      ],
-    },
-  ]);
+  // State to manage the month and year
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Current month (1-12)
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Current year
 
-  // State to hold the predefined workouts
+  // State to hold the predefined workouts (PPL)
   const [selectedWorkout, setSelectedWorkout] = useState([]);
 
   const toggleAddWorkoutCard = (workout) => {
@@ -44,90 +30,110 @@ function Workouts() {
     setIsCardVisible(false);
   };
 
-  return (
-    <Container sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-      <Navbar />
-      <Box sx={{ 
-        flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-      }}>
-        {workouts.length === 0 ? (
-          <Box>
-            <Typography variant="h4" component="p" sx={{ mb: 2 }}>
-              You don't have any current workouts.
-            </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => toggleAddWorkoutCard([])}
-              sx={{ padding: '10px 20px', fontSize: '16px' }}
+    // Filter workouts based on selected month and year
+    const filteredWorkouts = workouts.filter(workout => {
+      const workoutMonth = workout.date.getMonth() + 1;
+      const workoutYear = workout.date.getFullYear();
+      return workoutMonth === selectedMonth && workoutYear === selectedYear;
+    });
+  
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    return (
+      <Container sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Navbar />
+  
+        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <Typography variant="h4" component="p" sx={{ mb: 4 }}>
+            Your Workouts
+          </Typography>
+  
+          {/* Month and Year Selectors */}
+          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
             >
-              Add Workout
-            </Button>
+              {monthNames.map((month, index) => (
+                <MenuItem key={index} value={index + 1}>
+                  {month}
+                </MenuItem>
+              ))}
+            </Select>
+            <Select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+            >
+              {[2023, 2024, 2025].map(year => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
           </Box>
-        ) : (
-          <Box>
-            <Typography variant="h4" component="p" sx={{ mb: 8, textAlign: 'center' }}>
-              Your Workouts
-            </Typography>
-            <Box 
+  
+          {/* Display filtered workouts */}
+          {filteredWorkouts.length > 0 ? (
+            <Box
               sx={{
                 display: 'flex',
-                flexWrap: 'wrap', // Allows items to wrap onto new rows if necessary
-                justifyContent: 'center', // Centers the cards in the container
-                gap: 4, // Space between cards
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                gap: 2,
               }}
             >
-              {workouts.map((workout, index) => (
+              {filteredWorkouts.map((workout, index) => (
                 <WorkoutCardPreview key={index} workout={workout} />
               ))}
             </Box>
-          </Box>  
-        )}
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => toggleAddWorkoutCard([])}
-          sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
-        >
-          Add Workout
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => toggleAddWorkoutCard(pushWorkout)}
-          sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
-        >
-          Add Push Workout
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => toggleAddWorkoutCard(pullWorkout)}
-          sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
-        >
-          Add Pull Workout
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => toggleAddWorkoutCard(legsWorkout)}
-          sx={{ padding: '10px 20px', fontSize: '16px' }}
-        >
-          Add Legs Workout
-        </Button>
-      </Box>
-      <Workout_Card open={isCardVisible} onClose={handleClose} preloadedExercises={selectedWorkout} />
-      <Footer />
-    </Container>
-  );
-}
+          ) : (
+            <Typography variant="h6" sx={{ mb: 4 }}>
+              No workouts for {monthNames[selectedMonth - 1]} {selectedYear}
+            </Typography>
+          )}
+        </Box>
+  
+        {/* Workout creation buttons */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => toggleAddWorkoutCard([])}
+            sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
+          >
+            Add Workout
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => toggleAddWorkoutCard(pushWorkout)}
+            sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
+          >
+            Add Push Workout
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => toggleAddWorkoutCard(pullWorkout)}
+            sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
+          >
+            Add Pull Workout
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => toggleAddWorkoutCard(legsWorkout)}
+            sx={{ padding: '10px 20px', fontSize: '16px' }}
+          >
+            Add Legs Workout
+          </Button>
+        </Box>
+  
+        <Workout_Card open={isCardVisible} onClose={handleClose} preloadedExercises={selectedWorkout} />
+        <Footer />
+      </Container>
+    );
+  }
 
 const pushWorkout = [
   { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: "", reps: "" }] },
@@ -145,6 +151,33 @@ const legsWorkout = [
   { label: 'Squat', bodyPart: 'Legs', sets: [{ weight: "", reps: "" }] },
   { label: 'Leg Press', bodyPart: 'Legs', sets: [{ weight: "", reps: "" }] },
   { label: 'Lunge', bodyPart: 'Legs', sets: [{ weight: "", reps: "" }] }
+];
+
+const sampleWorkoutsTesting = [
+  {
+    date: new Date(2024, 6, 14), 
+    type: 'Push Workout',
+    exercises: [
+      { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: '10', reps: '8' }, { weight: '15', reps: '6' }] },
+      { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: '5', reps: '10' }, { weight: '7', reps: '8' }] },
+    ],
+  },
+  {
+    date: new Date(2024, 7, 14), 
+    type: 'Push Workout',
+    exercises: [
+      { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: '10', reps: '8' }, { weight: '15', reps: '6' }] },
+      { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: '5', reps: '10' }, { weight: '7', reps: '8' }] },
+    ],
+  },
+  {
+    date: new Date(2024, 7, 16), 
+    type: 'Pull Workout',
+    exercises: [
+      { label: 'Pull Up', bodyPart: 'Back', sets: [{ weight: '0', reps: '10' }] },
+      { label: 'Barbell Row', bodyPart: 'Back', sets: [{ weight: '12', reps: '8' }, { weight: '15', reps: '6' }] },
+    ],
+  },
 ];
 
 export default Workouts;
