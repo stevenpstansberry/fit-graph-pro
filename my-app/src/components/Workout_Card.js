@@ -13,24 +13,37 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./Exercise_Sub_Card";
+import { v4 as uuidv4 } from 'uuid'; // Import UUID for unique IDs
 
 function Workout_Card({ open, onClose, preloadedExercises }) {
-  const [inputValue, setInputValue] = useState(''); // State for the input value in the autocomplete
-  const [message, setMessage] = useState(''); // State for the error message
-  const [exercises, setExercises] = useState([]); // State to store exercises
-  const [selectedExercise, setSelectedExercise] = useState(null); // State for selected exercise in the autocomplete
+  const [inputValue, setInputValue] = useState('');
+  const [message, setMessage] = useState('');
+  const [exercises, setExercises] = useState([]);
+  const [selectedExercise, setSelectedExercise] = useState(null);
 
-  // UseEffect to preload exercises when the modal opens
+  // Workout metadata
+  const [workoutId, setWorkoutId] = useState(null);
+  const [workoutDate, setWorkoutDate] = useState(null);
+
+  // UseEffect to initialize workout metadata and preload exercises when the modal opens
   useEffect(() => {
     if (open) {
-      setExercises(preloadedExercises); // Load preloaded exercises when modal opens
+      setExercises(preloadedExercises);
+      setWorkoutId(uuidv4()); // Generate a unique ID for the workout
+      setWorkoutDate(new Date().toLocaleDateString()); // Set today's date for the workout
     }
   }, [open, preloadedExercises]);
 
   // Function to add a new exercise to the exercises list
   const addExercise = () => {
     if (selectedExercise) {
-      setExercises([...exercises, { label: selectedExercise.label, bodyPart: selectedExercise.bodyPart, sets: [{ weight: "", reps: "" }] }]);
+      const newExercise = { 
+        label: selectedExercise.label, 
+        bodyPart: selectedExercise.bodyPart, 
+        sets: [{ weight: "", reps: "" }] 
+      };
+
+      setExercises([...exercises, newExercise]);
     }
   };
 
@@ -53,7 +66,7 @@ function Workout_Card({ open, onClose, preloadedExercises }) {
     event.preventDefault();
 
     // Check to see if any exercises have been added
-    if (exercises.length === 0){
+    if (exercises.length === 0) {
       setMessage("Workout is empty, add sets.");
       console.log(message); 
       return;
@@ -70,7 +83,13 @@ function Workout_Card({ open, onClose, preloadedExercises }) {
       return;
     }
 
-    console.log("Workout Created: ", exercises);
+    const workout = {
+      id: workoutId,
+      date: workoutDate,
+      exercises: exercises,
+    };
+
+    console.log("Workout Created: ", workout);
   };
 
   return (
@@ -155,7 +174,7 @@ function Workout_Card({ open, onClose, preloadedExercises }) {
           <Box>
             {exercises.map((exercise, index) => (
               <ExerciseSubcard
-                key={index}
+                key={index} // Use index or a unique key
                 exercise={exercise}
                 index={index}
                 removeExercise={removeExercise}
@@ -184,6 +203,7 @@ function Workout_Card({ open, onClose, preloadedExercises }) {
 }
 
 export default Workout_Card;
+
 
 const strengthWorkouts = [
     { label: 'Bench Press', type: 'Strength', bodyPart: 'Chest' },
