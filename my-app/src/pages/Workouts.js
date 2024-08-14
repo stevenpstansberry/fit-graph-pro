@@ -4,7 +4,6 @@ import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import Workout_Card from '../components/Workout_Card';
 import { getUser } from '../services/AuthService';
-import WorkoutCalendar from '../components/WorkoutCalendar';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 
 function Workouts() {
