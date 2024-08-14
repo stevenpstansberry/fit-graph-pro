@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Workout_Card from '../components/Workout_Card';
 import { getUser } from '../services/AuthService';
 import WorkoutCalendar from '../components/WorkoutCalendar';
+import WorkoutCardPreview from '../components/WorkoutCardPreview';
 
 function Workouts() {
   const user = getUser();
@@ -71,11 +72,23 @@ function Workouts() {
           </Box>
         ) : (
           <Box>
-            <Typography variant="h5" sx={{ mb: 2 }}>Your Workout Calendar</Typography>
-            <Box sx={{ width: '100%', maxWidth: 800, mb: 4 }}>
-              <WorkoutCalendar workouts={workouts}/>
-            </Box>
+            <Typography variant="h4" component="p" sx={{ mb: 4, textAlign: 'center' }}>
+            Your Workouts
+          </Typography>
+            <Box 
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap', // Allows items to wrap onto new rows if necessary
+              justifyContent: 'center', // Centers the cards in the container
+              gap: 2 // Space between cards
+            }}
+          >
+            
+            {workouts.map((workout, index) => (
+              <WorkoutCardPreview key={index} workout={workout} />
+            ))}
           </Box>
+      </Box>  
         )}
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>

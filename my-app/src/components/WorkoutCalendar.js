@@ -3,13 +3,10 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { Box, Typography, Modal, Card, CardContent } from '@mui/material';
 
-
-
-function WorkoutCalendar({workouts}) {
+function WorkoutCalendar({ workouts }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
-
 
   const handleDayClick = (value) => {
     const workout = workouts.find(w => w.date.toDateString() === value.toDateString());
@@ -34,12 +31,12 @@ function WorkoutCalendar({workouts}) {
             sx={{
               backgroundColor: 'green',
               color: 'white',
-              borderRadius: '50%',
-              width: '100%',
-              height: '100%',
+              borderRadius: '8px',
               display: 'flex',
-              alignItems: 'center',
               justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              width: '100%',
             }}
           >
             {date.getDate()}
