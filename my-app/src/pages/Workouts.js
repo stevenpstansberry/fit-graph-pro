@@ -17,7 +17,7 @@ function Workouts() {
   const [workouts, setWorkouts] = useState([
     {
       date: new Date(2024, 7, 14), 
-      label: 'Push Workout',
+      type: 'Push Workout',
       exercises: [
         { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: '10', reps: '8' }, { weight: '15', reps: '6' }] },
         { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: '5', reps: '10' }, { weight: '7', reps: '8' }] },
@@ -25,7 +25,7 @@ function Workouts() {
     },
     {
       date: new Date(2024, 7, 16), 
-      label: 'Pull Workout',
+      type: 'Pull Workout',
       exercises: [
         { label: 'Pull Up', bodyPart: 'Back', sets: [{ weight: '0', reps: '10' }] },
         { label: 'Barbell Row', bodyPart: 'Back', sets: [{ weight: '12', reps: '8' }, { weight: '15', reps: '6' }] },
@@ -72,23 +72,22 @@ function Workouts() {
           </Box>
         ) : (
           <Box>
-            <Typography variant="h4" component="p" sx={{ mb: 4, textAlign: 'center' }}>
-            Your Workouts
-          </Typography>
+            <Typography variant="h4" component="p" sx={{ mb: 8, textAlign: 'center' }}>
+              Your Workouts
+            </Typography>
             <Box 
-            sx={{
-              display: 'flex',
-              flexWrap: 'wrap', // Allows items to wrap onto new rows if necessary
-              justifyContent: 'center', // Centers the cards in the container
-              gap: 2 // Space between cards
-            }}
-          >
-            
-            {workouts.map((workout, index) => (
-              <WorkoutCardPreview key={index} workout={workout} />
-            ))}
-          </Box>
-      </Box>  
+              sx={{
+                display: 'flex',
+                flexWrap: 'wrap', // Allows items to wrap onto new rows if necessary
+                justifyContent: 'center', // Centers the cards in the container
+                gap: 4, // Space between cards
+              }}
+            >
+              {workouts.map((workout, index) => (
+                <WorkoutCardPreview key={index} workout={workout} />
+              ))}
+            </Box>
+          </Box>  
         )}
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
