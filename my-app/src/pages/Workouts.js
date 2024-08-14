@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import Workout_Card from '../components/Workout_Card';
 import { getUser } from '../services/AuthService';
+import WorkoutCalendar from '../components/WorkoutCalendar';
 
 function Workouts() {
   const user = getUser();
@@ -12,91 +13,92 @@ function Workouts() {
   // State to manage the visibility of the Workout Card
   const [isCardVisible, setIsCardVisible] = useState(false);
 
-  const [workouts, setWorkouts] =[
+  const [workouts, setWorkouts] = useState([
     {
-    "WorkoutId": 1,
-    "date" : new Date (2024,7,11),
-    "Exercises":[ 
-    {
-        "label": "Bench Press",
-        "bodyPart": "Chest",
-        "sets": [
+      "WorkoutId": 1,
+      "date": new Date(2024, 7, 11),
+      "Exercises": [
+        {
+          "label": "Bench Press",
+          "bodyPart": "Chest",
+          "sets": [
             {
-                "weight": "10",
-                "reps": "8"
+              "weight": "10",
+              "reps": "8"
             },
             {
-                "weight": "15",
-                "reps": "6"
+              "weight": "15",
+              "reps": "6"
             }
-        ]
-    },
-    {
-        "label": "Squat",
-        "bodyPart": "Legs",
-        "sets": [
+          ]
+        },
+        {
+          "label": "Squat",
+          "bodyPart": "Legs",
+          "sets": [
             {
-                "weight": "20",
-                "reps": "10"
+              "weight": "20",
+              "reps": "10"
             },
             {
-                "weight": "25",
-                "reps": "8"
+              "weight": "25",
+              "reps": "8"
             },
             {
-                "weight": "30",
-                "reps": "6"
+              "weight": "30",
+              "reps": "6"
             }
-        ]
-    },
-    {
-        "label": "Deadlift",
-        "bodyPart": "Back",
-        "sets": [
+          ]
+        },
+        {
+          "label": "Deadlift",
+          "bodyPart": "Back",
+          "sets": [
             {
-                "weight": "30",
-                "reps": "5"
+              "weight": "30",
+              "reps": "5"
             },
             {
-                "weight": "35",
-                "reps": "4"
+              "weight": "35",
+              "reps": "4"
             }
-        ]
-    },
-    {
-        "label": "Bicep Curl",
-        "bodyPart": "Arms",
-        "sets": [
+          ]
+        },
+        {
+          "label": "Bicep Curl",
+          "bodyPart": "Arms",
+          "sets": [
             {
-                "weight": "5",
-                "reps": "12"
+              "weight": "5",
+              "reps": "12"
             },
             {
-                "weight": "7",
-                "reps": "10"
+              "weight": "7",
+              "reps": "10"
             },
             {
-                "weight": "8",
-                "reps": "8"
+              "weight": "8",
+              "reps": "8"
             }
-        ]
-    },
-    {
-        "label": "Tricep Extension",
-        "bodyPart": "Arms",
-        "sets": [
+          ]
+        },
+        {
+          "label": "Tricep Extension",
+          "bodyPart": "Arms",
+          "sets": [
             {
-                "weight": "5",
-                "reps": "12"
+              "weight": "5",
+              "reps": "12"
             },
             {
-                "weight": "7",
-                "reps": "10"
+              "weight": "7",
+              "reps": "10"
             }
-        ]
-    }]
-  }
-  ];
+          ]
+        }
+      ]
+    }
+  ]);
 
   // State to hold the predefined workouts
   const [selectedWorkout, setSelectedWorkout] = useState([]);
@@ -111,11 +113,12 @@ function Workouts() {
   };
 
   return (
-    <Container sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <Container sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
       <Navbar />
       <Box sx={{ 
         flexGrow: 1,
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
@@ -136,44 +139,46 @@ function Workouts() {
           </Box>
         ) : (
           <Box>
-            <Typography variant="h6">Your current workouts will be listed here.</Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => toggleAddWorkoutCard([])}
-              sx={{ padding: '10px 20px', fontSize: '16px' }}
-            >
-              Add Workout
-            </Button>
-            <Box>
-              <br />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => toggleAddWorkoutCard(pushWorkout)}
-                sx={{ padding: '10px 20px', fontSize: '16px' }}
-              >
-                Add Push Workout
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => toggleAddWorkoutCard(pullWorkout)}
-                sx={{ padding: '10px 20px', fontSize: '16px' }}
-              >
-                Add Pull Workout
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => toggleAddWorkoutCard(legsWorkout)}
-                sx={{ padding: '10px 20px', fontSize: '16px' }}
-              >
-                Add Legs Workout
-              </Button>
+            <Typography variant="h5" sx={{ mb: 2 }}>Your Workout Calendar</Typography>
+            <Box sx={{ width: '100%', maxWidth: 800, mb: 4 }}>
+              <WorkoutCalendar />
             </Box>
           </Box>
         )}
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => toggleAddWorkoutCard([])}
+          sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
+        >
+          Add Workout
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => toggleAddWorkoutCard(pushWorkout)}
+          sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
+        >
+          Add Push Workout
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => toggleAddWorkoutCard(pullWorkout)}
+          sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
+        >
+          Add Pull Workout
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => toggleAddWorkoutCard(legsWorkout)}
+          sx={{ padding: '10px 20px', fontSize: '16px' }}
+        >
+          Add Legs Workout
+        </Button>
       </Box>
       <Workout_Card open={isCardVisible} onClose={handleClose} preloadedExercises={selectedWorkout} />
       <Footer />
