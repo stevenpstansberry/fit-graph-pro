@@ -3,29 +3,13 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { Box, Typography, Modal, Card, CardContent } from '@mui/material';
 
-const workouts = [
-  {
-    date: new Date(2024, 7, 14), 
-    label: 'Push Workout',
-    exercises: [
-      { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: '10', reps: '8' }, { weight: '15', reps: '6' }] },
-      { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: '5', reps: '10' }, { weight: '7', reps: '8' }] },
-    ],
-  },
-  {
-    date: new Date(2024, 7, 16), 
-    label: 'Pull Workout',
-    exercises: [
-      { label: 'Pull Up', bodyPart: 'Back', sets: [{ weight: '0', reps: '10' }] },
-      { label: 'Barbell Row', bodyPart: 'Back', sets: [{ weight: '12', reps: '8' }, { weight: '15', reps: '6' }] },
-    ],
-  },
-];
 
-function WorkoutCalendar() {
+
+function WorkoutCalendar({workouts}) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
+
 
   const handleDayClick = (value) => {
     const workout = workouts.find(w => w.date.toDateString() === value.toDateString());

@@ -15,89 +15,21 @@ function Workouts() {
 
   const [workouts, setWorkouts] = useState([
     {
-      "WorkoutId": 1,
-      "date": new Date(2024, 7, 11),
-      "Exercises": [
-        {
-          "label": "Bench Press",
-          "bodyPart": "Chest",
-          "sets": [
-            {
-              "weight": "10",
-              "reps": "8"
-            },
-            {
-              "weight": "15",
-              "reps": "6"
-            }
-          ]
-        },
-        {
-          "label": "Squat",
-          "bodyPart": "Legs",
-          "sets": [
-            {
-              "weight": "20",
-              "reps": "10"
-            },
-            {
-              "weight": "25",
-              "reps": "8"
-            },
-            {
-              "weight": "30",
-              "reps": "6"
-            }
-          ]
-        },
-        {
-          "label": "Deadlift",
-          "bodyPart": "Back",
-          "sets": [
-            {
-              "weight": "30",
-              "reps": "5"
-            },
-            {
-              "weight": "35",
-              "reps": "4"
-            }
-          ]
-        },
-        {
-          "label": "Bicep Curl",
-          "bodyPart": "Arms",
-          "sets": [
-            {
-              "weight": "5",
-              "reps": "12"
-            },
-            {
-              "weight": "7",
-              "reps": "10"
-            },
-            {
-              "weight": "8",
-              "reps": "8"
-            }
-          ]
-        },
-        {
-          "label": "Tricep Extension",
-          "bodyPart": "Arms",
-          "sets": [
-            {
-              "weight": "5",
-              "reps": "12"
-            },
-            {
-              "weight": "7",
-              "reps": "10"
-            }
-          ]
-        }
-      ]
-    }
+      date: new Date(2024, 7, 14), 
+      label: 'Push Workout',
+      exercises: [
+        { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: '10', reps: '8' }, { weight: '15', reps: '6' }] },
+        { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: '5', reps: '10' }, { weight: '7', reps: '8' }] },
+      ],
+    },
+    {
+      date: new Date(2024, 7, 16), 
+      label: 'Pull Workout',
+      exercises: [
+        { label: 'Pull Up', bodyPart: 'Back', sets: [{ weight: '0', reps: '10' }] },
+        { label: 'Barbell Row', bodyPart: 'Back', sets: [{ weight: '12', reps: '8' }, { weight: '15', reps: '6' }] },
+      ],
+    },
   ]);
 
   // State to hold the predefined workouts
@@ -141,7 +73,7 @@ function Workouts() {
           <Box>
             <Typography variant="h5" sx={{ mb: 2 }}>Your Workout Calendar</Typography>
             <Box sx={{ width: '100%', maxWidth: 800, mb: 4 }}>
-              <WorkoutCalendar />
+              <WorkoutCalendar workouts={workouts}/>
             </Box>
           </Box>
         )}
