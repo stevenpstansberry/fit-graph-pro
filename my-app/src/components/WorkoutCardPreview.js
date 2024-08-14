@@ -39,7 +39,7 @@ function WorkoutCard({ workout }) {
                 </Typography>
                 {exercise.sets.map((set, i) => (
                   <Typography key={i} variant="body2">
-                    Set {i + 1}: {set.weight} kg x {set.reps} reps
+                    Set {i + 1}: {set.weight} lbs x {set.reps} reps
                   </Typography>
                 ))}
               </Box>
