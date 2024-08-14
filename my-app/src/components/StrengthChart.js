@@ -13,6 +13,7 @@ const StrengthChart = () => {
   const [timeframe, setTimeframe] = useState('currentMonth');
 
   // Function to filter data based on the selected exercise
+  //TODO: add ability to filter by reps
   const getFilteredData = () => {
     return workoutData.map((workout) => {
       const exercise = workout.exercises.find((ex) => ex.label === selectedExercise);
