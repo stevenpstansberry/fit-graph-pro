@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import Workout_Card from '../components/Workout_Card';
 import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
-import StrengthChart from '../components/StrengthChart'; // Import your StrengthChart component
+import StrengthChart from '../components/StrengthChart'; 
 
 function Workouts() {
   const user = getUser();
