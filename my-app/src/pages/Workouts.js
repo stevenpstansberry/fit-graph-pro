@@ -21,7 +21,7 @@ function Workouts() {
 
   // State to hold the predefined workouts (PPL)
   const [selectedWorkout, setSelectedWorkout] = useState([]);
-  const [showGraph, setShowGraph] = useState(false); // New state for controlling the graph view
+  const [showGraph, setShowGraph] = useState(false); // State to toggle between graph view and workout history view
 
   const toggleAddWorkoutCard = (workout) => {
     setSelectedWorkout(workout);
@@ -42,7 +42,7 @@ function Workouts() {
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   const handleGraphButtonClick = () => {
-    setShowGraph(true); // Switch to the graph view when the button is clicked
+    setShowGraph(!showGraph); // Toggle between graph view and workout history view
   };
 
   return (
@@ -82,7 +82,7 @@ function Workouts() {
             onClick={handleGraphButtonClick}
             sx={{ padding: '8px 16px', fontSize: '14px' }}
           >
-            Graph This Month
+            {showGraph ? 'View Workout History' : 'Graph This Month'} {/* Change button text dynamically */}
           </Button>
         </Box>
 
