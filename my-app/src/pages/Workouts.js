@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Workout_Card from '../components/Workout_Card';
 import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
+import StrengthChart from '../components/StrengthChart'; // Import your StrengthChart component
 
 function Workouts() {
   const user = getUser();
@@ -20,6 +21,7 @@ function Workouts() {
 
   // State to hold the predefined workouts (PPL)
   const [selectedWorkout, setSelectedWorkout] = useState([]);
+  const [showGraph, setShowGraph] = useState(false); // New state for controlling the graph view
 
   const toggleAddWorkoutCard = (workout) => {
     setSelectedWorkout(workout);
@@ -30,66 +32,65 @@ function Workouts() {
     setIsCardVisible(false);
   };
 
-    // Filter workouts based on selected month and year
-    const filteredWorkouts = workouts.filter(workout => {
-      const workoutMonth = workout.date.getMonth() + 1;
-      const workoutYear = workout.date.getFullYear();
-      return workoutMonth === selectedMonth && workoutYear === selectedYear;
-    });
-  
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  // Filter workouts based on selected month and year
+  const filteredWorkouts = workouts.filter(workout => {
+    const workoutMonth = workout.date.getMonth() + 1;
+    const workoutYear = workout.date.getFullYear();
+    return workoutMonth === selectedMonth && workoutYear === selectedYear;
+  });
 
-    const handleGraphButtonClick = () => {
-      // TODO:
-      // Logic to graph the workouts for the selected month
-      console.log(`Graphing workouts for ${monthNames[selectedMonth - 1]} ${selectedYear}`);
-    };
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+  const handleGraphButtonClick = () => {
+    setShowGraph(true); // Switch to the graph view when the button is clicked
+  };
 
+  return (
+    <Container sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <Navbar />
 
-    return (
-      <Container sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <Navbar />
-  
-        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          <Typography variant="h4" component="p" sx={{ mb: 4 }}>
-            Your Workouts
-          </Typography>
-  
-          {/* Month and Year Selectors with Graph Button */}
-          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-            >
-              {monthNames.map((month, index) => (
-                <MenuItem key={index} value={index + 1}>
-                  {month}
-                </MenuItem>
-              ))}
-            </Select>
-            <Select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-            >
-              {[2023, 2024, 2025].map(year => (
-                <MenuItem key={year} value={year}>
-                  {year}
-                </MenuItem>
-              ))}
-            </Select>
-            <Button 
-              variant="contained" 
-              color="secondary" 
-              onClick={handleGraphButtonClick}
-              sx={{ padding: '8px 16px', fontSize: '14px' }}
-            >
-              Graph This Month
-            </Button>
-          </Box>
-  
-          {/* Display filtered workouts */}
-          {filteredWorkouts.length > 0 ? (
+      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+        <Typography variant="h4" component="p" sx={{ mb: 4 }}>
+          Your Workouts
+        </Typography>
+
+        {/* Month and Year Selectors with Graph Button */}
+        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+          >
+            {monthNames.map((month, index) => (
+              <MenuItem key={index} value={index + 1}>
+                {month}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+          >
+            {[2023, 2024, 2025].map(year => (
+              <MenuItem key={year} value={year}>
+                {year}
+              </MenuItem>
+            ))}
+          </Select>
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            onClick={handleGraphButtonClick}
+            sx={{ padding: '8px 16px', fontSize: '14px' }}
+          >
+            Graph This Month
+          </Button>
+        </Box>
+
+        {/* Conditionally render either the workout cards or the graph */}
+        {showGraph ? (
+          <StrengthChart workouts={filteredWorkouts} /> // Pass the filtered workouts to the StrengthChart component
+        ) : (
+          filteredWorkouts.length > 0 ? (
             <Box
               sx={{
                 display: 'flex',
@@ -106,10 +107,12 @@ function Workouts() {
             <Typography variant="h6" sx={{ mb: 4 }}>
               No workouts for {monthNames[selectedMonth - 1]} {selectedYear}
             </Typography>
-          )}
-        </Box>
-  
-        {/* Workout creation buttons */}
+          )
+        )}
+      </Box>
+
+      {/* Workout creation buttons */}
+      {!showGraph && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
           <Button
             variant="contained"
@@ -144,12 +147,13 @@ function Workouts() {
             Add Legs Workout
           </Button>
         </Box>
-  
-        <Workout_Card open={isCardVisible} onClose={handleClose} preloadedExercises={selectedWorkout} />
-        <Footer />
-      </Container>
-    );
-  }
+      )}
+
+      <Workout_Card open={isCardVisible} onClose={handleClose} preloadedExercises={selectedWorkout} />
+      <Footer />
+    </Container>
+  );
+}
 
 const pushWorkout = [
   { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: "", reps: "" }] },
