@@ -19,8 +19,9 @@ function Workouts() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Current month (1-12)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Current year
 
-  // State to hold the predefined workouts (PPL)
+  // State to hold workouts
   const [selectedWorkout, setSelectedWorkout] = useState([]);
+
   const [showGraph, setShowGraph] = useState(false); // State to toggle between graph view and workout history view
 
   // Predefined workout plans. 
@@ -118,7 +119,8 @@ function Workouts() {
 
         {/* Conditionally render either the workout cards or the graph */}
         {showGraph ? (
-          <StrengthChart workouts={filteredWorkouts} />
+          <StrengthChart workouts={filteredWorkouts} 
+          selectedMonth={monthNames[selectedMonth - 1]} selectedYear={selectedYear}  />
         ) : (
           filteredWorkouts.length > 0 ? (
             <Box

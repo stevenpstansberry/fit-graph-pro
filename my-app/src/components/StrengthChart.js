@@ -3,12 +3,16 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import {
-  Select, MenuItem, FormControl, InputLabel, Box
+  Select, MenuItem, FormControl, InputLabel, Box, Container,
+  Typography
 } from '@mui/material';
 
-const StrengthChart = ({ workouts }) => { 
+const StrengthChart = ({ workouts, selectedMonth, selectedYear } ) => { 
   const [selectedExercise, setSelectedExercise] = useState('');
   const [timeframe, setTimeframe] = useState('currentMonth');
+  console.log("year" + selectedYear)
+  console.log("month" + selectedMonth)
+
 
   // Extract unique exercise labels from workouts
   const exerciseLabels = Array.from(new Set(workouts.flatMap(workout => 
@@ -76,6 +80,11 @@ const StrengthChart = ({ workouts }) => {
           <MenuItem value="allTime">All Time</MenuItem>
         </Select>
       </FormControl>
+      <Container>
+          <Typography variant = 'h5'>
+            Displaying Workout History for: {selectedExercise}, {selectedMonth} {selectedYear}
+          </Typography>
+      </Container>
 
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={filteredData}>
