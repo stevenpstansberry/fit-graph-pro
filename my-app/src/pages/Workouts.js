@@ -65,28 +65,47 @@ function Workouts() {
           Your Workouts
         </Typography>
 
-        {/* Month and Year Selectors with Graph Button */}
-        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-          >
-            {monthNames.map((month, index) => (
-              <MenuItem key={index} value={index + 1}>
-                {month}
-              </MenuItem>
-            ))}
-          </Select>
-          <Select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-          >
-            {[2023, 2024, 2025].map(year => (
-              <MenuItem key={year} value={year}>
-                {year}
-              </MenuItem>
-            ))}
-          </Select>
+        {/* Sticky container for selectors and button */}
+        <Box
+          sx={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
+            backgroundColor: 'white',
+            padding: '10px 0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2,
+            mb: 4,
+            width: '100%',
+          }}
+        >
+          {/* Conditionally render the month and year selectors */}
+          {!showGraph && (
+            <>
+              <Select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+              >
+                {monthNames.map((month, index) => (
+                  <MenuItem key={index} value={index + 1}>
+                    {month}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+              >
+                {[2023, 2024, 2025].map(year => (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                ))}
+              </Select>
+            </>
+          )}
           <Button 
             variant="contained" 
             color="secondary" 
@@ -132,7 +151,7 @@ function Workouts() {
             onClick={() => toggleAddWorkoutCard([])}
             sx={{ padding: '10px 20px', fontSize: '16px' }}
           >
-            Add Empty Workout
+            Add Default Workout
           </Button>
 
           {/* Dynamically generate predefined workout buttons */}
