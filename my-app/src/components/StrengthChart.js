@@ -76,6 +76,8 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
     }
   };
 
+  //TODO add tick boxes to remove weight /reps
+
   return (
     <Box sx={{ width: '100%', textAlign: 'center' }}>
       <FormControl sx={{ m: 1, minWidth: 120 }}>

@@ -40,7 +40,7 @@ function Workouts() {
   // Predefined workout plans. 
   //TODO by default, all users will be have ppl as a predefined workout plan, need to
   // implement way to store predefined workouts in dynamodb and fetch based on user
-  //use this method to change it later
+  //use this to add or delete methods later, change the use state to be a fetch from db.
   const [predefinedWorkouts, setPredefinedWorkouts] = useState([      
     { name: 'Push Workout', exercises: pushWorkout },
     { name: 'Pull Workout', exercises: pullWorkout },
@@ -125,16 +125,14 @@ function Workouts() {
               </Select>
             </>
           )}
-          {filteredWorkouts.length > 0 && ( // Conditionally render the graph button only if there are workouts
-            <Button 
-              variant="contained" 
-              color="secondary" 
-              onClick={handleGraphButtonClick}
-              sx={{ padding: '8px 16px', fontSize: '14px' }}
-            >
-              {showGraph ? 'View Workout History' : 'Graph This Month'}
-            </Button>
-          )}
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            onClick={handleGraphButtonClick}
+            sx={{ padding: '8px 16px', fontSize: '14px' }}
+          >
+            {showGraph ? 'View Workout History' : 'Graph This Month'}
+          </Button>
         </Box>
 
         {/* Conditionally render either the workout cards or the graph */}
