@@ -6,14 +6,27 @@ import Workout_Card from '../components/Workout_Card';
 import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart'; 
+import workoutDataRaw from '../util/sampleProgression.json';
+
+
+//TODO don't show graphworkout button if there are no workouts for the month
+
+// temp sample data
+const workoutData = workoutDataRaw.map(workout => {
+  return {
+    ...workout,
+    date: new Date(workout.date) 
+  };
+});
 
 function Workouts() {
   const user = getUser();
   const name = user !== 'undefined' && user ? user.name : '';
 
+
   // State to manage the visibility of the Workout Card
   const [isCardVisible, setIsCardVisible] = useState(false);
-  const [workoutHistory, setWorkoutHistory] = useState(sampleWorkoutsTesting);
+  const [workoutHistory, setWorkoutHistory] = useState(workoutData);
 
   // State to manage the month and year
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Current month (1-12)

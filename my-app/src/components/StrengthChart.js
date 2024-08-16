@@ -7,6 +7,9 @@ import {
   Typography
 } from '@mui/material';
 
+
+
+
 const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, selectedYear }) => { 
   const [selectedExercise, setSelectedExercise] = useState('');
   const [timeframe, setTimeframe] = useState('currentMonth');
@@ -30,9 +33,11 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
       const exercise = workout.exercises.find((ex) => ex.label === selectedExercise);
       if (exercise) {
         const totalWeight = exercise.sets.reduce((sum, set) => sum + parseInt(set.weight, 10), 0);
+        const totalReps = exercise.sets.reduce((sum, set) => sum + parseInt(set.reps, 10), 0);
         return {
           date: workout.date.toLocaleDateString(), // Format the date for X-axis
           weight: totalWeight,
+          reps: totalReps,
         };
       }
       return null;
@@ -125,6 +130,7 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
           <Tooltip />
           <Legend />
           <Line type="monotone" dataKey="weight" stroke="#8884d8" />
+          <Line type="monotone" dataKey="reps" stroke="#82ca9d" />
         </LineChart>
       </ResponsiveContainer>
     </Box>
