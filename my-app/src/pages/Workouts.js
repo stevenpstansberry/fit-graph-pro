@@ -11,7 +11,6 @@ import StrengthChart from '../components/StrengthChart';
 import workoutDataRaw from '../util/sampleProgression.json';
 
 
-//TODO don't show graphworkout button if there are no workouts for the month
 
 // Temp sample data formatting
 const workoutData = workoutDataRaw.map(workout => ({
@@ -39,7 +38,6 @@ function Workouts() {
   const [newWorkoutName, setNewWorkoutName] = useState(""); // State for the new workout name
   const [newWorkoutExercises, setNewWorkoutExercises] = useState([]); // State for exercises in the new workout
 
-  // Predefined workout plans
    // Predefined workout plans. 
   //TODO by default, all users will be have ppl as a predefined workout plan, need to
   // implement way to store predefined workouts in dynamodb and fetch based on user
