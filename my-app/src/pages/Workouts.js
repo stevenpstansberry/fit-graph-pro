@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
@@ -35,7 +36,7 @@ function Workouts() {
 
   const [showGraph, setShowGraph] = useState(false); // State to toggle between graph view and workout history view
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false); // State for add workout dialog
-  const [newWorkoutName, setNewWorkoutName] = useState(""); // State for the new workout name
+  const [newSplitName, setNewSplitName] = useState(""); // State for the new workout name
   const [newWorkoutExercises, setNewWorkoutExercises] = useState([]); // State for exercises in the new workout
 
    // Predefined workout plans. 
@@ -68,17 +69,19 @@ function Workouts() {
 
   const handleAddDialogClose = () => {
     setIsAddDialogOpen(false);
-    setNewWorkoutName(""); // Clear the input field
+    setNewSplitName(""); // Clear the input field
     setNewWorkoutExercises([]); // Clear the exercise selection
   };
 
-  const handleAddWorkout = () => {
-    if (newWorkoutName.trim()) {
+  const handleAddNewSplit = () => {
+    if (newSplitName.trim()) {
       const newWorkout = {
-        name: newWorkoutName,
+        name: newSplitName,
         exercises: newWorkoutExercises,
       };
       setPredefinedWorkouts([...predefinedWorkouts, newWorkout]);
+      //TODO add CRUD logic for backend
+
       handleAddDialogClose(); // Close the dialog after adding the workout
     }
   };
@@ -255,6 +258,18 @@ function Workouts() {
             </Box>
           ))}
         </DialogContent>
+          {/* Add New Split */}
+          <Box sx={{display: 'flex', alignItems: 'center', mt: 4}}>
+            <TextField>
+              label="New Workout Split"
+              value={newSplitName}
+              onChange={(e) => setNewSplitName(e.target.value)}
+              sx= {{mr : 2}}
+            </TextField>
+            <IconButton>
+              <AddIcon />
+            </IconButton>
+          </Box>
         <DialogActions>
           <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
         </DialogActions>
