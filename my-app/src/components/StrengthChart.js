@@ -80,11 +80,22 @@ const StrengthChart = ({ workouts, selectedMonth, selectedYear } ) => {
           <MenuItem value="allTime">All Time</MenuItem>
         </Select>
       </FormControl>
-      <Container>
-          <Typography variant = 'h5'>
-            Displaying Workout History for: {selectedExercise}, {selectedMonth} {selectedYear}
-          </Typography>
-      </Container>
+      <Container sx={{ mt: 2 }}>
+  <Typography
+    variant="h5"
+    sx={{
+      color: '#4A4A4A', 
+      fontWeight: 'bold',
+      backgroundColor: '#e0e0e0', 
+      padding: '8px 16px',
+      borderRadius: '8px',
+      boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', 
+    }}
+  >
+    Displaying Workout History for: {selectedExercise}, {selectedMonth} {selectedYear}
+  </Typography>
+</Container>
+
 
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={filteredData}>
