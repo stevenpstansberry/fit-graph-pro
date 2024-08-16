@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
@@ -7,32 +7,26 @@ import {
   Typography
 } from '@mui/material';
 
-const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, selectedYear } ) => { 
+const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, selectedYear }) => { 
   const [selectedExercise, setSelectedExercise] = useState('');
   const [timeframe, setTimeframe] = useState('currentMonth');
-
-
-  // const filteredWorkouts = workouts.filter(workout => {
-  //   const workoutMonth = workout.date.getMonth() + 1;
-  //   const workoutYear = workout.date.getFullYear();
-  //   return workoutMonth === selectedMonth && workoutYear === selectedYear;
-  // });
-
-
+  const [displayData, setDisplayData] = useState([]);
 
   // Extract unique exercise labels from workouts
-  const exerciseLabels = Array.from(new Set(filteredWorkouts.flatMap(workout => 
+  const exerciseLabels = Array.from(new Set(workoutHistory.flatMap(workout => 
     workout.exercises.map(exercise => exercise.label)
   )));
 
   // Set the first exercise as the default selected if none is selected
-  if (!selectedExercise && exerciseLabels.length > 0) {
-    setSelectedExercise(exerciseLabels[0]);
-  }
+  useEffect(() => {
+    if (!selectedExercise && exerciseLabels.length > 0) {
+      setSelectedExercise(exerciseLabels[0]);
+    }
+  }, [exerciseLabels, selectedExercise]);
 
   // Function to filter data based on the selected exercise
-  const getFilteredData = () => {
-    return filteredWorkouts.map((workout) => {
+  const getFilteredData = (workouts) => {
+    return workouts.map((workout) => {
       const exercise = workout.exercises.find((ex) => ex.label === selectedExercise);
       if (exercise) {
         const totalWeight = exercise.sets.reduce((sum, set) => sum + parseInt(set.weight, 10), 0);
@@ -45,18 +39,25 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
     }).filter(Boolean); // Remove any null values
   };
 
+  // Update display data based on timeframe and selected exercise
+  useEffect(() => {
+    if (timeframe === 'currentMonth') {
+      setDisplayData(getFilteredData(filteredWorkouts));
+    } else if (timeframe === 'ytd') {
+      const currentYearWorkouts = workoutHistory.filter(workout => workout.date.getFullYear() === selectedYear);
+      setDisplayData(getFilteredData(currentYearWorkouts));
+    } else if (timeframe === 'allTime') {
+      setDisplayData(getFilteredData(workoutHistory));
+    }
+  }, [filteredWorkouts, workoutHistory, timeframe, selectedExercise]);
+
   const handleExerciseChange = (event) => {
     setSelectedExercise(event.target.value);
   };
 
   const handleTimeframeChange = (event) => {
-
     setTimeframe(event.target.value);
-
-
   };
-
-  const filteredData = getFilteredData();
 
   const getTitle = () => {
     if (timeframe === 'currentMonth') {
@@ -101,24 +102,23 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
         </Select>
       </FormControl>
       <Container sx={{ mt: 2 }}>
-  <Typography
-    variant="h5"
-    sx={{
-      color: '#4A4A4A', 
-      fontWeight: 'bold',
-      backgroundColor: '#e0e0e0', 
-      padding: '8px 16px',
-      borderRadius: '8px',
-      boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', 
-    }}
-  >
-    {getTitle()}
-  </Typography>
-</Container>
-
+        <Typography
+          variant="h5"
+          sx={{
+            color: '#4A4A4A', 
+            fontWeight: 'bold',
+            backgroundColor: '#e0e0e0', 
+            padding: '8px 16px',
+            borderRadius: '8px',
+            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', 
+          }}
+        >
+          {getTitle()}
+        </Typography>
+      </Container>
 
       <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={filteredData}>
+        <LineChart data={displayData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
           <YAxis />
