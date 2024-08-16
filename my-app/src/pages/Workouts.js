@@ -1,28 +1,27 @@
 import React, { useState } from 'react';
-import { Container, Typography, Button, Box, Select, MenuItem } from '@mui/material';
+import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import Workout_Card from '../components/Workout_Card';
 import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
-import StrengthChart from '../components/StrengthChart'; 
+import StrengthChart from '../components/StrengthChart';
 import workoutDataRaw from '../util/sampleProgression.json';
 
 
 //TODO don't show graphworkout button if there are no workouts for the month
 
-// temp sample data
-const workoutData = workoutDataRaw.map(workout => {
-  return {
-    ...workout,
-    date: new Date(workout.date) 
-  };
-});
+// Temp sample data formatting
+const workoutData = workoutDataRaw.map(workout => ({
+  ...workout,
+  date: new Date(workout.date),
+}));
 
 function Workouts() {
   const user = getUser();
   const name = user !== 'undefined' && user ? user.name : '';
-
 
   // State to manage the visibility of the Workout Card
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -32,21 +31,28 @@ function Workouts() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Current month (1-12)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Current year
 
-  // State to hold workouts
+  // State to hold selected workouts
   const [selectedWorkout, setSelectedWorkout] = useState([]);
 
   const [showGraph, setShowGraph] = useState(false); // State to toggle between graph view and workout history view
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false); // State for add workout dialog
+  const [newWorkoutName, setNewWorkoutName] = useState(""); // State for the new workout name
+  const [newWorkoutExercises, setNewWorkoutExercises] = useState([]); // State for exercises in the new workout
 
-  // Predefined workout plans. 
+  // Predefined workout plans
+   // Predefined workout plans. 
   //TODO by default, all users will be have ppl as a predefined workout plan, need to
   // implement way to store predefined workouts in dynamodb and fetch based on user
   //use this to add or delete methods later, change the use state to be a fetch from db.
-  const [predefinedWorkouts, setPredefinedWorkouts] = useState([      
+  const [predefinedWorkouts, setPredefinedWorkouts] = useState([
     { name: 'Push Workout', exercises: pushWorkout },
     { name: 'Pull Workout', exercises: pullWorkout },
-    { name: 'Legs Workout', exercises: legsWorkout },]);
+    { name: 'Legs Workout', exercises: legsWorkout },
+  ]);
 
-
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Manage visibility of edit dialog
+  const [selectedSplitForEditing, setSelectedSplitForEditing] = useState({}); // Split being edited
+  const [editedName, setEditedName] = useState(''); // For renaming
 
   const toggleAddWorkoutCard = (workout) => {
     setSelectedWorkout(workout);
@@ -55,6 +61,33 @@ function Workouts() {
 
   const handleClose = () => {
     setIsCardVisible(false);
+  };
+
+  // Handle opening and closing of the add workout dialog
+  const handleAddDialogOpen = () => {
+    setIsAddDialogOpen(true);
+  };
+
+  const handleAddDialogClose = () => {
+    setIsAddDialogOpen(false);
+    setNewWorkoutName(""); // Clear the input field
+    setNewWorkoutExercises([]); // Clear the exercise selection
+  };
+
+  const handleAddWorkout = () => {
+    if (newWorkoutName.trim()) {
+      const newWorkout = {
+        name: newWorkoutName,
+        exercises: newWorkoutExercises,
+      };
+      setPredefinedWorkouts([...predefinedWorkouts, newWorkout]);
+      handleAddDialogClose(); // Close the dialog after adding the workout
+    }
+  };
+
+  const handleDeleteWorkout = (index) => {
+    const updatedWorkouts = predefinedWorkouts.filter((_, i) => i !== index);
+    setPredefinedWorkouts(updatedWorkouts);
   };
 
   // Filter workouts based on selected month and year
@@ -66,13 +99,38 @@ function Workouts() {
 
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-
-
-
-
   const handleGraphButtonClick = () => {
     setShowGraph(!showGraph); // Toggle between graph view and workout history view
-    console.log(workoutHistory)
+  };
+
+
+  // Handle opening the edit dialog
+  const handleOpenEditDialog = () => {
+    setIsEditDialogOpen(true);
+  };
+
+  // Handle closing the edit dialog
+  const handleCloseEditDialog = () => {
+    setIsEditDialogOpen(false);
+    setSelectedSplitForEditing({});
+    setEditedName('');
+  };
+
+  // Handle renaming a workout split
+  const handleRenameSplit = () => {
+    setPredefinedWorkouts(prevWorkouts =>
+      prevWorkouts.map(workout =>
+        workout.name === selectedSplitForEditing.name ? { ...workout, name: editedName } : workout
+      )
+    );
+    handleCloseEditDialog();
+  };
+
+  // Handle deleting a workout split
+  const handleDeleteSplit = (splitName) => {
+    setPredefinedWorkouts(prevWorkouts =>
+      prevWorkouts.filter(workout => workout.name !== splitName)
+    );
   };
 
   return (
@@ -100,7 +158,6 @@ function Workouts() {
             width: '100%',
           }}
         >
-          {/* Conditionally render the month and year selectors */}
           {!showGraph && (
             <>
               <Select
@@ -125,32 +182,24 @@ function Workouts() {
               </Select>
             </>
           )}
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            onClick={handleGraphButtonClick}
-            sx={{ padding: '8px 16px', fontSize: '14px' }}
-          >
-            {showGraph ? 'View Workout History' : 'Graph This Month'}
-          </Button>
+          {filteredWorkouts.length > 0 && (
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              onClick={handleGraphButtonClick}
+              sx={{ padding: '8px 16px', fontSize: '14px' }}
+            >
+              {showGraph ? 'View Workout History' : 'Graph This Month'}
+            </Button>
+          )}
         </Box>
 
         {/* Conditionally render either the workout cards or the graph */}
         {showGraph ? (
-          <StrengthChart workoutHistory={workoutHistory} // Workout History
-          filteredWorkouts={filteredWorkouts} // Workouts of current month and year
-          selectedMonth={monthNames[selectedMonth - 1]}
-          selectedYear={selectedYear}  />
+          <StrengthChart workoutHistory={workoutHistory} filteredWorkouts={filteredWorkouts} selectedMonth={monthNames[selectedMonth - 1]} selectedYear={selectedYear} />
         ) : (
           filteredWorkouts.length > 0 ? (
-            <Box
-              sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-                gap: 2,
-              }}
-            >
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
               {filteredWorkouts.map((workout, index) => (
                 <WorkoutCardPreview key={index} workout={workout} />
               ))}
@@ -163,33 +212,55 @@ function Workouts() {
         )}
       </Box>
 
-      {/* Workout creation buttons */}
+      {/* Workout creation buttons and edit icon */}
       {!showGraph && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4, gap: 2 }}>
-          {/* Default Workout Button */}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => toggleAddWorkoutCard([])}
-            sx={{ padding: '10px 20px', fontSize: '16px' }}
-          >
-            Add Default Workout
-          </Button>
-
-          {/* Dynamically generate predefined workout buttons */}
-          {predefinedWorkouts.map((workout, index) => (
-            <Button
-              key={index}
-              variant="contained"
-              color="primary"
-              onClick={() => toggleAddWorkoutCard(workout.exercises)}
-              sx={{ padding: '10px 20px', fontSize: '16px' }}
-            >
-              Add {workout.name}
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 4, gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            {/* Default Workout Button */}
+            <Button variant="contained" color="primary" onClick={() => toggleAddWorkoutCard([])} sx={{ padding: '10px 20px', fontSize: '16px' }}>
+              Add Default Workout
             </Button>
-          ))}
+
+            {/* Dynamically generate predefined workout buttons */}
+            {predefinedWorkouts.map((workout, index) => (
+              <Button key={index} variant="contained" color="primary" onClick={() => toggleAddWorkoutCard(workout.exercises)} sx={{ padding: '10px 20px', fontSize: '16px' }}>
+                Add {workout.name}
+              </Button>
+            ))}
+          </Box>
+          {/* Single edit icon to the right of the buttons */}
+          <IconButton onClick={handleOpenEditDialog}>
+            <EditIcon />
+          </IconButton>
         </Box>
       )}
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onClose={handleCloseEditDialog}>
+        <DialogTitle>Edit Workout Splits</DialogTitle>
+        <DialogContent>
+          <Typography variant="h6">Available Workout Splits</Typography>
+          {predefinedWorkouts.map((workout, index) => (
+            <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+              <TextField
+                value={workout.name}
+                onChange={(e) => {
+                  const updatedSplits = [...predefinedWorkouts];
+                  updatedSplits[index].name = e.target.value;
+                  setPredefinedWorkouts(updatedSplits);
+                }}
+                sx={{ mr: 2 }}
+              />
+              <IconButton color="error" onClick={() => handleDeleteSplit(workout.name)}>
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          ))}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
+        </DialogActions>
+      </Dialog>
 
       <Workout_Card open={isCardVisible} onClose={handleClose} preloadedExercises={selectedWorkout} />
       <Footer />
@@ -214,33 +285,6 @@ const legsWorkout = [
   { label: 'Squat', bodyPart: 'Legs', sets: [{ weight: "", reps: "" }] },
   { label: 'Leg Press', bodyPart: 'Legs', sets: [{ weight: "", reps: "" }] },
   { label: 'Lunge', bodyPart: 'Legs', sets: [{ weight: "", reps: "" }] }
-];
-
-const sampleWorkoutsTesting = [
-  {
-    date: new Date(2024, 6, 14), 
-    type: 'Push Workout',
-    exercises: [
-      { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: '10', reps: '8' }, { weight: '15', reps: '6' }] },
-      { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: '5', reps: '10' }, { weight: '7', reps: '8' }] },
-    ],
-  },
-  {
-    date: new Date(2024, 7, 14), 
-    type: 'Push Workout',
-    exercises: [
-      { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: '10', reps: '8' }, { weight: '15', reps: '6' }] },
-      { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: '5', reps: '10' }, { weight: '7', reps: '8' }] },
-    ],
-  },
-  {
-    date: new Date(2024, 7, 17), 
-    type: 'Push Workout',
-    exercises: [
-      { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: '15', reps: '8' }, { weight: '15', reps: '6' }] },
-      { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: '15', reps: '10' }, { weight: '7', reps: '8' }] },
-    ],
-  },
 ];
 
 export default Workouts;
