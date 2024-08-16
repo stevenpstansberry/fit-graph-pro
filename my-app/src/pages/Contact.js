@@ -19,7 +19,7 @@ function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here, e.g., sending the data to an API
+    // Handle form submission logic here, e.g., sending the data to an API aws?
     console.log('Form Data:', formData);
   };
 
