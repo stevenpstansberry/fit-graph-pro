@@ -13,7 +13,7 @@ function Workouts() {
 
   // State to manage the visibility of the Workout Card
   const [isCardVisible, setIsCardVisible] = useState(false);
-  const [workouts, setWorkouts] = useState(sampleWorkoutsTesting);
+  const [workoutHistory, setWorkoutHistory] = useState(sampleWorkoutsTesting);
 
   // State to manage the month and year
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Current month (1-12)
@@ -45,7 +45,7 @@ function Workouts() {
   };
 
   // Filter workouts based on selected month and year
-  const filteredWorkouts = workouts.filter(workout => {
+  const filteredWorkouts = workoutHistory.filter(workout => {
     const workoutMonth = workout.date.getMonth() + 1;
     const workoutYear = workout.date.getFullYear();
     return workoutMonth === selectedMonth && workoutYear === selectedYear;
@@ -53,8 +53,13 @@ function Workouts() {
 
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+
+
+
+
   const handleGraphButtonClick = () => {
     setShowGraph(!showGraph); // Toggle between graph view and workout history view
+    console.log(workoutHistory)
   };
 
   return (
@@ -119,8 +124,10 @@ function Workouts() {
 
         {/* Conditionally render either the workout cards or the graph */}
         {showGraph ? (
-          <StrengthChart workouts={filteredWorkouts} 
-          selectedMonth={monthNames[selectedMonth - 1]} selectedYear={selectedYear}  />
+          <StrengthChart workoutHistory={workoutHistory} // Workout History
+          filteredWorkouts={filteredWorkouts} // Workouts of current month and year
+          selectedMonth={monthNames[selectedMonth - 1]}
+          selectedYear={selectedYear}  />
         ) : (
           filteredWorkouts.length > 0 ? (
             <Box

@@ -7,15 +7,21 @@ import {
   Typography
 } from '@mui/material';
 
-const StrengthChart = ({ workouts, selectedMonth, selectedYear } ) => { 
+const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, selectedYear } ) => { 
   const [selectedExercise, setSelectedExercise] = useState('');
   const [timeframe, setTimeframe] = useState('currentMonth');
-  console.log("year" + selectedYear)
-  console.log("month" + selectedMonth)
+
+
+  // const filteredWorkouts = workouts.filter(workout => {
+  //   const workoutMonth = workout.date.getMonth() + 1;
+  //   const workoutYear = workout.date.getFullYear();
+  //   return workoutMonth === selectedMonth && workoutYear === selectedYear;
+  // });
+
 
 
   // Extract unique exercise labels from workouts
-  const exerciseLabels = Array.from(new Set(workouts.flatMap(workout => 
+  const exerciseLabels = Array.from(new Set(filteredWorkouts.flatMap(workout => 
     workout.exercises.map(exercise => exercise.label)
   )));
 
@@ -26,7 +32,7 @@ const StrengthChart = ({ workouts, selectedMonth, selectedYear } ) => {
 
   // Function to filter data based on the selected exercise
   const getFilteredData = () => {
-    return workouts.map((workout) => {
+    return filteredWorkouts.map((workout) => {
       const exercise = workout.exercises.find((ex) => ex.label === selectedExercise);
       if (exercise) {
         const totalWeight = exercise.sets.reduce((sum, set) => sum + parseInt(set.weight, 10), 0);
@@ -44,11 +50,25 @@ const StrengthChart = ({ workouts, selectedMonth, selectedYear } ) => {
   };
 
   const handleTimeframeChange = (event) => {
+
     setTimeframe(event.target.value);
-    // Handle timeframe logic here if needed
+
+
   };
 
   const filteredData = getFilteredData();
+
+  const getTitle = () => {
+    if (timeframe === 'currentMonth') {
+      return `Displaying Workout History for: ${selectedExercise}, ${selectedMonth} ${selectedYear}`;
+    } else if (timeframe === 'ytd') {
+      return `Displaying Year-to-Date Workout History for: ${selectedExercise}, ${selectedYear}`;
+    } else if (timeframe === 'allTime') {
+      return `Displaying All-Time Workout History for: ${selectedExercise}`;
+    } else {
+      return `Displaying Workout History for: ${selectedExercise}`;
+    }
+  };
 
   return (
     <Box sx={{ width: '100%', textAlign: 'center' }}>
@@ -92,7 +112,7 @@ const StrengthChart = ({ workouts, selectedMonth, selectedYear } ) => {
       boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', 
     }}
   >
-    Displaying Workout History for: {selectedExercise}, {selectedMonth} {selectedYear}
+    {getTitle()}
   </Typography>
 </Container>
 
