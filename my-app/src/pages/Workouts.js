@@ -125,14 +125,16 @@ function Workouts() {
               </Select>
             </>
           )}
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            onClick={handleGraphButtonClick}
-            sx={{ padding: '8px 16px', fontSize: '14px' }}
-          >
-            {showGraph ? 'View Workout History' : 'Graph This Month'}
-          </Button>
+          {filteredWorkouts.length > 0 && ( // Conditionally render the graph button only if there are workouts
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              onClick={handleGraphButtonClick}
+              sx={{ padding: '8px 16px', fontSize: '14px' }}
+            >
+              {showGraph ? 'View Workout History' : 'Graph This Month'}
+            </Button>
+          )}
         </Box>
 
         {/* Conditionally render either the workout cards or the graph */}
