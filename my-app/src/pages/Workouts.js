@@ -23,6 +23,17 @@ function Workouts() {
   const [selectedWorkout, setSelectedWorkout] = useState([]);
   const [showGraph, setShowGraph] = useState(false); // State to toggle between graph view and workout history view
 
+  // Predefined workout plans. 
+  //TODO by default, all users will be have ppl as a predefined workout plan, need to
+  // implement way to store predefined workouts in dynamodb and fetch based on user
+  //use this method to change it later
+  const [predefinedWorkouts, setPredefinedWorkouts] = useState([      
+    { name: 'Push Workout', exercises: pushWorkout },
+    { name: 'Pull Workout', exercises: pullWorkout },
+    { name: 'Legs Workout', exercises: legsWorkout },]);
+
+
+
   const toggleAddWorkoutCard = (workout) => {
     setSelectedWorkout(workout);
     setIsCardVisible(!isCardVisible);
@@ -82,13 +93,13 @@ function Workouts() {
             onClick={handleGraphButtonClick}
             sx={{ padding: '8px 16px', fontSize: '14px' }}
           >
-            {showGraph ? 'View Workout History' : 'Graph This Month'} {/* Change button text dynamically */}
+            {showGraph ? 'View Workout History' : 'Graph This Month'}
           </Button>
         </Box>
 
         {/* Conditionally render either the workout cards or the graph */}
         {showGraph ? (
-          <StrengthChart workouts={filteredWorkouts} /> // Pass the filtered workouts to the StrengthChart component
+          <StrengthChart workouts={filteredWorkouts} />
         ) : (
           filteredWorkouts.length > 0 ? (
             <Box
@@ -113,39 +124,29 @@ function Workouts() {
 
       {/* Workout creation buttons */}
       {!showGraph && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4, gap: 2 }}>
+          {/* Default Workout Button */}
           <Button
             variant="contained"
             color="primary"
             onClick={() => toggleAddWorkoutCard([])}
-            sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
-          >
-            Add Workout
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => toggleAddWorkoutCard(pushWorkout)}
-            sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
-          >
-            Add Push Workout
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => toggleAddWorkoutCard(pullWorkout)}
-            sx={{ padding: '10px 20px', fontSize: '16px', mr: 2 }}
-          >
-            Add Pull Workout
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => toggleAddWorkoutCard(legsWorkout)}
             sx={{ padding: '10px 20px', fontSize: '16px' }}
           >
-            Add Legs Workout
+            Add Empty Workout
           </Button>
+
+          {/* Dynamically generate predefined workout buttons */}
+          {predefinedWorkouts.map((workout, index) => (
+            <Button
+              key={index}
+              variant="contained"
+              color="primary"
+              onClick={() => toggleAddWorkoutCard(workout.exercises)}
+              sx={{ padding: '10px 20px', fontSize: '16px' }}
+            >
+              Add {workout.name}
+            </Button>
+          ))}
         </Box>
       )}
 
@@ -155,6 +156,7 @@ function Workouts() {
   );
 }
 
+// Sample predefined workouts
 const pushWorkout = [
   { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: "", reps: "" }] },
   { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: "", reps: "" }] },
