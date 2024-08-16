@@ -191,11 +191,11 @@ const sampleWorkoutsTesting = [
     ],
   },
   {
-    date: new Date(2024, 7, 16), 
-    type: 'Pull Workout',
+    date: new Date(2024, 7, 17), 
+    type: 'Push Workout',
     exercises: [
-      { label: 'Pull Up', bodyPart: 'Back', sets: [{ weight: '0', reps: '10' }] },
-      { label: 'Barbell Row', bodyPart: 'Back', sets: [{ weight: '12', reps: '8' }, { weight: '15', reps: '6' }] },
+      { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: '15', reps: '8' }, { weight: '15', reps: '6' }] },
+      { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: '15', reps: '10' }, { weight: '7', reps: '8' }] },
     ],
   },
 ];
