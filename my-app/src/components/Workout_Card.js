@@ -84,7 +84,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     }
     onClose();
   };
-
+ 
 
 
 
