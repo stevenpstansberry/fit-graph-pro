@@ -15,7 +15,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./Exercise_Sub_Card";
 import { v4 as uuidv4 } from 'uuid'; // Import UUID for unique IDs
 
-function Workout_Card({ open, onClose, preloadedExercises }) {
+function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName }) {
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState('');
   const [exercises, setExercises] = useState([]);
@@ -61,7 +61,36 @@ function Workout_Card({ open, onClose, preloadedExercises }) {
     setExercises(updatedExercises);
   };
 
+  // Function to check mode and create the workout / validate inputs
+  const handleSave = () => {
+    if (exercises.length == 0) {
+      alert("You must add at least one exercise");
+      return;
+    }
+    if (mode === "addSplit"){
+      const workoutSplit = {
+        id: uuidv4(),
+        name: "test",
+        exercises: exercises,
+      };
+      saveSplit(workoutSplit);
+    } else if (mode === "createWorkout"){
+      const workout = {
+        id: uuidv4,
+        date: new Date().toLocaleDateString(),
+        exercises: exercises,
+      };
+      saveWorkout(workout);
+    }
+    onClose();
+  };
+ 
+
+
+
   // Function to create the workout and validate inputs
+
+  // refactor this to handle saving split templates as well as creating workouts
   const createWorkout = (event) => {
     event.preventDefault();
 
@@ -71,6 +100,8 @@ function Workout_Card({ open, onClose, preloadedExercises }) {
       console.log(message); 
       return;
     }
+
+    if (mode === "createWorkout") {
 
     // Check to see if any of the reps or weights are empty
     const isAnyExerciseEmpty = exercises.some(exercise => 
@@ -82,14 +113,40 @@ function Workout_Card({ open, onClose, preloadedExercises }) {
       console.log(message);
       return;
     }
-
+    //?
     const workout = {
-      id: workoutId,
+      id: uuidv4(),
       date: workoutDate,
       exercises: exercises,
     };
+    saveWorkout(workout)
 
-    console.log("Workout Created: ", workout);
+  }
+    // Logic for "addSplit" mode
+    if (mode === "addSplit") {
+      // Only check that exercises and set counts are provided (no weights/reps validation)
+      const isAnySetEmpty = exercises.some(exercise => exercise.sets.length === 0);
+  
+      if (isAnySetEmpty) {
+        setMessage("One or more exercises have empty sets.");
+        console.log(message);
+        return;
+      }
+  
+      const workoutSplit = {
+        id: uuidv4(),
+        name: newSplitName, 
+        exercises: exercises.map(exercise => ({
+          label: exercise.label,
+          bodyPart: exercise.bodyPart,
+          sets: exercise.sets.map(set => ({ setCount: set.setCount })) // Only include set count
+        })),
+      };
+      console.log(newSplitName);
+      saveSplit(workoutSplit); 
+      //console.log("Workout Split Created: ", workoutSplit);
+    }
+    onClose();
   };
 
   return (
@@ -132,11 +189,14 @@ function Workout_Card({ open, onClose, preloadedExercises }) {
 
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            Add a Workout
+            {mode === "addSplit" ? "Create a Workout Split" : "Add a Workout"}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Add exercises to your workout from the list below.
+            {mode === "addSplit"
+              ? "Define your workout split by adding exercises and specifying the number of sets."
+              : "Add exercises to your workout and customize sets, weights, and reps."}
           </Typography>
+
 
           <Box
             sx={{
@@ -174,11 +234,12 @@ function Workout_Card({ open, onClose, preloadedExercises }) {
           <Box>
             {exercises.map((exercise, index) => (
               <ExerciseSubcard
-                key={index} // Use index or a unique key
+                key={index}
                 exercise={exercise}
                 index={index}
                 removeExercise={removeExercise}
-                updateExerciseSets={updateExerciseSets} // Pass the update function
+                updateExerciseSets={updateExerciseSets}
+                allowWeightAndReps={mode === "createWorkout"} // Show weights/reps only in "createWorkout" mode
               />
             ))}
           </Box>
@@ -194,7 +255,7 @@ function Workout_Card({ open, onClose, preloadedExercises }) {
               ml: 'auto',
             }}
           >
-            Create Workout
+            {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
           </Button>
         </CardActions>
       </Card>
