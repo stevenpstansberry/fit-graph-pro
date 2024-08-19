@@ -32,7 +32,7 @@ function Features() {
               sx: {
                 color: 'rgba(255, 0, 0, 0.5)', 
               },
-              timeout: 300, 
+              timeout: 50,
             }}
           >
             <Paper
