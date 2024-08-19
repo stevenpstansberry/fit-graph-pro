@@ -348,9 +348,6 @@ return (
     </Button>
   </DialogContent>
 </Dialog>
-
-
-
     <Workout_Card 
     open={isCardVisible} 
     onClose={handleClose} 
