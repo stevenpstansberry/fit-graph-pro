@@ -55,6 +55,9 @@ function Workouts() {
   const [selectedSplitForEditing, setSelectedSplitForEditing] = useState({}); // Split being edited
   const [editedName, setEditedName] = useState(''); // For renaming
 
+  const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false);
+  const [customSplitName, setCustomSplitName] = useState("");
+
   const toggleAddWorkoutCard = (workout, mode) => {
     setSelectedWorkout(workout);
     setCardMode(mode); 
@@ -276,43 +279,66 @@ return (
 
     {/* Edit Dialog */}
     <Dialog open={isEditDialogOpen} onClose={handleCloseEditDialog}>
-      <DialogTitle>Edit Workout Splits</DialogTitle>
-      <DialogContent>
-        <Typography variant="h6">Available Workout Splits</Typography>
-        {predefinedWorkouts.map((workout, index) => (
-          <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-            <TextField
-              value={workout.name}
-              onChange={(e) => {
-                const updatedSplits = [...predefinedWorkouts];
-                updatedSplits[index].name = e.target.value;
-                setPredefinedWorkouts(updatedSplits);
-              }}
-              sx={{ mr: 2 }}
-            />
-            <IconButton color="error" onClick={() => handleDeleteSplit(workout.name)}>
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        ))}
-        {/* Add New Split */}
-        <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
-          <TextField
-            label="New Workout Split"
-            value={newSplitName}
-            onChange={(e) => setNewSplitName(e.target.value)}
-            sx={{ mr: 2 }}
-          />
-        <IconButton onClick={() => handleAddNewSplit('addSplit')}>
-          <AddIcon />
+  <DialogTitle>Edit Workout Splits</DialogTitle>
+  <DialogContent>
+    <Typography variant="h6">Available Workout Splits</Typography>
+    {predefinedWorkouts.map((workout, index) => (
+      <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+        <TextField
+          value={workout.name}
+          onChange={(e) => {
+            const updatedSplits = [...predefinedWorkouts];
+            updatedSplits[index].name = e.target.value;
+            setPredefinedWorkouts(updatedSplits);
+          }}
+          sx={{ mr: 2 }}
+        />
+        <IconButton color="error" onClick={() => handleDeleteSplit(workout.name)}>
+          <DeleteIcon />
         </IconButton>
+      </Box>
+    ))}
 
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
-      </DialogActions>
-    </Dialog>
+    {/* Button to Add Custom Split */}
+    <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
+      <Button 
+        variant="outlined" 
+        startIcon={<AddIcon />} 
+        onClick={() => setIsCustomSplitDialogOpen(true)} // Open the dialog to name the custom split
+      >
+        Add Custom Split
+      </Button>
+    </Box>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
+  </DialogActions>
+</Dialog>
+
+<Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
+  <DialogTitle>Name Your Custom Split</DialogTitle>
+  <DialogContent>
+    <TextField
+      label="Split Name"
+      value={customSplitName}
+      onChange={(e) => setCustomSplitName(e.target.value)}
+      fullWidth
+      sx={{ mb: 2 }}
+    />
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={() => {
+        setNewSplitName(customSplitName); // Pass the custom split name to the Workout_Card
+        setIsCardVisible(true); // Open the Workout_Card in addSplit mode
+        setCardMode("addSplit");
+        setIsCustomSplitDialogOpen(false); // Close the naming dialog
+      }}
+    >
+      Create Split
+    </Button>
+  </DialogContent>
+</Dialog>
 
     <Workout_Card 
     open={isCardVisible} 
@@ -321,6 +347,7 @@ return (
     mode={cardMode}
     saveWorkout={saveWorkout}
     saveSplit={saveSplit} 
+    newSplitName={newSplitName}
     />
     <Footer />
   </Container>

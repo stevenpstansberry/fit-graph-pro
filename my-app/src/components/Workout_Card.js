@@ -135,16 +135,16 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
   
       const workoutSplit = {
         id: uuidv4(),
-        name: "New Split", 
+        name: newSplitName, 
         exercises: exercises.map(exercise => ({
           label: exercise.label,
           bodyPart: exercise.bodyPart,
           sets: exercise.sets.map(set => ({ setCount: set.setCount })) // Only include set count
         })),
       };
-  
-      //saveSplit(workoutSplit); 
-      console.log("Workout Split Created: ", workoutSplit);
+      console.log(newSplitName);
+      saveSplit(workoutSplit); 
+      //console.log("Workout Split Created: ", workoutSplit);
     }
     onClose();
   };
