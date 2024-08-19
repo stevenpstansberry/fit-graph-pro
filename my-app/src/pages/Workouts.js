@@ -316,14 +316,20 @@ return (
 </Dialog>
 
 <Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
-  <DialogTitle>Name Your Custom Split</DialogTitle>
-  <DialogContent>
+  <DialogTitle sx={{ pb: 2 }}>
+    Name Your Custom Split
+  </DialogTitle>
+  <DialogContent sx={{ minWidth: 500, minHeight: 200 }}>
     <TextField
       label="Split Name"
       value={customSplitName}
       onChange={(e) => setCustomSplitName(e.target.value)}
-      fullWidth
-      sx={{ mb: 2 }}
+      sx={{ 
+        width: 500, 
+        mb: 2,
+        '& .MuiInputLabel-root': { fontSize: '1rem' }, // Adjust label font size
+        '& .MuiInputBase-root': { paddingRight: 2 }, // Add padding to prevent cutting off
+      }}
     />
     <Button
       variant="contained"
@@ -339,6 +345,8 @@ return (
     </Button>
   </DialogContent>
 </Dialog>
+
+
 
     <Workout_Card 
     open={isCardVisible} 
