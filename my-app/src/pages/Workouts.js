@@ -58,7 +58,10 @@ function Workouts() {
   const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false);
   const [customSplitName, setCustomSplitName] = useState("");
 
-  const toggleAddWorkoutCard = (workout, mode) => {
+  const [workoutType, setWorkoutType] = useState("Default");
+
+  const toggleAddWorkoutCard = (workout, mode, workoutType) => {
+    setWorkoutType(workoutType);
     setSelectedWorkout(workout);
     setCardMode(mode); 
     setIsCardVisible(!isCardVisible);
@@ -252,7 +255,7 @@ return (
             <Button 
               variant="contained" 
               color="primary" 
-              onClick={() => toggleAddWorkoutCard([], 'createWorkout')} // Passing 'createWorkout' mode
+              onClick={() => toggleAddWorkoutCard([], 'createWorkout', "Default")} // Passing 'createWorkout' mode
               sx={{ padding: '10px 20px', fontSize: '16px' }}
             >
               Add Default Workout
@@ -264,7 +267,7 @@ return (
             key={index} 
             variant="contained" 
             color="primary" 
-            onClick={() => toggleAddWorkoutCard(workout.exercises, 'createWorkout')} 
+            onClick={() => toggleAddWorkoutCard(workout.exercises, 'createWorkout', workout.name)} 
             sx={{ padding: '10px 20px', fontSize: '16px' }}>
               Add {workout.name}
             </Button>
@@ -356,6 +359,7 @@ return (
     saveWorkout={saveWorkout}
     saveSplit={saveSplit} 
     newSplitName={newSplitName}
+    type={workoutType}
     />
     <Footer />
   </Container>

@@ -15,7 +15,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./Exercise_Sub_Card";
 import { v4 as uuidv4 } from 'uuid'; // Import UUID for unique IDs
 
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName }) {
+function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName,type }) {
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState('');
   const [exercises, setExercises] = useState([]);
@@ -61,36 +61,10 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     setExercises(updatedExercises);
   };
 
-  // Function to check mode and create the workout / validate inputs
-  const handleSave = () => {
-    if (exercises.length == 0) {
-      alert("You must add at least one exercise");
-      return;
-    }
-    if (mode === "addSplit"){
-      const workoutSplit = {
-        id: uuidv4(),
-        name: "test",
-        exercises: exercises,
-      };
-      saveSplit(workoutSplit);
-    } else if (mode === "createWorkout"){
-      const workout = {
-        id: uuidv4,
-        date: new Date().toLocaleDateString(),
-        exercises: exercises,
-      };
-      saveWorkout(workout);
-    }
-    onClose();
-  };
  
-
-
 
   // Function to create the workout and validate inputs
 
-  // refactor this to handle saving split templates as well as creating workouts
   const createWorkout = (event) => {
     event.preventDefault();
 
@@ -113,10 +87,10 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       console.log(message);
       return;
     }
-    //?
     const workout = {
       id: uuidv4(),
       date: workoutDate,
+      type: type,
       exercises: exercises,
     };
     saveWorkout(workout)
