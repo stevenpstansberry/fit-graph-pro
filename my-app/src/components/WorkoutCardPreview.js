@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, Box, Button, Collapse } from '@mui/material';
+import { Card, CardContent, Typography, Box, Button, Collapse, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-function WorkoutCard({ workout }) {
+function WorkoutCardPreview({ workout, onDelete }) { // Accept onDelete as a prop
   const [expanded, setExpanded] = useState(false);
 
   const handleExpandClick = () => {
@@ -12,14 +13,15 @@ function WorkoutCard({ workout }) {
     <Card
       sx={{
         mb: 2,
-        width: '300px', // Fixed width for each card
-        border: '1px solid #ccc', // Distinct outline
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Slight shadow for depth
-        borderRadius: '8px', // Rounded corners
-        overflow: 'hidden', // Ensure contents are contained
-        transition: 'transform 0.2s ease-in-out', // Smooth transition on hover
+        width: '300px',
+        border: '1px solid #ccc',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        transition: 'transform 0.2s ease-in-out',
+        position: 'relative', // Ensure relative positioning for absolute positioning of delete icon
         '&:hover': {
-          transform: 'scale(1.02)' // Slightly scale up on hover
+          transform: 'scale(1.02)'
         }
       }}
     >
@@ -50,8 +52,20 @@ function WorkoutCard({ workout }) {
           {expanded ? "Show Less" : "Show More"}
         </Button>
       </CardContent>
+
+      {/* Trashcan Icon for Deletion */}
+      <IconButton
+        onClick={() => onDelete(workout.id)} // Call the onDelete prop with the workout id
+        sx={{
+          position: 'absolute',
+          bottom: 8,
+          left: 8,
+        }}
+      >
+        <DeleteIcon />
+      </IconButton>
     </Card>
   );
 }
 
-export default WorkoutCard;
+export default WorkoutCardPreview;

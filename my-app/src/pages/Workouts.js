@@ -85,9 +85,10 @@ function Workouts() {
     }
   };
 
-  const handleDeleteWorkout = (index) => {
-    const updatedWorkouts = predefinedWorkouts.filter((_, i) => i !== index);
-    setPredefinedWorkouts(updatedWorkouts);
+  const handleDeleteWorkout = (workoutId) => {
+    // Filter out the workout with the given id
+    const updatedWorkouts = workoutHistory.filter(workout => workout.id !== workoutId);
+    setWorkoutHistory(updatedWorkouts);
   };
 
     // Function to save a workout
@@ -223,7 +224,7 @@ return (
         filteredWorkouts.length > 0 ? (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
             {filteredWorkouts.map((workout, index) => (
-              <WorkoutCardPreview key={index} workout={workout} />
+                <WorkoutCardPreview key={index} workout={workout} onDelete={handleDeleteWorkout} />
             ))}
           </Box>
         ) : (

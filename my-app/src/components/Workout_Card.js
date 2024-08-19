@@ -146,7 +146,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       //saveSplit(workoutSplit); 
       console.log("Workout Split Created: ", workoutSplit);
     }
-
+    onClose();
   };
 
   return (
