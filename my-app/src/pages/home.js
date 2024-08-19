@@ -3,8 +3,7 @@ import Features from '../components/Features';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Container, Typography, Box } from '@mui/material';
-import backgroundImage from '../assets/backgroundImage.jpg'; // Use your fitness-themed background image
-
+import backgroundImage from '../assets/backgroundImage.jpg';
 
 function Home() {
   return (
@@ -27,10 +26,26 @@ function Home() {
           color: '#fff',
         }}
       >
-        <Typography variant="h2" component="h1" gutterBottom>
+        <Typography 
+          variant="h2" 
+          component="h1" 
+          gutterBottom
+          sx={{ 
+            fontStyle: 'italic',
+            color: '#3a3a3a', // Dark gray
+          }}
+        >
           FitGraphPro
         </Typography>
-        <Typography variant="h5" component="p" gutterBottom>
+        <Typography 
+          variant="h5" 
+          component="p" 
+          gutterBottom
+          sx={{ 
+            fontStyle: 'italic',
+            color: '#3a3a3a', // Dark gray
+          }}
+        >
           Your ultimate fitness tracking and graphing app!
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
