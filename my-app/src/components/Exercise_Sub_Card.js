@@ -3,7 +3,7 @@ import { Card, CardContent, Box, TextField, Button, Typography, IconButton } fro
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
-function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets }) {
+function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps }) {
   const handleSetChange = (setIndex, key, value) => {
     const newSets = exercise.sets.map((set, i) =>
       i === setIndex ? { ...set, [key]: value } : set
@@ -34,34 +34,41 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets }
         </Box>
 
         {exercise.sets.map((set, setIndex) => (
-          <Box key={setIndex} sx={{ display: 'flex', gap: 2, mt: 2 }}>
-            <Typography>Set {setIndex + 1}</Typography>
-            <TextField
-              name="weight"
-              label="Weight"
-              variant="outlined"
-              value={set.weight}
-              onChange={(e) => handleSetChange(setIndex, "weight", e.target.value)}
-              type='number'
-              sx={{ flex: 1 }}
-            />
-            <TextField
-              name="reps"
-              label="Reps"
-              variant="outlined"
-              value={set.reps}
-              onChange={(e) => handleSetChange(setIndex, "reps", e.target.value)}
-              type='number'
-              sx={{ flex: 1 }}
-            />
-            <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveSet(setIndex)}>
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        ))}
-        <IconButton edge="end" aria-label="delete" onClick={() => removeExercise(index)} sx={{ mt: 2 }}>
-          <DeleteIcon />
-        </IconButton>
+  <Box key={setIndex} sx={{ display: 'flex', gap: 2, mt: 2 }}>
+    <Typography>Set {setIndex + 1}</Typography>
+    
+    {/* Conditionally render the weight field */}
+    {allowWeightAndReps && (
+      <TextField
+        name="weight"
+        label="Weight"
+        variant="outlined"
+        value={set.weight}
+        onChange={(e) => handleSetChange(setIndex, "weight", e.target.value)}
+        type='number'
+        sx={{ flex: 1 }}
+      />
+    )}
+
+    {/* Conditionally render the reps field */}
+    {allowWeightAndReps && (
+      <TextField
+        name="reps"
+        label="Reps"
+        variant="outlined"
+        value={set.reps}
+        onChange={(e) => handleSetChange(setIndex, "reps", e.target.value)}
+        type='number'
+        sx={{ flex: 1 }}
+      />
+    )}
+
+    <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveSet(setIndex)}>
+      <DeleteIcon />
+    </IconButton>
+  </Box>
+))}
+
       </CardContent>
     </Card>
   );

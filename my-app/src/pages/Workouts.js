@@ -23,9 +23,11 @@ function Workouts() {
   const user = getUser();
   const name = user !== 'undefined' && user ? user.name : '';
 
-  // State to manage the visibility of the Workout Card
+  // State to manage the visibility and mode of the Workout Card
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [workoutHistory, setWorkoutHistory] = useState(workoutData);
+  const [cardMode, setCardMode] = useState('createWorkout'); // State to determine the mode of Workout_Card
+
 
   // State to manage the month and year
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Current month (1-12)
@@ -53,8 +55,9 @@ function Workouts() {
   const [selectedSplitForEditing, setSelectedSplitForEditing] = useState({}); // Split being edited
   const [editedName, setEditedName] = useState(''); // For renaming
 
-  const toggleAddWorkoutCard = (workout) => {
+  const toggleAddWorkoutCard = (workout, mode) => {
     setSelectedWorkout(workout);
+    setCardMode(mode); 
     setIsCardVisible(!isCardVisible);
   };
 
@@ -72,7 +75,10 @@ function Workouts() {
     setNewWorkoutExercises([]); // Clear the exercise selection
   };
 
-  const handleAddNewSplit = () => {
+  const handleAddNewSplit = (mode) => {
+    setCardMode(mode); 
+    setIsCardVisible(!isCardVisible);
+
     if (newSplitName.trim()) {
       const newWorkout = {
         name: newSplitName,
@@ -240,13 +246,23 @@ return (
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 4, gap: 2 }}>
         <Box sx={{ display: 'flex', gap: 2 }}>
           {/* Default Workout Button */}
-          <Button variant="contained" color="primary" onClick={() => toggleAddWorkoutCard([])} sx={{ padding: '10px 20px', fontSize: '16px' }}>
-            Add Default Workout
-          </Button>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={() => toggleAddWorkoutCard([], 'createWorkout')} // Passing 'createWorkout' mode
+              sx={{ padding: '10px 20px', fontSize: '16px' }}
+            >
+              Add Default Workout
+            </Button>
 
           {/* Dynamically generate predefined workout buttons */}
           {predefinedWorkouts.map((workout, index) => (
-            <Button key={index} variant="contained" color="primary" onClick={() => toggleAddWorkoutCard(workout.exercises)} sx={{ padding: '10px 20px', fontSize: '16px' }}>
+            <Button 
+            key={index} 
+            variant="contained" 
+            color="primary" 
+            onClick={() => toggleAddWorkoutCard(workout.exercises, 'createWorkout')} 
+            sx={{ padding: '10px 20px', fontSize: '16px' }}>
               Add {workout.name}
             </Button>
           ))}
@@ -287,10 +303,10 @@ return (
             onChange={(e) => setNewSplitName(e.target.value)}
             sx={{ mr: 2 }}
           />
-          <IconButton onClick={handleAddNewSplit}>
-            <AddIcon />
+        <IconButton onClick={() => handleAddNewSplit('addSplit')}>
+          <AddIcon />
+        </IconButton>
 
-          </IconButton>
         </Box>
       </DialogContent>
       <DialogActions>
@@ -302,7 +318,7 @@ return (
     open={isCardVisible} 
     onClose={handleClose} 
     preloadedExercises={selectedWorkout} 
-    mode={'createWorkout'}
+    mode={cardMode}
     saveWorkout={saveWorkout}
     saveSplit={saveSplit} 
     />

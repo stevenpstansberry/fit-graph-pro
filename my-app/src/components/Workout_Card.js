@@ -189,11 +189,14 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
 
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            Add a Workout
+            {mode === "addSplit" ? "Create a Workout Split" : "Add a Workout"}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Add exercises to your workout from the list below.
+            {mode === "addSplit"
+              ? "Define your workout split by adding exercises and specifying the number of sets."
+              : "Add exercises to your workout and customize sets, weights, and reps."}
           </Typography>
+
 
           <Box
             sx={{
@@ -231,11 +234,12 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
           <Box>
             {exercises.map((exercise, index) => (
               <ExerciseSubcard
-                key={index} // Use index or a unique key
+                key={index}
                 exercise={exercise}
                 index={index}
                 removeExercise={removeExercise}
-                updateExerciseSets={updateExerciseSets} // Pass the update function
+                updateExerciseSets={updateExerciseSets}
+                allowWeightAndReps={mode === "createWorkout"} // Show weights/reps only in "createWorkout" mode
               />
             ))}
           </Box>
@@ -251,7 +255,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
               ml: 'auto',
             }}
           >
-            Create Workout
+            {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
           </Button>
         </CardActions>
       </Card>
