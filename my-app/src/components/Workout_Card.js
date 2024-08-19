@@ -101,6 +101,8 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       return;
     }
 
+    if (mode === "createWorkout") {
+
     // Check to see if any of the reps or weights are empty
     const isAnyExerciseEmpty = exercises.some(exercise => 
       exercise.sets.length === 0 || exercise.sets.some(set => set.weight === '' || set.reps === '')
@@ -113,12 +115,38 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     }
     //?
     const workout = {
-      id: workoutId,
+      id: uuidv4(),
       date: workoutDate,
       exercises: exercises,
     };
+    saveWorkout(workout)
 
-    console.log("Workout Created: ", workout);
+  }
+    // Logic for "addSplit" mode
+    if (mode === "addSplit") {
+      // Only check that exercises and set counts are provided (no weights/reps validation)
+      const isAnySetEmpty = exercises.some(exercise => exercise.sets.length === 0);
+  
+      if (isAnySetEmpty) {
+        setMessage("One or more exercises have empty sets.");
+        console.log(message);
+        return;
+      }
+  
+      const workoutSplit = {
+        id: uuidv4(),
+        name: "New Split", 
+        exercises: exercises.map(exercise => ({
+          label: exercise.label,
+          bodyPart: exercise.bodyPart,
+          sets: exercise.sets.map(set => ({ setCount: set.setCount })) // Only include set count
+        })),
+      };
+  
+      //saveSplit(workoutSplit); 
+      console.log("Workout Split Created: ", workoutSplit);
+    }
+
   };
 
   return (

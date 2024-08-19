@@ -90,6 +90,27 @@ function Workouts() {
     setPredefinedWorkouts(updatedWorkouts);
   };
 
+    // Function to save a workout
+    //TOOD add connectivity to db
+    const saveWorkout = (workout) => {
+
+      // Ensure the date is stored as a Date object
+      const workoutWithDate = {
+        ...workout,
+        date: new Date(workout.date), // Convert to Date object if it isn't already
+        };      
+
+
+      setWorkoutHistory([...workoutHistory, workoutWithDate]);
+      console.log("Saved Workout: ", workoutWithDate);
+    };
+  
+    // Function to save a new workout split
+    const saveSplit = (split) => {
+      setPredefinedWorkouts([...predefinedWorkouts, split]);
+      console.log("Saved Workout Split: ", split);
+    };
+
 
   // Filter workouts based on selected month and year
   const filteredWorkouts = workoutHistory.filter(workout => {
@@ -267,6 +288,7 @@ return (
           />
           <IconButton onClick={handleAddNewSplit}>
             <AddIcon />
+
           </IconButton>
         </Box>
       </DialogContent>
@@ -275,7 +297,14 @@ return (
       </DialogActions>
     </Dialog>
 
-    <Workout_Card open={isCardVisible} onClose={handleClose} preloadedExercises={selectedWorkout} />
+    <Workout_Card 
+    open={isCardVisible} 
+    onClose={handleClose} 
+    preloadedExercises={selectedWorkout} 
+    mode={'createWorkout'}
+    saveWorkout={saveWorkout}
+    saveSplit={saveSplit} 
+    />
     <Footer />
   </Container>
 );
