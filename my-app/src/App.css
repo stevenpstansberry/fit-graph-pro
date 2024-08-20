@@ -30,22 +30,38 @@
 
 @keyframes slideInFromLeft {
   0% {
-    transform: translateX(-100%); /* Start off-screen */
+    transform: translateX(-100%); 
     opacity: 0;
   }
   100% {
-    transform: translateX(0); /* Slide into place */
+    transform: translateX(0); 
     opacity: 1;
   }
 }
 
 @keyframes slideInFromRight {
   0% {
-    transform: translateX(100%); /* Start off-screen to the right */
+    transform: translateX(100%); 
     opacity: 0;
   }
   100% {
-    transform: translateX(0); /* Slide into place */
+    transform: translateX(0); 
     opacity: 1;
   }
 }
+
+@keyframes fadeInFromCenter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeInFromCenter {
+  animation: fadeInFromCenter 2s ease-out forwards;
+}
+

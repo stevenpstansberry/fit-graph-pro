@@ -1,4 +1,3 @@
-// src/pages/Home.js
 import React from 'react';
 import Features from '../components/Features';
 import Footer from '../components/Footer';
@@ -18,61 +17,73 @@ function Home() {
       <Navbar />
       <Box
         sx={{
-          flex: 1, 
+          flex: 1,
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           padding: 4,
           color: '#fff',
+          paddingTop: '250px', // Controls padding between navbar and tiles/title
         }}
       >
-        <Grid container sx={{ height: '100%', paddingTop: 20 }} alignItems="center">
-          {/* Left Section with Text */}
-          <Grid 
-            item xs={12} md={6} 
-            sx={{ 
-              textAlign: 'left', 
-              padding: 4, 
-              animation: 'slideInFromLeft 1s ease-out' // Applying the slide-in animation
-            }}
-          >
-            <Box>
-              <Typography 
-                variant="h2" 
-                component="h1" 
-                gutterBottom
-                sx={{ 
-                  fontStyle: 'italic',
-                  color: '#ffcc00', // Updated to a vibrant yellow color that contrasts more against the background
-                }}
-              >
-                FitGraphPro
-              </Typography>
-              <Typography 
-                variant="h5" 
-                component="p" 
-                gutterBottom
-                sx={{ 
-                  fontStyle: 'italic',
-                  color: '#ffcc00', // Matching color for the subtext
-                }}
-              >
-                Your ultimate fitness tracking and graphing app!
-              </Typography>
+        <Grid container spacing={2} sx={{ height: '100%' }}>
+          {/* Left side with text */}
+          <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <Typography
+              variant="h2"
+              component="h1"
+              gutterBottom
+              sx={{
+                fontStyle: 'italic',
+                color: '#ffdd57', 
+                mb: 2,
+                animation: 'slideInFromLeft 1s ease-out', 
+              }}
+            >
+              FitGraphPro
+            </Typography>
+            <Typography
+              variant="h5"
+              component="p"
+              gutterBottom
+              sx={{
+                fontStyle: 'italic',
+                color: '#ffdd57', 
+                mb: 4,
+                animation: 'slideInFromLeft 1s ease-out', 
+                animationDelay: '0.2s',
+              }}
+            >
+              Your ultimate fitness tracking and graphing app!
+            </Typography>
+          </Grid>
+
+          {/* Right side with features */}
+          <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Box sx={{ width: '100%' }}>
+              <Features />
             </Box>
           </Grid>
-          
-          {/* Right Section with Features Tiles */}
-          <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Features />
-          </Grid>
         </Grid>
+
+        {/* New motivational text, placed centrally below the other content */}
+        <Typography
+          variant="h4"
+          component="p"
+          className="fadeInFromCenter" 
+          sx={{
+            marginTop: 6, 
+            fontStyle: 'italic',
+            color: 'orange', 
+            textAlign: 'center',
+          }}
+        >
+          "Fitness is not about being better than someone else. It’s about being better than you used to be."
+        </Typography>
       </Box>
       <Footer />
     </Box>
   );
 }
-
-
 
 export default Home;
