@@ -25,9 +25,9 @@ function Features() {
           md={3}
           key={index}
           sx={{
-            animation: 'slideInFromRight 1s ease-out', // Apply the slide-in animation
-            animationDelay: `${index * 0.2}s`, // Add a delay to each tile for a staggered effect
-            animationFillMode: 'both', // Ensure the final state persists
+            animation: 'slideInFromRight 1s ease-out', 
+            animationDelay: `${index * 0.2}s`, 
+            animationFillMode: 'both', 
           }}
         >
           <ButtonBase
