@@ -1,10 +1,11 @@
+// src/components/Features.js
 import React from 'react';
 import { Grid, Paper, Typography, ButtonBase } from '@mui/material';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import FlagIcon from '@mui/icons-material/Flag';
 import PeopleIcon from '@mui/icons-material/People';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link } from 'react-router-dom';
 
 const featureItems = [
   { title: 'Track Activities', description: 'Log your workouts and activities to keep track of your progress.', icon: <FitnessCenterIcon sx={{ fontSize: 40 }} />, link: '/workouts' },
@@ -15,7 +16,7 @@ const featureItems = [
 
 function Features() {
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} justifyContent="center">
       {featureItems.map((item, index) => (
         <Grid item xs={12} sm={6} md={3} key={index}>
           <ButtonBase

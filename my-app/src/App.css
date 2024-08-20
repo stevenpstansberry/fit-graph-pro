@@ -28,11 +28,13 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+@keyframes slideIn {
+  0% {
+    transform: translateX(-100%); /* Start off-screen */
+    opacity: 0;
   }
-  to {
-    transform: rotate(360deg);
+  100% {
+    transform: translateX(0); /* Slide into place */
+    opacity: 1;
   }
 }
