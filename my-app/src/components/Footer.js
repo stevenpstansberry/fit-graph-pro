@@ -8,6 +8,7 @@ function Footer() {
       sx={{
         backgroundColor: '#333',
         color: '#fff',
+        opacity: 0.8, 
         padding: '10px',
         textAlign: 'center',
       }}

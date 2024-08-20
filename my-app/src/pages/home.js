@@ -12,15 +12,15 @@ function Home() {
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
       }}
     >
       <Navbar />
       <Box
         sx={{
           flex: 1,
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
           padding: 4,
           color: '#fff',
           paddingTop: '250px', // Controls padding between navbar and tiles/title
