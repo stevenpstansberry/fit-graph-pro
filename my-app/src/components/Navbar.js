@@ -56,7 +56,13 @@ function Navbar() {
   };
 
   return (
-<AppBar position="static" sx={{ backgroundColor: '#333333' }}>
+<AppBar
+  position="static"
+  sx={{
+    backgroundColor: 'rgba(51, 51, 51, 0.8)', // Semi-transparent dark gray background
+    backdropFilter: 'blur(10px)', // Optional: adds a subtle blur effect to the background
+  }}
+>
   <Container maxWidth={false} sx={{ px: 2 }}>
     <Toolbar disableGutters sx={{ justifyContent: 'flex-start' }}>
       {/* Grouping the title and the navigation links */}
@@ -140,6 +146,7 @@ function Navbar() {
     </Toolbar>
   </Container>
 </AppBar>
+
 
   );
 }
