@@ -53,6 +53,7 @@ function Features() {
                 textAlign: 'center',
                 backgroundColor: 'rgba(255, 255, 255, 0.9)',
                 color: '#333',
+                opacity: 0.9,
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease',
                 '&:hover': {
                   transform: 'scale(1.05)',
