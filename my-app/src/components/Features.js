@@ -18,7 +18,18 @@ function Features() {
   return (
     <Grid container spacing={3} justifyContent="center">
       {featureItems.map((item, index) => (
-        <Grid item xs={12} sm={6} md={3} key={index}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={3}
+          key={index}
+          sx={{
+            animation: 'slideInFromRight 1s ease-out', // Apply the slide-in animation
+            animationDelay: `${index * 0.2}s`, // Add a delay to each tile for a staggered effect
+            animationFillMode: 'both', // Ensure the final state persists
+          }}
+        >
           <ButtonBase
             component={Link} 
             to={item.link} 

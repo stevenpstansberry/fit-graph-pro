@@ -33,7 +33,7 @@ function Home() {
             sx={{ 
               textAlign: 'left', 
               padding: 4, 
-              animation: 'slideIn 1s ease-out' // Applying the slide-in animation
+              animation: 'slideInFromLeft 1s ease-out' // Applying the slide-in animation
             }}
           >
             <Box>

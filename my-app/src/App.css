@@ -28,9 +28,20 @@
   color: #61dafb;
 }
 
-@keyframes slideIn {
+@keyframes slideInFromLeft {
   0% {
     transform: translateX(-100%); /* Start off-screen */
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0); /* Slide into place */
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%); /* Start off-screen to the right */
     opacity: 0;
   }
   100% {
