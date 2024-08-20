@@ -1,14 +1,16 @@
 import React from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import { Container, Typography, Box } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 
 function About() {
   return (
-    <Container sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      {/* Ensure Navbar spans the entire width */}
       <Navbar />
 
-      <Box sx={{ flexGrow: 1, textAlign: 'center', mt: 4 }}>
+      {/* Main Content Area */}
+      <Box sx={{ flexGrow: 1, textAlign: 'center', mt: 4, px: 2 }}>
         <Typography variant="h4" component="h1" sx={{ mb: 4 }}>
           About Fit Graph Pro
         </Typography>
@@ -27,8 +29,9 @@ function About() {
         </Typography>
       </Box>
 
+      {/* Ensure Footer spans the entire width */}
       <Footer />
-    </Container>
+    </Box>
   );
 }
 
