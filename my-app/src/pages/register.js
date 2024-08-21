@@ -8,11 +8,19 @@ import { Container, Typography, Box , FormControl, InputLabel, Input, FormHelper
 
 function Register() {
   return (
-      <Container>
-          <Navbar />
-              <SignUp />
-          <Footer />
-      </Container>
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ width: '100%' }}>
+        <Navbar />
+      </Box>
+
+      <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: 3 }}>
+        <SignUp />
+      </Box>
+
+      <Box sx={{ width: '100%' }}>
+        <Footer />
+      </Box>
+    </Box>
   );
 }
   
