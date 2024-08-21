@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import { Container, Typography, Box, TextField, Button } from '@mui/material';
+import { Typography, Box, TextField, Button } from '@mui/material';
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -19,13 +19,15 @@ function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here, e.g., sending the data to an API aws?
+    // Handle form submission logic here, e.g., sending the data to an API
     console.log('Form Data:', formData);
   };
 
   return (
-    <Container sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-      <Navbar />
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ width: '100%' }}>
+        <Navbar />
+      </Box>
 
       <Box sx={{ flexGrow: 1, textAlign: 'center', mt: 4 }}>
         <Typography variant="h4" component="h1" sx={{ mb: 4 }}>
@@ -82,8 +84,10 @@ function Contact() {
         </Box>
       </Box>
 
-      <Footer />
-    </Container>
+      <Box sx={{ width: '100%' }}>
+        <Footer />
+      </Box>
+    </Box>
   );
 }
 
