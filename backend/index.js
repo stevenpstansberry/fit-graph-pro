@@ -2,6 +2,7 @@ const registerService = require('./services/register');
 const loginService = require('./services/login');
 const verifyService = require('./services/verify');
 const getWorkoutByIdService = require ('./services/getWorkout');
+const getAllWorkoutsService = require ('./services/getAllWorkouts');
 const util = require('./utils/util');
 
 const healthPath = '/health';
@@ -35,7 +36,7 @@ exports.handler = async (event) => {
             response = verifyService.verify(verifyBody);
             break;
         case event.httpMethod ==='GET' && event.path === getAllWorkoutsPath:
-            response = util.buildResponse(200, {message: 'returned all workouts'})
+            response = await getAllWorkoutsService.getAllWorkouts();
             break;
         case event.httpMethod === 'GET' && event.path.startsWith('/workouts/'):
             const workoutId = event.pathParameters.workoutid;
