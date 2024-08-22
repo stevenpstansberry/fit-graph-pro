@@ -1,13 +1,15 @@
 const registerService = require('./services/register');
 const loginService = require('./services/login');
 const verifyService = require('./services/verify');
-const getWorkoutByIdService = require ('./services/getWorkout')
+const getWorkoutByIdService = require ('./services/getWorkout');
 const util = require('./utils/util');
 
 const healthPath = '/health';
 const registerPath = '/register';
 const loginPath = '/login';
 const verifyPath = '/verify';
+const getAllWorkoutsPath = '/workouts/all';
+
 const getWorkoutByIdPath = '/workouts/{workoutId}';
 
 
@@ -32,10 +34,13 @@ exports.handler = async (event) => {
             const verifyBody = JSON.parse(event.body);
             response = verifyService.verify(verifyBody);
             break;
-
+        case event.httpMethod ==='GET' && event.path === getAllWorkoutsPath:
+            response = util.buildResponse(200, {message: 'returned all workouts'})
+            break;
         case event.httpMethod === 'GET' && event.path.startsWith('/workouts/'):
-            const workoutId = event.pathParameters.workoutId;
+            const workoutId = event.pathParameters.workoutid;
             response = await getWorkoutByIdService.getWorkoutById(workoutId);
+
             break;
         default:
             response = util.buildResponse(404, '404 Not Found');
