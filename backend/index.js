@@ -38,6 +38,9 @@ exports.handler = async (event) => {
         case event.httpMethod ==='GET' && event.path === getAllWorkoutsPath:
             response = await getAllWorkoutsService.getAllWorkouts();
             break;
+        case event.httpMethod ==='GET' && event.path === (getAllWorkoutsPath + '/d'):
+            response = util.buildResponse(200, {message : 'test'})
+            break;            
         case event.httpMethod === 'GET' && event.path.startsWith('/workouts/'):
             const workoutId = event.pathParameters.workoutid;
             response = await getWorkoutByIdService.getWorkoutById(workoutId);
