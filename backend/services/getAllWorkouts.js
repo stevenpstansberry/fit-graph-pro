@@ -28,4 +28,35 @@ async function getAllWorkouts() {
     }
   }
 
-module.exports.getAllWorkouts = getAllWorkouts;
+  async function getAllWorkoutsForUser(username) {
+    const params = {
+      TableName: workoutTable,
+      FilterExpression: '#username = :username',
+      ExpressionAttributeNames: {
+        '#username': 'username'
+      },
+      ExpressionAttributeValues: {
+        ':username': username
+      }
+    };
+  
+    try {
+      const result = await dynamodb.scan(params).promise();
+  
+      if (!result.Items || result.Items.length === 0) {
+        return util.buildResponse(404, { message: `No workouts found for user ${username}` });
+      }
+  
+      return util.buildResponse(200, result.Items);
+  
+    } catch (error) {
+      console.log('Error retrieving workouts for user:', error);
+  
+      return util.buildResponse(500, { message: 'Internal Server Error' });
+    }
+  }
+  
+  module.exports = {
+    getAllWorkouts,
+    getAllWorkoutsForUser
+  };

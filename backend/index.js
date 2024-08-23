@@ -37,14 +37,13 @@ exports.handler = async (event) => {
             break;
         case event.httpMethod ==='GET' && event.path === getAllWorkoutsPath:
             response = await getAllWorkoutsService.getAllWorkouts();
+        case event.httpMethod === 'GET' && event.path.startsWith(getAllWorkoutsPath + '/'):
+            const username = event.path.split('/').pop();
+            response = await getAllWorkoutsService.getAllWorkoutsForUser(username);
             break;
-        case event.httpMethod ==='GET' && event.path === (getAllWorkoutsPath + '/d'):
-            response = util.buildResponse(200, {message : 'test get all for user'})
-            break;            
-        case event.httpMethod === 'GET' && event.path.startsWith('/workouts/'):
+        case event.httpMethod === 'GET' && event.path.startsWith('/workouts/') && event.pathParameters && event.pathParameters.workoutid:
             const workoutId = event.pathParameters.workoutid;
             response = await getWorkoutByIdService.getWorkoutById(workoutId);
-
             break;
         default:
             response = util.buildResponse(404, '404 Not Found');
