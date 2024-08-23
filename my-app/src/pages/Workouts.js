@@ -14,6 +14,7 @@ import axios from 'axios';
 
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
+const getAllSplitsURL = fitGraphProd + "/splits/all/";
 
 
 // Temp sample data formatting
