@@ -387,6 +387,17 @@ return (
 }
 
 // Sample predefined workouts
+// const pushWorkout = {
+// splitId: "1'",
+// username: "d",
+// splitName: "Push Workout",
+// exercises: 
+// [
+//   { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: "", reps: "" }] },
+//   { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: "", reps: "" }] },
+//   { label: 'Tricep Extension', bodyPart: 'Arms', sets: [{ weight: "", reps: "" }] }
+// ]};
+
 const pushWorkout = [
   { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: "", reps: "" }] },
   { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: "", reps: "" }] },

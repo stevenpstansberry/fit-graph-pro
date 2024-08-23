@@ -3,6 +3,7 @@ const loginService = require('./services/login');
 const verifyService = require('./services/verify');
 const getWorkoutByIdService = require ('./services/getWorkout');
 const getAllWorkoutsService = require ('./services/getAllWorkouts');
+const getAllSplitsService = require ('./services/getAllSplits')
 const util = require('./utils/util');
 
 const healthPath = '/health';
@@ -10,6 +11,7 @@ const registerPath = '/register';
 const loginPath = '/login';
 const verifyPath = '/verify';
 const getAllWorkoutsPath = '/workouts/all';
+const getAllSplitsPath = '/splits/all'
 
 const getWorkoutByIdPath = '/workouts/{workoutId}';
 
@@ -45,6 +47,9 @@ exports.handler = async (event) => {
             const workoutId = event.pathParameters.workoutid;
             response = await getWorkoutByIdService.getWorkoutById(workoutId);
             break;
+        case event.httpMethod ==='GET' && event.path === getAllSplitsPath:
+            response = await getAllSplitsService.getAllSplits();
+            break;            
         default:
             response = util.buildResponse(404, '404 Not Found');
     }
