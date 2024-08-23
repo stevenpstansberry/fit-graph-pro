@@ -15,6 +15,7 @@ const getAllSplitsPath = '/splits/all'
 
 const getWorkoutByIdPath = '/workouts/{workoutId}';
 
+let username;
 
 exports.handler = async (event) => {
     console.log('Request Event: ', event);
@@ -40,7 +41,7 @@ exports.handler = async (event) => {
         case event.httpMethod ==='GET' && event.path === getAllWorkoutsPath:
             response = await getAllWorkoutsService.getAllWorkouts();
         case event.httpMethod === 'GET' && event.path.startsWith(getAllWorkoutsPath + '/'):
-            const username = event.path.split('/').pop();
+            username = event.path.split('/').pop();
             response = await getAllWorkoutsService.getAllWorkoutsForUser(username);
             break;
         case event.httpMethod === 'GET' && event.path.startsWith('/workouts/') && event.pathParameters && event.pathParameters.workoutid:
@@ -49,7 +50,11 @@ exports.handler = async (event) => {
             break;
         case event.httpMethod ==='GET' && event.path === getAllSplitsPath:
             response = await getAllSplitsService.getAllSplits();
-            break;            
+            break;       
+        case event.httpMethod === 'GET' && event.path.startsWith(getAllSplitsPath + '/'):
+            username = event.path.split('/').pop();
+            response = await getAllSplitsService.getSplitsForUser(username);
+            break;                 
         default:
             response = util.buildResponse(404, '404 Not Found');
     }
