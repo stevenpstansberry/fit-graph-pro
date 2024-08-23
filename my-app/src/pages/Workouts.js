@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,7 +10,10 @@ import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
 import workoutDataRaw from '../util/sampleProgression.json';
+import axios from 'axios'; 
 
+const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
+const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
 
 
 // Temp sample data formatting
@@ -22,6 +25,22 @@ const workoutData = workoutDataRaw.map(workout => ({
 function Workouts() {
   const user = getUser();
   const name = user !== 'undefined' && user ? user.name : '';
+  console.log(user);
+
+  // Make the API call to fetch workouts for the user
+  useEffect(() => {
+    if (name) {
+      const fetchWorkouts = async () => {
+        try {
+          const response = await axios.get(getAllWorkoutsURL + name);
+          console.log('API Response:', response.data); // Log the response data
+        } catch (error) {
+          console.error('Error fetching workouts:', error);
+        }
+      };
+      fetchWorkouts();
+    }
+  }, [name]);
 
   // State to manage the visibility and mode of the Workout Card
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -176,7 +195,7 @@ return (
 
   <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
     <Typography variant="h4" component="p" sx={{ mb: 4 }}>
-      Your Workouts
+      Your Workouts for {name}
     </Typography>
 
     {/* Sticky container for selectors and button */}
