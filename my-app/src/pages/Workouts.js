@@ -42,11 +42,20 @@ function Workouts() {
       };
       fetchWorkouts();
 
-      // Fetch splits for the user
+      // Fetch splits for the user and update state
       const fetchSplits = async () => {
         try {
           const response = await axios.get(getAllSplitsURL + name);
-          console.log('Splits API Response:', response.data); 
+          console.log('Splits API Response:', response.data);
+
+          // Transform the response data to use `splitName` and map it to `name` in the local state
+          if (response.data && Array.isArray(response.data)) {
+            const formattedSplits = response.data.map(split => ({
+              name: split.splitName, // Map splitName to name
+              exercises: split.exercises,
+            }));
+            setUserSplits((prevSplits) => [...prevSplits, ...formattedSplits]);
+          }
         } catch (error) {
           console.error('Error fetching splits:', error);
         }
@@ -77,7 +86,7 @@ function Workouts() {
   //TODO by default, all users will be have ppl as a predefined workout plan, need to
   // implement way to store predefined workouts in dynamodb and fetch based on user
   //use this to add or delete methods later, change the use state to be a fetch from db.
-  const [predefinedWorkouts, setPredefinedWorkouts] = useState([
+  const [userSplits, setUserSplits] = useState([
     { name: 'Push Workout', exercises: pushWorkout },
     { name: 'Pull Workout', exercises: pullWorkout },
     { name: 'Legs Workout', exercises: legsWorkout },
@@ -122,7 +131,7 @@ function Workouts() {
         name: newSplitName,
         exercises: newWorkoutExercises,
       };
-      setPredefinedWorkouts([...predefinedWorkouts, newWorkout]);
+      setUserSplits([...userSplits, newWorkout]);
       //TODO add CRUD logic for backend
 
       handleAddDialogClose(); // Close the dialog after adding the workout
@@ -152,7 +161,7 @@ function Workouts() {
   
     // Function to save a new workout split
     const saveSplit = (split) => {
-      setPredefinedWorkouts([...predefinedWorkouts, split]);
+      setUserSplits([...userSplits, split]);
       console.log("Saved Workout Split: ", split);
     };
 
@@ -185,7 +194,7 @@ function Workouts() {
 
   // Handle renaming a workout split
   const handleRenameSplit = () => {
-    setPredefinedWorkouts(prevWorkouts =>
+    setUserSplits(prevWorkouts =>
       prevWorkouts.map(workout =>
         workout.name === selectedSplitForEditing.name ? { ...workout, name: editedName } : workout
       )
@@ -195,7 +204,7 @@ function Workouts() {
 
   // Handle deleting a workout split
   const handleDeleteSplit = (splitName) => {
-    setPredefinedWorkouts(prevWorkouts =>
+    setUserSplits(prevWorkouts =>
       prevWorkouts.filter(workout => workout.name !== splitName)
     );
   };
@@ -299,7 +308,7 @@ return (
         </Button>
 
         {/* Dynamically generate predefined workout buttons */}
-        {predefinedWorkouts.map((workout, index) => (
+        {userSplits.map((workout, index) => (
           <Button
             key={index}
             variant="contained"
@@ -322,14 +331,14 @@ return (
     <DialogTitle>Edit Workout Splits</DialogTitle>
     <DialogContent>
       <Typography variant="h6">Available Workout Splits</Typography>
-      {predefinedWorkouts.map((workout, index) => (
+      {userSplits.map((workout, index) => (
         <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
           <TextField
             value={workout.name}
             onChange={(e) => {
-              const updatedSplits = [...predefinedWorkouts];
+              const updatedSplits = [...userSplits];
               updatedSplits[index].name = e.target.value;
-              setPredefinedWorkouts(updatedSplits);
+              setUserSplits(updatedSplits);
             }}
             sx={{ mr: 2 }}
           />
