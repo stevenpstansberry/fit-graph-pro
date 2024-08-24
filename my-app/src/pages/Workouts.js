@@ -28,18 +28,30 @@ function Workouts() {
   const name = user !== 'undefined' && user ? user.name : '';
   console.log(user);
 
-  // Make the API call to fetch workouts for the user
+  // Fetch from API
   useEffect(() => {
     if (name) {
+      // Fetch workouts for the user
       const fetchWorkouts = async () => {
         try {
           const response = await axios.get(getAllWorkoutsURL + name);
-          console.log('API Response:', response.data); // Log the response data
+          console.log('Workouts API Response:', response.data); 
         } catch (error) {
           console.error('Error fetching workouts:', error);
         }
       };
       fetchWorkouts();
+
+      // Fetch splits for the user
+      const fetchSplits = async () => {
+        try {
+          const response = await axios.get(getAllSplitsURL + name);
+          console.log('Splits API Response:', response.data); 
+        } catch (error) {
+          console.error('Error fetching splits:', error);
+        }
+      };
+      fetchSplits();
     }
   }, [name]);
 
