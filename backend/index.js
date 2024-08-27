@@ -65,7 +65,7 @@ exports.handler = async (event) => {
             break;
         case event.httpMethod === 'POST' && event.path === createSplitPath:
             const createSplitBody = JSON.parse(event.body);
-            response = util.buildResponse(200, {message : createSplitBody})
+            response = createSplitService.uploadSplit(createSplitBody);
             break;                                      
         default:
             response = util.buildResponse(404, '404 Not Found');
