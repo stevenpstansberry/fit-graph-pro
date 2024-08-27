@@ -11,6 +11,8 @@ import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
 import workoutDataRaw from '../util/sampleProgression.json';
 import axios from 'axios'; 
+import { uploadWorkout, uploadSplit } from '../services/APIServices';
+
 
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
@@ -154,24 +156,33 @@ function Workouts() {
   };
 
     // Function to save a workout
-    //TOOD add connectivity to db
-    const saveWorkout = (workout) => {
-
-      // Ensure the date is stored as a Date object
-      const workoutWithDate = {
-        ...workout,
-        date: new Date(workout.date), // Convert to Date object if it isn't already
-        };      
-
-
-      setWorkoutHistory([...workoutHistory, workoutWithDate]);
-      console.log("Saved Workout: ", workoutWithDate);
+    const saveWorkout = async (workout) => {
+      try {
+        const workoutWithDate = {
+          ...workout,
+          date: new Date(workout.date),
+        };
+    
+        setWorkoutHistory([...workoutHistory, workoutWithDate]);
+        console.log("Saved Workout: ", workoutWithDate);
+    
+        await uploadWorkout(workoutWithDate);
+        console.log("Workout uploaded successfully");
+      } catch (error) {
+        console.error("Failed to upload workout: ", error);
+      }
     };
-  
-    // Function to save a new workout split
-    const saveSplit = (split) => {
-      setUserSplits([...userSplits, split]);
-      console.log("Saved Workout Split: ", split);
+    
+    const saveSplit = async (split) => {
+      try {
+        setUserSplits([...userSplits, split]);
+        console.log("Saved Workout Split: ", split);
+    
+        await uploadSplit(split);
+        console.log("Split uploaded successfully");
+      } catch (error) {
+        console.error("Failed to upload split: ", error);
+      }
     };
 
 
