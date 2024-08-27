@@ -5,6 +5,7 @@ const getWorkoutByIdService = require ('./services/getWorkout');
 const getAllWorkoutsService = require ('./services/getAllWorkouts');
 const getAllSplitsService = require ('./services/getAllSplits');
 const createWorkoutService = require ('./services/createWorkout');
+const createSplitService = require ('./services/createSplit');
 const util = require('./utils/util');
 
 const healthPath = '/health';
@@ -12,8 +13,9 @@ const registerPath = '/register';
 const loginPath = '/login';
 const verifyPath = '/verify';
 const getAllWorkoutsPath = '/workouts/all';
-const getAllSplitsPath = '/splits/all'
-const createWorkoutPath = '/workouts/create'
+const getAllSplitsPath = '/splits/all';
+const createWorkoutPath = '/workouts/create';
+const createSplitPath = '/splits/create';
 
 const getWorkoutByIdPath = '/workouts/{workoutId}';
 
@@ -60,7 +62,11 @@ exports.handler = async (event) => {
         case event.httpMethod === 'POST' && event.path === createWorkoutPath:
             const createWorkoutBody = JSON.parse(event.body);
             response = util.buildResponse(200, {message : createWorkoutBody})
-            break;                       
+            break;
+        case event.httpMethod === 'POST' && event.path === createSplitPath:
+            const createSplitBody = JSON.parse(event.body);
+            response = util.buildResponse(200, {message : createSplitBody})
+            break;                                      
         default:
             response = util.buildResponse(404, '404 Not Found');
     }
