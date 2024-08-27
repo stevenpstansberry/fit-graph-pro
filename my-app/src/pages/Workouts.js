@@ -35,7 +35,16 @@ function Workouts() {
       const fetchWorkouts = async () => {
         try {
           const response = await axios.get(getAllWorkoutsURL + name);
-          console.log('Workouts API Response:', response.data); 
+          console.log('Workouts API Response:', response.data);
+
+          // Update workoutHistory with the retrieved workouts
+          if (response.data && Array.isArray(response.data)) {
+            const formattedWorkouts = response.data.map(workout => ({
+              ...workout,
+              date: new Date(workout.date), // Ensure date is in Date format
+            }));
+            setWorkoutHistory(prevHistory => [...prevHistory, ...formattedWorkouts]);
+          }
         } catch (error) {
           console.error('Error fetching workouts:', error);
         }
