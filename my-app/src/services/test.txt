@@ -1,39 +1,103 @@
 {
-    "message": "Request failed with status code 403",
-    "name": "AxiosError",
-    "stack": "AxiosError: Request failed with status code 403\n    at settle (http://localhost:3000/static/js/bundle.js:122619:12)\n    at XMLHttpRequest.onloadend (http://localhost:3000/static/js/bundle.js:121282:66)\n    at Axios.request (http://localhost:3000/static/js/bundle.js:121772:41)\n    at async postToAPI (http://localhost:3000/static/js/bundle.js:4950:22)\n    at async saveWorkout (http://localhost:3000/static/js/bundle.js:4120:7)",
-    "config": {
-        "transitional": {
-            "silentJSONParsing": true,
-            "forcedJSONParsing": true,
-            "clarifyTimeoutError": false
+    "id": "1f948462-0cfc-4150-8c46-0c3f861546c6",
+    "date": "2024-08-26T07:00:00.000Z",
+    "type": "Push Workout",
+    "exercises": [
+        {
+            "label": "Bench Press",
+            "bodyPart": "Chest",
+            "sets": [
+                {
+                    "weight": "1",
+                    "reps": "1"
+                }
+            ]
         },
-        "adapter": [
-            "xhr",
-            "http",
-            "fetch"
-        ],
-        "transformRequest": [
-            null
-        ],
-        "transformResponse": [
-            null
-        ],
-        "timeout": 0,
-        "xsrfCookieName": "XSRF-TOKEN",
-        "xsrfHeaderName": "X-XSRF-TOKEN",
-        "maxContentLength": -1,
-        "maxBodyLength": -1,
-        "env": {},
-        "headers": {
-            "Accept": "application/json, text/plain, */*",
-            "Content-Type": "application/json",
-            "X-Api-Key": "Zd5FoS8ivP1BdkKxhOBL35ODTvod8WGm50ORYlla"
+        {
+            "label": "Overhead Press",
+            "bodyPart": "Shoulders",
+            "sets": [
+                {
+                    "weight": "1",
+                    "reps": "1"
+                }
+            ]
         },
-        "method": "post",
-        "url": "https://a95kc2kqtb.execute-api.us-east-1.amazonaws.com/prod/workouts/create",
-        "data": "{\"id\":\"58a23dda-406f-4f2e-b511-d5a057066dba\",\"date\":\"2024-08-26T07:00:00.000Z\",\"type\":\"Push Workout\",\"exercises\":[{\"sets\":[{\"weight\":\"1\",\"reps\":\"1\"}],\"label\":\"Bench Press\",\"bodyPart\":\"Chest\"},{\"sets\":[{\"weight\":\"1\",\"reps\":\"1\"}],\"label\":\"Overhead Press\",\"bodyPart\":\"Shoulders\"},{\"sets\":[{\"weight\":\"1\",\"reps\":\"1\"}],\"label\":\"Tricep Extension\",\"bodyPart\":\"Arms\"}]}"
-    },
-    "code": "ERR_BAD_REQUEST",
-    "status": 403
+        {
+            "label": "Tricep Extension",
+            "bodyPart": "Arms",
+            "sets": [
+                {
+                    "weight": "1",
+                    "reps": "1"
+                }
+            ]
+        }
+    ]
+}
+
+
+{
+    "date": "2024-08-14",
+    "exercises": [
+        {
+            "sets": [
+                {
+                    "weight": "45",
+                    "reps": "10"
+                },
+                {
+                    "weight": "50",
+                    "reps": "8"
+                }
+            ],
+            "label": "Bench Press",
+            "bodyPart": "Chest"
+        },
+        {
+            "sets": [
+                {
+                    "weight": "25",
+                    "reps": "10"
+                },
+                {
+                    "weight": "30",
+                    "reps": "8"
+                }
+            ],
+            "label": "Overhead Press",
+            "bodyPart": "Shoulders"
+        },
+        {
+            "sets": [
+                {
+                    "weight": "30",
+                    "reps": "10"
+                },
+                {
+                    "weight": "35",
+                    "reps": "8"
+                }
+            ],
+            "label": "Incline Dumbbell Press",
+            "bodyPart": "Chest"
+        },
+        {
+            "sets": [
+                {
+                    "weight": "10",
+                    "reps": "12"
+                },
+                {
+                    "weight": "15",
+                    "reps": "10"
+                }
+            ],
+            "label": "Lateral Raises",
+            "bodyPart": "Shoulders"
+        }
+    ],
+    "username": "d",
+    "workoutId": "5ZTSjfus#@",
+    "type": "Push Workout"
 }

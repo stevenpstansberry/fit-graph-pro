@@ -14,8 +14,13 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./Exercise_Sub_Card";
 import { v4 as uuidv4 } from 'uuid'; // Import UUID for unique IDs
+import { getUser } from '../services/AuthService';
+
 
 function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName,type }) {
+  const user = getUser();
+  const name = user !== 'undefined' && user ? user.name : '';
+
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState('');
   const [exercises, setExercises] = useState([]);
@@ -90,6 +95,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     const workout = {
       id: uuidv4(),
       date: workoutDate,
+      username: user.username,
       type: type,
       exercises: exercises,
     };

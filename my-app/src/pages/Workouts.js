@@ -166,8 +166,8 @@ function Workouts() {
         setWorkoutHistory([...workoutHistory, workoutWithDate]);
         console.log("Saved Workout: ", workoutWithDate);
     
-        await uploadWorkout(workoutWithDate);
-        console.log("Workout uploaded successfully");
+        //await uploadWorkout(workoutWithDate);
+        //console.log("Workout uploaded successfully");
       } catch (error) {
         console.error("Failed to upload workout: ", error);
       }
