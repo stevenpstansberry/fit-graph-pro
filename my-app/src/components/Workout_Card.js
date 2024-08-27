@@ -116,6 +116,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       const workoutSplit = {
         id: uuidv4(),
         name: newSplitName, 
+        username: user.username,
         exercises: exercises.map(exercise => ({
           label: exercise.label,
           bodyPart: exercise.bodyPart,

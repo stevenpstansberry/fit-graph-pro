@@ -8,7 +8,9 @@ const splitTable = 'fit-graph-user-splits';
 const util = require('../utils/util');
 
 async function uploadSplit(splitData) {
-  const { id: splitId, exercises, splitName, username} = splitData;
+  const { id: splitId, exercises, name, username} = splitData;
+
+  const splitName = name;
 
   const params = {
     TableName: splitTable,

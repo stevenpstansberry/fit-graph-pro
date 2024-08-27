@@ -141,6 +141,7 @@ function Workouts() {
       const newWorkout = {
         name: newSplitName,
         exercises: newWorkoutExercises,
+        
       };
       setUserSplits([...userSplits, newWorkout]);
       //TODO add CRUD logic for backend
