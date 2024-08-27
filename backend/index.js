@@ -60,8 +60,8 @@ exports.handler = async (event) => {
             response = await getAllSplitsService.getSplitsForUser(username);
             break;      
         case event.httpMethod === 'POST' && event.path === createWorkoutPath:
-            const createWorkoutBody = JSON.parse(event.body);
-            response = util.buildResponse(200, {message : createWorkoutBody})
+            const createWorkoutBody = JSON.parse(event.body)
+            response = createWorkoutService.uploadWorkout(createWorkoutBody);
             break;
         case event.httpMethod === 'POST' && event.path === createSplitPath:
             const createSplitBody = JSON.parse(event.body);
