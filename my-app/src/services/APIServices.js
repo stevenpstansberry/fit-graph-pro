@@ -37,3 +37,5 @@ export const uploadSplit = async (split) => {
 export const deleteWorkout = async (workoutId) => {
   return deleteToAPI(`/workouts/delete/${workoutId}`)
 }
+
+//TODO refactor workouts.js to make get requests from here and not within workouts.js

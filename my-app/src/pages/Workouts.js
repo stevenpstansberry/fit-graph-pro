@@ -11,7 +11,6 @@ import Workout_Card from '../components/Workout_Card';
 import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
-import workoutDataRaw from '../util/sampleProgression.json';
 import axios from 'axios'; 
 import { uploadWorkout, uploadSplit, deleteWorkout } from '../services/APIServices';
 
@@ -19,14 +18,8 @@ import { uploadWorkout, uploadSplit, deleteWorkout } from '../services/APIServic
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
 const getAllSplitsURL = fitGraphProd + "/splits/all/";
-const deleteWorkoutURL = fitGraphProd + "/workouts/delete/"
 
 
-// Temp sample data formatting
-const workoutData = workoutDataRaw.map(workout => ({
-  ...workout,
-  date: new Date(workout.date),
-}));
 
 function Workouts() {
   const user = getUser();
@@ -441,34 +434,5 @@ return (
 );
 }
 
-// Sample predefined workouts
-// const pushWorkout = {
-// splitId: "1'",
-// username: "d",
-// splitName: "Push Workout",
-// exercises: 
-// [
-//   { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: "", reps: "" }] },
-//   { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: "", reps: "" }] },
-//   { label: 'Tricep Extension', bodyPart: 'Arms', sets: [{ weight: "", reps: "" }] }
-// ]};
-
-const pushWorkout = [
-  { label: 'Bench Press', bodyPart: 'Chest', sets: [{ weight: "", reps: "" }] },
-  { label: 'Overhead Press', bodyPart: 'Shoulders', sets: [{ weight: "", reps: "" }] },
-  { label: 'Tricep Extension', bodyPart: 'Arms', sets: [{ weight: "", reps: "" }] }
-];
-
-const pullWorkout = [
-  { label: 'Pull Up', bodyPart: 'Back', sets: [{ weight: "", reps: "" }] },
-  { label: 'Barbell Row', bodyPart: 'Back', sets: [{ weight: "", reps: "" }] },
-  { label: 'Bicep Curl', bodyPart: 'Arms', sets: [{ weight: "", reps: "" }] }
-];
-
-const legsWorkout = [
-  { label: 'Squat', bodyPart: 'Legs', sets: [{ weight: "", reps: "" }] },
-  { label: 'Leg Press', bodyPart: 'Legs', sets: [{ weight: "", reps: "" }] },
-  { label: 'Lunge', bodyPart: 'Legs', sets: [{ weight: "", reps: "" }] }
-];
 
 export default Workouts;
