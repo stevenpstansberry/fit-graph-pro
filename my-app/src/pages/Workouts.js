@@ -79,7 +79,7 @@ function Workouts() {
 
   // State to manage the visibility and mode of the Workout Card
   const [isCardVisible, setIsCardVisible] = useState(false);
-  const [workoutHistory, setWorkoutHistory] = useState(workoutData);
+  const [workoutHistory, setWorkoutHistory] = useState([]);
   const [cardMode, setCardMode] = useState('createWorkout'); // State to determine the mode of Workout_Card
 
 
@@ -95,15 +95,8 @@ function Workouts() {
   const [newSplitName, setNewSplitName] = useState(""); // State for the new workout name
   const [newWorkoutExercises, setNewWorkoutExercises] = useState([]); // State for exercises in the new workout
 
-   // Predefined workout plans. 
-  //TODO by default, all users will be have ppl as a predefined workout plan, need to
-  // implement way to store predefined workouts in dynamodb and fetch based on user
-  //use this to add or delete methods later, change the use state to be a fetch from db.
-  const [userSplits, setUserSplits] = useState([
-    { name: 'Push Workout', exercises: pushWorkout },
-    { name: 'Pull Workout', exercises: pullWorkout },
-    { name: 'Legs Workout', exercises: legsWorkout },
-  ]);
+   // Holds the user Splits
+  const [userSplits, setUserSplits] = useState([]);
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Manage visibility of edit dialog
   const [selectedSplitForEditing, setSelectedSplitForEditing] = useState({}); // Split being edited
@@ -146,47 +139,51 @@ function Workouts() {
         
       };
       setUserSplits([...userSplits, newWorkout]);
-      //TODO add CRUD logic for backend
-
       handleAddDialogClose(); // Close the dialog after adding the workout
     }
   };
 
   const handleDeleteWorkout = (workoutId) => {
-    // Filter out the workout with the given id
-    const updatedWorkouts = workoutHistory.filter(workout => workout.id !== workoutId);
-    setWorkoutHistory(updatedWorkouts);
+    console.log("Deleting workout with ID:", workoutId);
+    console.log("Current workout history:", workoutHistory);
+  
+    // Use a function to update state based on the previous state
+    setWorkoutHistory(prevWorkouts =>
+      prevWorkouts.filter(workout => workout.workoutId !== workoutId)
+    );
+  
+    console.log("Updated workout history:", workoutHistory);
   };
+  
+  
 
-    // Function to save a workout
-    const saveWorkout = async (workout) => {
-      try {
-        const workoutWithDate = {
-          ...workout,
-          date: new Date(workout.date),
-        };
+  // Function to save a workout
+  const saveWorkout = async (workout) => {
+    try {
+      const workoutWithDate = {
+        ...workout,
+        date: new Date(workout.date),
+      };
+  
+      setWorkoutHistory([...workoutHistory, workoutWithDate]);
+      console.log("Saved Workout: ", workoutWithDate);
+  
+    } catch (error) {
+      console.error("Failed to upload workout: ", error);
+    }
+  };
     
-        setWorkoutHistory([...workoutHistory, workoutWithDate]);
-        console.log("Saved Workout: ", workoutWithDate);
-    
-        //await uploadWorkout(workoutWithDate);
-        //console.log("Workout uploaded successfully");
-      } catch (error) {
-        console.error("Failed to upload workout: ", error);
-      }
-    };
-    
-    const saveSplit = async (split) => {
-      try {
-        setUserSplits([...userSplits, split]);
-        console.log("Saved Workout Split: ", split);
-    
-        await uploadSplit(split);
-        console.log("Split uploaded successfully");
-      } catch (error) {
-        console.error("Failed to upload split: ", error);
-      }
-    };
+  const saveSplit = async (split) => {
+    try {
+      setUserSplits([...userSplits, split]);
+      console.log("Saved Workout Split: ", split);
+  
+      await uploadSplit(split);
+      console.log("Split uploaded successfully");
+    } catch (error) {
+      console.error("Failed to upload split: ", error);
+    }
+  };
 
 
   // Filter workouts based on selected month and year
@@ -305,9 +302,13 @@ return (
       />
     ) : filteredWorkouts.length > 0 ? (
       <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
-        {filteredWorkouts.map((workout, index) => (
-          <WorkoutCardPreview key={index} workout={workout} onDelete={handleDeleteWorkout} />
-        ))}
+      {filteredWorkouts.map((workout, index) => (
+        <WorkoutCardPreview
+          key={workout.workoutId || index} // Ensure the key is unique
+          workout={workout}
+          onDelete={() => handleDeleteWorkout(workout.workoutId)} // Correctly pass workoutId here
+        />
+      ))}
       </Box>
     ) : (
       <Typography variant="h6" sx={{ mb: 4 }}>
