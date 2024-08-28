@@ -1,3 +1,5 @@
+// /index.js
+
 const registerService = require('./services/register');
 const loginService = require('./services/login');
 const verifyService = require('./services/verify');
