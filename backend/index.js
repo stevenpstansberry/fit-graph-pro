@@ -20,6 +20,7 @@ const getAllWorkoutsService = require ('./services/getAllWorkouts');
 const getAllSplitsService = require ('./services/getAllSplits');
 const createWorkoutService = require ('./services/createWorkout');
 const createSplitService = require ('./services/createSplit');
+const deleteWorkoutService = require ('./services/deleteWorkout');
 const util = require('./utils/util');
 
 // Define API paths
@@ -31,6 +32,7 @@ const getAllWorkoutsPath = '/workouts/all';
 const getAllSplitsPath = '/splits/all';
 const createWorkoutPath = '/workouts/create';
 const createSplitPath = '/splits/create';
+const deleteWorkoutPath = '/workouts/delete';
 
 let username;
 
@@ -107,6 +109,12 @@ exports.handler = async (event) => {
             const createSplitBody = JSON.parse(event.body);
             response = createSplitService.uploadSplit(createSplitBody);
             break;    
+
+        // Delete a workout by workout ID route
+        case event.httpMethod === 'DELETE' && event.path.startsWith(deleteWorkoutPath + '/'):
+            const workoutIdToDelete = event.path.split('/').pop(); 
+            response = await deleteWorkoutService.deleteWorkout(workoutIdToDelete);
+            break;
 
         default:
             response = util.buildResponse(404, '404 Not Found');
