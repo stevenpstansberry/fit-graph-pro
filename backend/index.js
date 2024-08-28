@@ -21,6 +21,7 @@ const getAllSplitsService = require ('./services/getAllSplits');
 const createWorkoutService = require ('./services/createWorkout');
 const createSplitService = require ('./services/createSplit');
 const deleteWorkoutService = require ('./services/deleteWorkout');
+const deleteSplitService = require ('./services/deleteSplit');
 const util = require('./utils/util');
 
 // Define API paths
@@ -33,6 +34,7 @@ const getAllSplitsPath = '/splits/all';
 const createWorkoutPath = '/workouts/create';
 const createSplitPath = '/splits/create';
 const deleteWorkoutPath = '/workouts/delete';
+const deleteSplitPath = '/splits/delete';
 
 let username;
 
@@ -116,6 +118,13 @@ exports.handler = async (event) => {
             response = await deleteWorkoutService.deleteWorkout(workoutIdToDelete);
             break;
 
+        // Delete a split by split ID route
+        case event.httpMethod === 'DELETE' && event.path.startsWith(deleteSplitPath + '/'):
+            const splitIdToDelete = event.path.split('/').pop(); 
+            response = await deleteSplitService.deleteSplit(splitIdToDelete);
+            break;
+        
+        // Default - All other routes
         default:
             response = util.buildResponse(404, '404 Not Found');
     }
