@@ -1,3 +1,6 @@
+// src/components/StrengthChart.js
+
+
 import React, { useState, useEffect } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer

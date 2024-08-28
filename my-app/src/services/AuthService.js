@@ -1,3 +1,5 @@
+// src/services/AuthService.js
+
 module.exports = {
     // Retrieves the user from session storage as an object
     getUser: function () {

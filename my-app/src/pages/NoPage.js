@@ -1,3 +1,4 @@
+// src/pages/NoPages.js
 
 
 function NoPage(){

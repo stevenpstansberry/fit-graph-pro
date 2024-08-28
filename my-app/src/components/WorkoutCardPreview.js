@@ -1,3 +1,5 @@
+// src/components/WorkoutCardPreview.js
+
 import React, { useState } from 'react';
 import { Card, CardContent, Typography, Box, Button, Collapse, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
