@@ -34,7 +34,7 @@ const getAllSplitsPath = '/splits/all';
 const createWorkoutPath = '/workouts/create';
 const createSplitPath = '/splits/create';
 const deleteWorkoutPath = '/workouts/delete';
-const deleteSplitPath = 'splits/delete';
+const deleteSplitPath = '/splits/delete';
 
 let username;
 
