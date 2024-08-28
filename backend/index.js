@@ -8,7 +8,7 @@
  * Handles routes for user registration, login, workout and split creation, and data retrieval ...
  * 
  * @author Steven Stansberry
- * @version 0.1.0
+ * @version 1.0.0
  */
 
 // Import required service modules
