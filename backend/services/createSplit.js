@@ -1,4 +1,14 @@
-// backend/services/createSplit.js
+/**
+ * @fileoverview Service to upload a new workout split to DynamoDB.
+ * 
+ * @file backend/services/createSplit.js
+ * 
+ * Exposes the `uploadSplit()` function to handle the upload of a split.
+ * 
+ * 
+ * @author Steven Stansberry
+ * @version 1.0.0
+ */
 
 
 const AWS = require('aws-sdk');
@@ -10,6 +20,18 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 const splitTable = 'fit-graph-user-splits';
 const util = require('../utils/util');
 
+/**
+ * Uploads a new workout split to DynamoDB.
+ * 
+ * @async
+ * @function uploadSplit
+ * @param {Object} splitData - The split data to upload.
+ * @param {string} splitData.id - The unique ID for the split.
+ * @param {string} splitData.username - The username associated with the split.
+ * @param {string} splitData.name - The name of the split.
+ * @param {Array} splitData.exercises - The list of exercises in the split.
+ * @returns {Promise<Object>} Response object indicating success or failure.
+ */
 async function uploadSplit(splitData) {
   const { id: splitId, exercises, name, username} = splitData;
 
