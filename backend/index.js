@@ -112,9 +112,8 @@ exports.handler = async (event) => {
 
         // Delete a workout by workout ID route
         case event.httpMethod === 'DELETE' && event.path.startsWith(deleteWorkoutPath + '/'):
-            const workoutIdToDelete = event.path.split('/').pop(); // Extract workout ID from path
-            //response = await deleteWorkoutService.deleteWorkout(workoutIdToDelete);
-            response = util.buildResponse(200, {message : 'delete method reached'});
+            const workoutIdToDelete = event.path.split('/').pop(); 
+            response = await deleteWorkoutService.deleteWorkout(workoutIdToDelete);
             break;
 
         default:
