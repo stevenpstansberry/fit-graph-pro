@@ -1,4 +1,4 @@
-// ../services/getAllSplits.js
+// backend/services/getAllSplits.js
 
 
 const AWS = require('aws-sdk');

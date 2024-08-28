@@ -1,4 +1,4 @@
-// /index.js
+// backend/index.js
 
 const registerService = require('./services/register');
 const loginService = require('./services/login');

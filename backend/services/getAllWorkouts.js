@@ -1,4 +1,4 @@
-// ../services/getAllWorkouts.js
+// backend/services/getAllWorkouts.js
 
 
 const AWS = require('aws-sdk');

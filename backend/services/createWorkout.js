@@ -1,4 +1,4 @@
-// ../services/createWorkout.js
+// backend/services/createWorkout.js
 
 const AWS = require('aws-sdk');
 AWS.config.update({

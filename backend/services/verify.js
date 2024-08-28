@@ -1,4 +1,4 @@
-// ../services/verify.js
+// backend/services/verify.js
 
 
 const util = require('../utils/util');

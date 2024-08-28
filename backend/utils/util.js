@@ -1,4 +1,4 @@
-// ../utils/util.js
+// backend/utils/util.js
 
 
 function buildResponse(statusCode, body) {
