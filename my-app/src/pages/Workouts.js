@@ -13,12 +13,13 @@ import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
 import workoutDataRaw from '../util/sampleProgression.json';
 import axios from 'axios'; 
-import { uploadWorkout, uploadSplit } from '../services/APIServices';
+import { uploadWorkout, uploadSplit, deleteWorkout } from '../services/APIServices';
 
 
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
 const getAllSplitsURL = fitGraphProd + "/splits/all/";
+const deleteWorkoutURL = fitGraphProd + "/workouts/delete/"
 
 
 // Temp sample data formatting
@@ -143,7 +144,7 @@ function Workouts() {
     }
   };
 
-  const handleDeleteWorkout = (workoutId) => {
+  const handleDeleteWorkout = async (workoutId) => {
     console.log("Deleting workout with ID:", workoutId);
     console.log("Current workout history:", workoutHistory);
   
@@ -151,8 +152,16 @@ function Workouts() {
     setWorkoutHistory(prevWorkouts =>
       prevWorkouts.filter(workout => workout.workoutId !== workoutId)
     );
-  
+    
     console.log("Updated workout history:", workoutHistory);
+    
+    //Attempt to upload workout
+    try {
+      await deleteWorkout(workoutId);
+      console.log("Workout deleted succesfully");
+    } catch (error) {
+      console.error("Failed to delete workout: " , error);
+    }
   };
   
   

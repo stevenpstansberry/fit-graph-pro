@@ -14,6 +14,18 @@ const postToAPI = async (endpoint, data) => {
   }
 };
 
+const deleteToAPI = async (endpoint, data) => {
+  console.log ("Delete request: ", data)
+  try {
+    const url = `${fitGraphProd}${endpoint}`;
+    const response = await axios.delete(url, data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error posting to ${endpoint}:`, error);
+    throw error;
+  }
+};
+
 export const uploadWorkout = async (workout) => {
   return postToAPI('/workouts/create', workout);
 };
@@ -21,3 +33,7 @@ export const uploadWorkout = async (workout) => {
 export const uploadSplit = async (split) => {
   return postToAPI('/splits/create', split);
 };
+
+export const deleteWorkout = async (workoutId) => {
+  return deleteToAPI(`/workouts/delete/${workoutId}`)
+}
