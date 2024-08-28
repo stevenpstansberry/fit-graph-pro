@@ -1,3 +1,6 @@
+// src/components/SignUp.js
+
+
 import React, {useState, useEffect} from 'react';
 import { Container, Typography, Box, FormControl, InputLabel, Input, FormHelperText, Button, TextField, FormControlLabel, Checkbox, Link, Grid, Alert } from '@mui/material';
 import axios from 'axios'
