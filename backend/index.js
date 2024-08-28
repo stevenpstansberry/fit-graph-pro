@@ -121,8 +121,7 @@ exports.handler = async (event) => {
         // Delete a split by split ID route
         case event.httpMethod === 'DELETE' && event.path.startsWith(deleteSplitPath + '/'):
             const splitIdToDelete = event.path.split('/').pop(); 
-            response = util.buildResponse(200, {message : 'delete split method reached'})
-            //response = await deleteSplitService.deleteSplit(splitIdToDelete);
+            response = await deleteSplitService.deleteSplit(splitIdToDelete);
             break;
         
         // Default - All other routes
