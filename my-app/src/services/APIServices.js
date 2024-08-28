@@ -1,4 +1,4 @@
-// APIService.js
+// src/services/APIServices.js
 import axios from 'axios';
 
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
