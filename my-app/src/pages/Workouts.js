@@ -1,4 +1,14 @@
-// src/pages/Workouts.js
+/**
+ * @fileoverview Component to manage and display user workouts and splits.
+ * 
+ * @file src/pages/Workouts.js
+ * 
+ * Exposes the `Workouts` React component, which handles fetching, creating, updating,
+ * and deleting workouts and splits for the authenticated user.
+ * 
+ * @version 1.0.0
+ * @author Steven Stansberry
+ */
 
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
@@ -14,17 +24,41 @@ import StrengthChart from '../components/StrengthChart';
 import axios from 'axios'; 
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit } from '../services/APIServices';
 
-
+// API URLs
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
 const getAllSplitsURL = fitGraphProd + "/splits/all/";
 
 
-
+/**
+ * Main component to manage user workouts and splits.
+ * 
+ * @component
+ * @returns {React.Element} - The rendered component.
+ */
 function Workouts() {
   const user = getUser();
   const name = user !== 'undefined' && user ? user.name : '';
   console.log(user);
+
+  // State declarations
+  const [isCardVisible, setIsCardVisible] = useState(false);
+  const [workoutHistory, setWorkoutHistory] = useState([]);
+  const [cardMode, setCardMode] = useState('createWorkout');
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedWorkout, setSelectedWorkout] = useState([]);
+  const [showGraph, setShowGraph] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [newSplitName, setNewSplitName] = useState("");
+  const [newWorkoutExercises, setNewWorkoutExercises] = useState([]);
+  const [userSplits, setUserSplits] = useState([]);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedSplitForEditing, setSelectedSplitForEditing] = useState({});
+  const [editedName, setEditedName] = useState('');
+  const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false);
+  const [customSplitName, setCustomSplitName] = useState("");
+  const [workoutType, setWorkoutType] = useState("Default");
 
   // Fetch from API
   useEffect(() => {
@@ -72,35 +106,6 @@ function Workouts() {
     }
   }, [name]);
 
-  // State to manage the visibility and mode of the Workout Card
-  const [isCardVisible, setIsCardVisible] = useState(false);
-  const [workoutHistory, setWorkoutHistory] = useState([]);
-  const [cardMode, setCardMode] = useState('createWorkout'); // State to determine the mode of Workout_Card
-
-
-  // State to manage the month and year
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Current month (1-12)
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Current year
-
-  // State to hold selected workouts
-  const [selectedWorkout, setSelectedWorkout] = useState([]);
-
-  const [showGraph, setShowGraph] = useState(false); // State to toggle between graph view and workout history view
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false); // State for add workout dialog
-  const [newSplitName, setNewSplitName] = useState(""); // State for the new workout name
-  const [newWorkoutExercises, setNewWorkoutExercises] = useState([]); // State for exercises in the new workout
-
-   // Holds the user Splits
-  const [userSplits, setUserSplits] = useState([]);
-
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Manage visibility of edit dialog
-  const [selectedSplitForEditing, setSelectedSplitForEditing] = useState({}); // Split being edited
-  const [editedName, setEditedName] = useState(''); // For renaming
-
-  const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false);
-  const [customSplitName, setCustomSplitName] = useState("");
-
-  const [workoutType, setWorkoutType] = useState("Default");
 
   const toggleAddWorkoutCard = (workout, mode, workoutType) => {
     setWorkoutType(workoutType);
