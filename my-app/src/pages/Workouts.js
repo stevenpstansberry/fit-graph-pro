@@ -12,7 +12,7 @@ import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
 import axios from 'axios'; 
-import { uploadWorkout, uploadSplit, deleteWorkout } from '../services/APIServices';
+import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit } from '../services/APIServices';
 
 
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
@@ -228,12 +228,23 @@ function Workouts() {
   };
 
   // Handle deleting a workout split
-  const handleDeleteSplit = (splitId) => {
+  const handleDeleteSplit = async (splitId) => {
     console.log("Deleting split with ID: ", splitId);
 
-    setUserSplits(prevSplits =>
-      prevSplits.filter(split => split.splitId !== splitId)
-    );
+    try {
+
+      await deleteSplit(splitId);
+      console.log("Split deleted successfully from backend");
+
+      // Update state to remove deleted split
+      setUserSplits(prevSplits =>
+        prevSplits.filter(split => split.splitId !== splitId)
+      );
+
+      console.log("Updated splits: ", userSplits)
+    } catch (error) {
+      console.error("Failed to delete split: ", error)
+    }
   };
 
 return (
