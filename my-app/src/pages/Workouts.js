@@ -22,7 +22,7 @@ import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
 import axios from 'axios'; 
-import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit } from '../services/APIServices';
+import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
 
 // API URLs
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
@@ -60,7 +60,7 @@ function Workouts() {
   const [customSplitName, setCustomSplitName] = useState("");
   const [workoutType, setWorkoutType] = useState("Default");
 
-  // Fetch workouts and splits for the user from API
+  // Fetch from API using APIServices
   useEffect(() => {
     if (name) {
       fetchWorkouts();
@@ -73,11 +73,11 @@ function Workouts() {
    */
   const fetchWorkouts = async () => {
     try {
-      const response = await axios.get(`${getAllWorkoutsURL}${name}`);
-      console.log('Workouts API Response:', response.data);
+      const data = await getAllWorkouts(name);
+      console.log('Workouts API Response:', data);
 
-      if (response.data && Array.isArray(response.data)) {
-        const formattedWorkouts = response.data.map(workout => ({
+      if (data && Array.isArray(data)) {
+        const formattedWorkouts = data.map(workout => ({
           ...workout,
           date: new Date(workout.date), // Convert date to Date object
         }));
@@ -93,11 +93,11 @@ function Workouts() {
    */
   const fetchSplits = async () => {
     try {
-      const response = await axios.get(`${getAllSplitsURL}${name}`);
-      console.log('Splits API Response:', response.data);
+      const data = await getAllSplits(name);
+      console.log('Splits API Response:', data);
 
-      if (response.data && Array.isArray(response.data)) {
-        const formattedSplits = response.data.map(split => ({
+      if (data && Array.isArray(data)) {
+        const formattedSplits = data.map(split => ({
           splitId: split.splitId,
           name: split.splitName,
           exercises: split.exercises,
@@ -265,7 +265,7 @@ function Workouts() {
     );
     handleCloseEditDialog();
   };
-  
+
   /**
    * Deletes a workout split by ID.
    * 
