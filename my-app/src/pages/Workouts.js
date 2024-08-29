@@ -60,51 +60,54 @@ function Workouts() {
   const [customSplitName, setCustomSplitName] = useState("");
   const [workoutType, setWorkoutType] = useState("Default");
 
-  // Fetch from API
+  // Fetch workouts and splits for the user from API
   useEffect(() => {
     if (name) {
-      // Fetch workouts for the user
-      const fetchWorkouts = async () => {
-        try {
-          const response = await axios.get(getAllWorkoutsURL + name);
-          console.log('Workouts API Response:', response.data);
-
-          // Update workoutHistory with the retrieved workouts
-          if (response.data && Array.isArray(response.data)) {
-            const formattedWorkouts = response.data.map(workout => ({
-              ...workout,
-              date: new Date(workout.date), // Ensure date is in Date format
-            }));
-            setWorkoutHistory(prevHistory => [...prevHistory, ...formattedWorkouts]);
-          }
-        } catch (error) {
-          console.error('Error fetching workouts:', error);
-        }
-      };
       fetchWorkouts();
-
-      // Fetch splits for the user and update state
-      const fetchSplits = async () => {
-        try {
-          const response = await axios.get(getAllSplitsURL + name);
-          console.log('Splits API Response:', response.data);
-
-          // Transform the response data to use `splitName` and map it to `name` in the local state
-          if (response.data && Array.isArray(response.data)) {
-            const formattedSplits = response.data.map(split => ({
-              name: split.splitName, // Map splitName to name
-              splitId: split.splitId,
-              exercises: split.exercises,
-            }));
-            setUserSplits((prevSplits) => [...prevSplits, ...formattedSplits]);
-          }
-        } catch (error) {
-          console.error('Error fetching splits:', error);
-        }
-      };
       fetchSplits();
     }
   }, [name]);
+
+  /**
+   * Fetches workouts for the user and updates state.
+   */
+  const fetchWorkouts = async () => {
+    try {
+      const response = await axios.get(`${getAllWorkoutsURL}${name}`);
+      console.log('Workouts API Response:', response.data);
+
+      if (response.data && Array.isArray(response.data)) {
+        const formattedWorkouts = response.data.map(workout => ({
+          ...workout,
+          date: new Date(workout.date), // Convert date to Date object
+        }));
+        setWorkoutHistory(formattedWorkouts);
+      }
+    } catch (error) {
+      console.error('Error fetching workouts:', error);
+    }
+  };
+
+  /**
+   * Fetches splits for the user and updates state.
+   */
+  const fetchSplits = async () => {
+    try {
+      const response = await axios.get(`${getAllSplitsURL}${name}`);
+      console.log('Splits API Response:', response.data);
+
+      if (response.data && Array.isArray(response.data)) {
+        const formattedSplits = response.data.map(split => ({
+          splitId: split.splitId,
+          name: split.splitName,
+          exercises: split.exercises,
+        }));
+        setUserSplits(formattedSplits);
+      }
+    } catch (error) {
+      console.error('Error fetching splits:', error);
+    }
+  };
 
 
   const toggleAddWorkoutCard = (workout, mode, workoutType) => {
