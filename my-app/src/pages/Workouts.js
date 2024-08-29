@@ -12,7 +12,7 @@ import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
 import axios from 'axios'; 
-import { uploadWorkout, uploadSplit, deleteWorkout } from '../services/APIServices';
+import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit } from '../services/APIServices';
 
 
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
@@ -59,6 +59,7 @@ function Workouts() {
           if (response.data && Array.isArray(response.data)) {
             const formattedSplits = response.data.map(split => ({
               name: split.splitName, // Map splitName to name
+              splitId: split.splitId,
               exercises: split.exercises,
             }));
             setUserSplits((prevSplits) => [...prevSplits, ...formattedSplits]);
@@ -227,10 +228,23 @@ function Workouts() {
   };
 
   // Handle deleting a workout split
-  const handleDeleteSplit = (splitName) => {
-    setUserSplits(prevWorkouts =>
-      prevWorkouts.filter(workout => workout.name !== splitName)
-    );
+  const handleDeleteSplit = async (splitId) => {
+    console.log("Deleting split with ID: ", splitId);
+
+    try {
+
+      await deleteSplit(splitId);
+      console.log("Split deleted successfully from backend");
+
+      // Update state to remove deleted split
+      setUserSplits(prevSplits =>
+        prevSplits.filter(split => split.splitId !== splitId)
+      );
+
+      console.log("Updated splits: ", userSplits)
+    } catch (error) {
+      console.error("Failed to delete split: ", error)
+    }
   };
 
 return (
@@ -362,10 +376,10 @@ return (
     <DialogTitle>Edit Workout Splits</DialogTitle>
     <DialogContent>
       <Typography variant="h6">Available Workout Splits</Typography>
-      {userSplits.map((workout, index) => (
+      {userSplits.map((split, index) => (
         <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
           <TextField
-            value={workout.name}
+            value={split.name}
             onChange={(e) => {
               const updatedSplits = [...userSplits];
               updatedSplits[index].name = e.target.value;
@@ -373,7 +387,7 @@ return (
             }}
             sx={{ mr: 2 }}
           />
-          <IconButton color="error" onClick={() => handleDeleteSplit(workout.name)}>
+          <IconButton color="error" onClick={() => handleDeleteSplit(split.splitId)}>
             <DeleteIcon />
           </IconButton>
         </Box>
