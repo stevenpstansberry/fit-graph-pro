@@ -52,7 +52,6 @@ function App() {
           <Route path = "/register" element={<Register/>} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/test" element={<Test />} />
-          <Route path="/workouts" element={<Workouts />} />
           <Route path="/testchart" element={<StrengthChart />} />
 
           <Route
@@ -63,6 +62,15 @@ function App() {
             </PrivateRoute>
           }
         />        
+          <Route
+          path="/workouts"
+          element={
+            <PrivateRoute>
+              <Workouts />
+            </PrivateRoute>
+          }
+        />           
+
           <Route
           path="/login"
           element={
@@ -78,7 +86,7 @@ function App() {
               <Register />
             </PublicRoute>
           }
-        />        
+        />                      
         </Routes>
       </div>
     </BrowserRouter>
