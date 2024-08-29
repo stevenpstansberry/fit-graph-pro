@@ -21,7 +21,6 @@ import Workout_Card from '../components/Workout_Card';
 import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
-import axios from 'axios'; 
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
 
 // API URLs
