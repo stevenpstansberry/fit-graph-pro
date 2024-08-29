@@ -109,7 +109,13 @@ function Workouts() {
     }
   };
 
-
+  /**
+   * Toggles the visibility of the workout card and sets its mode.
+   * 
+   * @param {Array} workout - The selected workout exercises.
+   * @param {string} mode - The mode of the workout card ('createWorkout' or 'addSplit').
+   * @param {string} workoutType - The type of workout.
+   */
   const toggleAddWorkoutCard = (workout, mode, workoutType) => {
     setWorkoutType(workoutType);
     setSelectedWorkout(workout);
@@ -117,35 +123,36 @@ function Workouts() {
     setIsCardVisible(!isCardVisible);
   };
 
+  /**
+   * Closes the workout card modal.
+   */
   const handleClose = () => {
     setIsCardVisible(false);
   };
 
+
+  /**
+   * Opens the add workout dialog.
+   */
   const handleAddDialogOpen = () => {
     setIsAddDialogOpen(true);
   };
 
+  /**
+   * Closes the add workout dialog.
+   */  
   const handleAddDialogClose = () => {
     setIsAddDialogOpen(false);
     setNewSplitName(""); // Clear the input field
     setNewWorkoutExercises([]); // Clear the exercise selection
   };
 
-  const handleAddNewSplit = (mode) => {
-    setCardMode(mode); 
-    setIsCardVisible(!isCardVisible);
-
-    if (newSplitName.trim()) {
-      const newWorkout = {
-        name: newSplitName,
-        exercises: newWorkoutExercises,
-        
-      };
-      setUserSplits([...userSplits, newWorkout]);
-      handleAddDialogClose(); // Close the dialog after adding the workout
-    }
-  };
-
+  /**
+   * Deletes a workout by ID.
+   * 
+   * @async
+   * @param {string} workoutId - The ID of the workout to delete.
+   */  
   const handleDeleteWorkout = async (workoutId) => {
     console.log("Deleting workout with ID:", workoutId);
   
@@ -168,7 +175,12 @@ function Workouts() {
   
   
 
-  // Function to save a workout
+  /**
+   * Saves a workout to the backend and updates state.
+   * 
+   * @async
+   * @param {Object} workout - The workout object to save.
+   */
   const saveWorkout = async (workout) => {
     try {
       const workoutWithDate = {
@@ -185,7 +197,13 @@ function Workouts() {
       console.error("Failed to upload workout: ", error);
     }
   };
-    
+
+/**
+ * Saves a workout split to the backend and updates state.
+ * 
+ * @async
+ * @param {Object} split - The split object to save.
+ */  
   const saveSplit = async (split) => {
     try {
       setUserSplits([...userSplits, split]);
@@ -199,7 +217,11 @@ function Workouts() {
   };
 
 
-  // Filter workouts based on selected month and year
+  /**
+   * Filters workouts based on the selected month and year.
+   * 
+   * @returns {Array} - The filtered list of workouts.
+   */
   const filteredWorkouts = workoutHistory.filter(workout => {
     const workoutMonth = workout.date.getMonth() + 1;
     const workoutYear = workout.date.getFullYear();
@@ -208,24 +230,33 @@ function Workouts() {
 
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+  /**
+   * Toggles between graph view and workout history view.
+   */  
   const handleGraphButtonClick = () => {
     setShowGraph(!showGraph); // Toggle between graph view and workout history view
   };
 
 
-  // Handle opening the edit dialog
+  /**
+   * Opens the edit dialog for workout splits.
+   */
   const handleOpenEditDialog = () => {
     setIsEditDialogOpen(true);
   };
 
-  // Handle closing the edit dialog
+  /**
+   * Closes the edit dialog for workout splits.
+   */
   const handleCloseEditDialog = () => {
     setIsEditDialogOpen(false);
     setSelectedSplitForEditing({});
     setEditedName('');
   };
 
-  // Handle renaming a workout split
+  /**
+   * Renames a workout split.
+   */
   const handleRenameSplit = () => {
     setUserSplits(prevWorkouts =>
       prevWorkouts.map(workout =>
@@ -234,8 +265,13 @@ function Workouts() {
     );
     handleCloseEditDialog();
   };
-
-  // Handle deleting a workout split
+  
+  /**
+   * Deletes a workout split by ID.
+   * 
+   * @async
+   * @param {string} splitId - The ID of the split to delete.
+   */
   const handleDeleteSplit = async (splitId) => {
     console.log("Deleting split with ID: ", splitId);
 
