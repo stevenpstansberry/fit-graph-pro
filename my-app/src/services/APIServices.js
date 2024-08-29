@@ -3,6 +3,17 @@ import axios from 'axios';
 
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 
+const getFromAPI = async (endpoint) => {
+  try {
+    const url = `${fitGraphProd}${endpoint}`;
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error(`Error getting from ${endpoint}:`, error);
+    throw error;
+  }
+};
+
 const postToAPI = async (endpoint, data) => {
   try {
     const url = `${fitGraphProd}${endpoint}`;
@@ -41,4 +52,11 @@ export const deleteSplit = async (splitId) => {
   return deleteToAPI (`/splits/delete/${splitId}`)
 }
 
-//TODO refactor workouts.js to make get requests from here and not within workouts.js
+export const getAllWorkouts = async (username) => {
+  return getFromAPI(`/workouts/all/${username}`);
+};
+
+export const getAllSplits = async (username) => {
+  return getFromAPI(`/splits/all/${username}`);
+};
+

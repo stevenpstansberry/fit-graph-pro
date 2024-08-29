@@ -1,4 +1,14 @@
-// src/pages/Workouts.js
+/**
+ * @fileoverview Component to manage and display user workouts and splits.
+ * 
+ * @file src/pages/Workouts.js
+ * 
+ * Exposes the `Workouts` React component, which handles fetching, creating, updating,
+ * and deleting workouts and splits for the authenticated user.
+ * 
+ * @version 1.0.0
+ * @author Steven Stansberry
+ */
 
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
@@ -12,96 +22,100 @@ import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
 import axios from 'axios'; 
-import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit } from '../services/APIServices';
+import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
 
-
+// API URLs
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
 const getAllSplitsURL = fitGraphProd + "/splits/all/";
 
 
-
+/**
+ * Main component to manage user workouts and splits.
+ * 
+ * @component
+ * @returns {React.Element} - The rendered component.
+ */
 function Workouts() {
   const user = getUser();
   const name = user !== 'undefined' && user ? user.name : '';
   console.log(user);
 
-  // Fetch from API
+  // State declarations
+  const [isCardVisible, setIsCardVisible] = useState(false);
+  const [workoutHistory, setWorkoutHistory] = useState([]);
+  const [cardMode, setCardMode] = useState('createWorkout');
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedWorkout, setSelectedWorkout] = useState([]);
+  const [showGraph, setShowGraph] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [newSplitName, setNewSplitName] = useState("");
+  const [newWorkoutExercises, setNewWorkoutExercises] = useState([]);
+  const [userSplits, setUserSplits] = useState([]);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedSplitForEditing, setSelectedSplitForEditing] = useState({});
+  const [editedName, setEditedName] = useState('');
+  const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false);
+  const [customSplitName, setCustomSplitName] = useState("");
+  const [workoutType, setWorkoutType] = useState("Default");
+
+  // Fetch from API using APIServices
   useEffect(() => {
     if (name) {
-      // Fetch workouts for the user
-      const fetchWorkouts = async () => {
-        try {
-          const response = await axios.get(getAllWorkoutsURL + name);
-          console.log('Workouts API Response:', response.data);
-
-          // Update workoutHistory with the retrieved workouts
-          if (response.data && Array.isArray(response.data)) {
-            const formattedWorkouts = response.data.map(workout => ({
-              ...workout,
-              date: new Date(workout.date), // Ensure date is in Date format
-            }));
-            setWorkoutHistory(prevHistory => [...prevHistory, ...formattedWorkouts]);
-          }
-        } catch (error) {
-          console.error('Error fetching workouts:', error);
-        }
-      };
       fetchWorkouts();
-
-      // Fetch splits for the user and update state
-      const fetchSplits = async () => {
-        try {
-          const response = await axios.get(getAllSplitsURL + name);
-          console.log('Splits API Response:', response.data);
-
-          // Transform the response data to use `splitName` and map it to `name` in the local state
-          if (response.data && Array.isArray(response.data)) {
-            const formattedSplits = response.data.map(split => ({
-              name: split.splitName, // Map splitName to name
-              splitId: split.splitId,
-              exercises: split.exercises,
-            }));
-            setUserSplits((prevSplits) => [...prevSplits, ...formattedSplits]);
-          }
-        } catch (error) {
-          console.error('Error fetching splits:', error);
-        }
-      };
       fetchSplits();
     }
   }, [name]);
 
-  // State to manage the visibility and mode of the Workout Card
-  const [isCardVisible, setIsCardVisible] = useState(false);
-  const [workoutHistory, setWorkoutHistory] = useState([]);
-  const [cardMode, setCardMode] = useState('createWorkout'); // State to determine the mode of Workout_Card
+  /**
+   * Fetches workouts for the user and updates state.
+   */
+  const fetchWorkouts = async () => {
+    try {
+      const data = await getAllWorkouts(name);
+      console.log('Workouts API Response:', data);
 
+      if (data && Array.isArray(data)) {
+        const formattedWorkouts = data.map(workout => ({
+          ...workout,
+          date: new Date(workout.date), // Convert date to Date object
+        }));
+        setWorkoutHistory(formattedWorkouts);
+      }
+    } catch (error) {
+      console.error('Error fetching workouts:', error);
+    }
+  };
 
-  // State to manage the month and year
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Current month (1-12)
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Current year
+  /**
+   * Fetches splits for the user and updates state.
+   */
+  const fetchSplits = async () => {
+    try {
+      const data = await getAllSplits(name);
+      console.log('Splits API Response:', data);
 
-  // State to hold selected workouts
-  const [selectedWorkout, setSelectedWorkout] = useState([]);
+      if (data && Array.isArray(data)) {
+        const formattedSplits = data.map(split => ({
+          splitId: split.splitId,
+          name: split.splitName,
+          exercises: split.exercises,
+        }));
+        setUserSplits(formattedSplits);
+      }
+    } catch (error) {
+      console.error('Error fetching splits:', error);
+    }
+  };
 
-  const [showGraph, setShowGraph] = useState(false); // State to toggle between graph view and workout history view
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false); // State for add workout dialog
-  const [newSplitName, setNewSplitName] = useState(""); // State for the new workout name
-  const [newWorkoutExercises, setNewWorkoutExercises] = useState([]); // State for exercises in the new workout
-
-   // Holds the user Splits
-  const [userSplits, setUserSplits] = useState([]);
-
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Manage visibility of edit dialog
-  const [selectedSplitForEditing, setSelectedSplitForEditing] = useState({}); // Split being edited
-  const [editedName, setEditedName] = useState(''); // For renaming
-
-  const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false);
-  const [customSplitName, setCustomSplitName] = useState("");
-
-  const [workoutType, setWorkoutType] = useState("Default");
-
+  /**
+   * Toggles the visibility of the workout card and sets its mode.
+   * 
+   * @param {Array} workout - The selected workout exercises.
+   * @param {string} mode - The mode of the workout card ('createWorkout' or 'addSplit').
+   * @param {string} workoutType - The type of workout.
+   */
   const toggleAddWorkoutCard = (workout, mode, workoutType) => {
     setWorkoutType(workoutType);
     setSelectedWorkout(workout);
@@ -109,35 +123,36 @@ function Workouts() {
     setIsCardVisible(!isCardVisible);
   };
 
+  /**
+   * Closes the workout card modal.
+   */
   const handleClose = () => {
     setIsCardVisible(false);
   };
 
+
+  /**
+   * Opens the add workout dialog.
+   */
   const handleAddDialogOpen = () => {
     setIsAddDialogOpen(true);
   };
 
+  /**
+   * Closes the add workout dialog.
+   */  
   const handleAddDialogClose = () => {
     setIsAddDialogOpen(false);
     setNewSplitName(""); // Clear the input field
     setNewWorkoutExercises([]); // Clear the exercise selection
   };
 
-  const handleAddNewSplit = (mode) => {
-    setCardMode(mode); 
-    setIsCardVisible(!isCardVisible);
-
-    if (newSplitName.trim()) {
-      const newWorkout = {
-        name: newSplitName,
-        exercises: newWorkoutExercises,
-        
-      };
-      setUserSplits([...userSplits, newWorkout]);
-      handleAddDialogClose(); // Close the dialog after adding the workout
-    }
-  };
-
+  /**
+   * Deletes a workout by ID.
+   * 
+   * @async
+   * @param {string} workoutId - The ID of the workout to delete.
+   */  
   const handleDeleteWorkout = async (workoutId) => {
     console.log("Deleting workout with ID:", workoutId);
   
@@ -160,7 +175,12 @@ function Workouts() {
   
   
 
-  // Function to save a workout
+  /**
+   * Saves a workout to the backend and updates state.
+   * 
+   * @async
+   * @param {Object} workout - The workout object to save.
+   */
   const saveWorkout = async (workout) => {
     try {
       const workoutWithDate = {
@@ -177,7 +197,13 @@ function Workouts() {
       console.error("Failed to upload workout: ", error);
     }
   };
-    
+
+/**
+ * Saves a workout split to the backend and updates state.
+ * 
+ * @async
+ * @param {Object} split - The split object to save.
+ */  
   const saveSplit = async (split) => {
     try {
       setUserSplits([...userSplits, split]);
@@ -191,7 +217,11 @@ function Workouts() {
   };
 
 
-  // Filter workouts based on selected month and year
+  /**
+   * Filters workouts based on the selected month and year.
+   * 
+   * @returns {Array} - The filtered list of workouts.
+   */
   const filteredWorkouts = workoutHistory.filter(workout => {
     const workoutMonth = workout.date.getMonth() + 1;
     const workoutYear = workout.date.getFullYear();
@@ -200,24 +230,33 @@ function Workouts() {
 
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+  /**
+   * Toggles between graph view and workout history view.
+   */  
   const handleGraphButtonClick = () => {
     setShowGraph(!showGraph); // Toggle between graph view and workout history view
   };
 
 
-  // Handle opening the edit dialog
+  /**
+   * Opens the edit dialog for workout splits.
+   */
   const handleOpenEditDialog = () => {
     setIsEditDialogOpen(true);
   };
 
-  // Handle closing the edit dialog
+  /**
+   * Closes the edit dialog for workout splits.
+   */
   const handleCloseEditDialog = () => {
     setIsEditDialogOpen(false);
     setSelectedSplitForEditing({});
     setEditedName('');
   };
 
-  // Handle renaming a workout split
+  /**
+   * Renames a workout split.
+   */
   const handleRenameSplit = () => {
     setUserSplits(prevWorkouts =>
       prevWorkouts.map(workout =>
@@ -227,7 +266,12 @@ function Workouts() {
     handleCloseEditDialog();
   };
 
-  // Handle deleting a workout split
+  /**
+   * Deletes a workout split by ID.
+   * 
+   * @async
+   * @param {string} splitId - The ID of the split to delete.
+   */
   const handleDeleteSplit = async (splitId) => {
     console.log("Deleting split with ID: ", splitId);
 
