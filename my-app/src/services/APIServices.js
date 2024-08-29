@@ -14,11 +14,10 @@ const postToAPI = async (endpoint, data) => {
   }
 };
 
-const deleteToAPI = async (endpoint, data) => {
-  console.log ("Delete request: ", data)
+const deleteToAPI = async (endpoint) => {
   try {
     const url = `${fitGraphProd}${endpoint}`;
-    const response = await axios.delete(url, data);
+    const response = await axios.delete(url);
     return response.data;
   } catch (error) {
     console.error(`Error posting to ${endpoint}:`, error);

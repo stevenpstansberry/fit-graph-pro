@@ -139,23 +139,23 @@ function Workouts() {
 
   const handleDeleteWorkout = async (workoutId) => {
     console.log("Deleting workout with ID:", workoutId);
-    console.log("Current workout history:", workoutHistory);
   
-    // Use a function to update state based on the previous state
-    setWorkoutHistory(prevWorkouts =>
-      prevWorkouts.filter(workout => workout.workoutId !== workoutId)
-    );
-    
-    console.log("Updated workout history:", workoutHistory);
-    
-    //Attempt to upload workout
     try {
+      // Attempt to delete workout from the backend
       await deleteWorkout(workoutId);
-      console.log("Workout deleted succesfully");
+      console.log("Workout deleted successfully from backend");
+  
+      // Update the state to remove the deleted workout
+      setWorkoutHistory(prevWorkouts =>
+        prevWorkouts.filter(workout => workout.workoutId !== workoutId)
+      );
+  
+      console.log("Updated workout history:", workoutHistory);
     } catch (error) {
-      console.error("Failed to delete workout: " , error);
+      console.error("Failed to delete workout:", error);
     }
   };
+  
   
   
 
@@ -166,10 +166,12 @@ function Workouts() {
         ...workout,
         date: new Date(workout.date),
       };
-  
+      
       setWorkoutHistory([...workoutHistory, workoutWithDate]);
       console.log("Saved Workout: ", workoutWithDate);
   
+      await uploadWorkout(workout);
+      console.log("Workout uploaded Successfully")
     } catch (error) {
       console.error("Failed to upload workout: ", error);
     }
@@ -304,13 +306,16 @@ return (
       />
     ) : filteredWorkouts.length > 0 ? (
       <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
-      {filteredWorkouts.map((workout, index) => (
-        <WorkoutCardPreview
-          key={workout.workoutId || index} // Ensure the key is unique
-          workout={workout}
-          onDelete={() => handleDeleteWorkout(workout.workoutId)} // Correctly pass workoutId here
-        />
-      ))}
+      {filteredWorkouts.map((workout, index) => {
+        console.log('Workout object:', workout); // Log workout to see its structure
+        return (
+          <WorkoutCardPreview
+            key={workout.workoutId || index}
+            workout={workout}
+            onDelete={() => handleDeleteWorkout(workout.workoutId)}
+          />
+        );
+      })}
       </Box>
     ) : (
       <Typography variant="h6" sx={{ mb: 4 }}>

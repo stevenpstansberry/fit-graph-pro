@@ -94,14 +94,19 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       console.log(message);
       return;
     }
-    const workout = {
-      id: uuidv4(),
+    let id = uuidv4();
+
+    //TODO bandaid solution by incorporating both id and workoutID into object due to discrepancy
+    let workout = {
+      id,
+      workoutId: id,
       date: workoutDate,
       username: user.username,
       type: type,
       exercises: exercises,
     };
     saveWorkout(workout)
+
 
   }
     // Logic for "addSplit" mode
