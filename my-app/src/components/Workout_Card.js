@@ -72,6 +72,8 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
 
   // Function to create the workout and validate inputs
 
+  let id = uuidv4();
+
   const createWorkout = (event) => {
     event.preventDefault();
 
@@ -94,7 +96,6 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       console.log(message);
       return;
     }
-    let id = uuidv4();
 
     //TODO bandaid solution by incorporating both id and workoutID into object due to discrepancy
     let workout = {
@@ -121,7 +122,8 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       }
   
       const workoutSplit = {
-        id: uuidv4(),
+        id,
+        splitId: id,
         name: newSplitName, 
         username: user.username,
         exercises: exercises.map(exercise => ({
