@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Typography, Box, TextField, Button } from '@mui/material';
+import { submitContactForm } from '../services/APIServices';
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -21,8 +22,9 @@ function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here, e.g., sending the data to an API
     console.log('Form Data:', formData);
+    
+    submitContactForm(formData);
   };
 
   return (

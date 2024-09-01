@@ -15,7 +15,7 @@
 const registerService = require('./services/register');
 const loginService = require('./services/login');
 const verifyService = require('./services/verify');
-const contactService = require('./services/contact');
+const contactService = require('./services/contactService');
 const getWorkoutByIdService = require ('./services/getWorkout');
 const getAllWorkoutsService = require ('./services/getAllWorkouts');
 const getAllSplitsService = require ('./services/getAllSplits');
@@ -78,8 +78,7 @@ exports.handler = async (event) => {
         // Contact us route
         case event.httpMethod === 'POST' && event.path === contactPath:
             const contactBody = JSON.parse(event.body);
-            
-        
+            //response = contactSerivce
             break;
 
         // Retrieve all workouts route

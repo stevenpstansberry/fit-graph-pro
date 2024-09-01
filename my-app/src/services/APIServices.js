@@ -60,3 +60,6 @@ export const getAllSplits = async (username) => {
   return getFromAPI(`/splits/all/${username}`);
 };
 
+export const submitContactForm = async (formdata) => {
+  return getFromAPI (`/contact`);
+};
