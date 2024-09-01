@@ -29,6 +29,7 @@ const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
 const getAllSplitsURL = fitGraphProd + "/splits/all/";
 
+// TODO: add logic to see avg growth for exercises, max, estimated time to reach goal...
 
 /**
  * Main component to manage user workouts and splits.
