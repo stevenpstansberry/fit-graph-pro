@@ -210,12 +210,12 @@ const fetchSplits = async () => {
     }
   };
 
-/**
- * Saves a workout split to the backend and updates state.
- * 
- * @async
- * @param {Object} split - The split object to save.
- */  
+  /**
+   * Saves a workout split to the backend and updates state.
+   * 
+   * @async
+   * @param {Object} split - The split object to save.
+   */  
   const saveSplit = async (split) => {
     try {
       setUserSplits([...userSplits, split]);
