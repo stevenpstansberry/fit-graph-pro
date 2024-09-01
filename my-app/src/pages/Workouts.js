@@ -72,12 +72,12 @@ function Workouts() {
    * Fetches workouts and splits for the user and updates state.
    */
   const fetchWorkoutsAndSplits = async () => {
-    setIsLoading(true); // Start loading
+    setIsLoading(true); // Start loading for load icon
     try {
       await fetchWorkouts();
       await fetchSplits();
     } finally {
-      setIsLoading(false); // End loading
+      setIsLoading(false); // End loading for load icon
     }
   };
 
