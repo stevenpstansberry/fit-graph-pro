@@ -53,10 +53,22 @@ const postToAPI = async (endpoint, data) => {
     const response = await axios.post(url, data);
     return response.data;
   } catch (error) {
-    console.error(`Error posting to ${endpoint}:`, error);
+    if (error.response) {
+      // Request made and server responded
+      console.error('Response Error:', error.response.data);
+      console.error('Status:', error.response.status);
+      console.error('Headers:', error.response.headers);
+    } else if (error.request) {
+      // Request made but no response received
+      console.error('Request Error:', error.request);
+    } else {
+      // Something happened in setting up the request
+      console.error('Error', error.message);
+    }
     throw error;
   }
 };
+
 
 /**
  * Sends a DELETE request to a specified API endpoint.

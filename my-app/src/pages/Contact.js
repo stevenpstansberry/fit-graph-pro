@@ -20,11 +20,16 @@ function Contact() {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
     console.log('Form Data:', formData);
     
-    submitContactForm(formData);
+    try {
+      await submitContactForm(formData);
+
+      console.log("Successfully submitted contact form!")
+    } catch (error) {
+      console.error("Failed to submit contact form", error);
+    }
   };
 
   return (
