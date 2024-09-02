@@ -1,8 +1,31 @@
-// src/services/APIServices.js
+/**
+ * @fileoverview Service to interact with the FitGraph API.
+ * 
+ * @file src/services/APIServices.js
+ * 
+ * Provides functions to interact with various API endpoints, including retrieving,
+ * creating, and deleting workouts and splits, as well as handling contact form submissions.
+ * 
+ * Utilizes Axios for HTTP requests.
+ * 
+ * @author Steven Stansberry
+ * @version 1.0.0
+ */
+
 import axios from 'axios';
 
+// Base URL for the FitGraph production environment API
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 
+/**
+ * Sends a GET request to a specified API endpoint.
+ * 
+ * @async
+ * @function getFromAPI
+ * @param {string} endpoint - The API endpoint to send the GET request to.
+ * @returns {Promise<Object>} Response data from the API.
+ * @throws Will throw an error if the request fails.
+ */
 const getFromAPI = async (endpoint) => {
   try {
     const url = `${fitGraphProd}${endpoint}`;
@@ -14,6 +37,16 @@ const getFromAPI = async (endpoint) => {
   }
 };
 
+/**
+ * Sends a POST request to a specified API endpoint with data.
+ * 
+ * @async
+ * @function postToAPI
+ * @param {string} endpoint - The API endpoint to send the POST request to.
+ * @param {Object} data - The data to be sent in the body of the POST request.
+ * @returns {Promise<Object>} Response data from the API.
+ * @throws Will throw an error if the request fails.
+ */
 const postToAPI = async (endpoint, data) => {
   try {
     const url = `${fitGraphProd}${endpoint}`;
@@ -25,40 +58,98 @@ const postToAPI = async (endpoint, data) => {
   }
 };
 
+/**
+ * Sends a DELETE request to a specified API endpoint.
+ * 
+ * @async
+ * @function deleteToAPI
+ * @param {string} endpoint - The API endpoint to send the DELETE request to.
+ * @returns {Promise<Object>} Response data from the API.
+ * @throws Will throw an error if the request fails.
+ */
 const deleteToAPI = async (endpoint) => {
   try {
     const url = `${fitGraphProd}${endpoint}`;
     const response = await axios.delete(url);
     return response.data;
   } catch (error) {
-    console.error(`Error posting to ${endpoint}:`, error);
+    console.error(`Error deleting from ${endpoint}:`, error);
     throw error;
   }
 };
 
+/**
+ * Uploads a new workout to the API.
+ * 
+ * @async
+ * @function uploadWorkout
+ * @param {Object} workout - The workout data to upload.
+ * @returns {Promise<Object>} Response data from the API.
+ */
 export const uploadWorkout = async (workout) => {
   return postToAPI('/workouts/create', workout);
 };
 
+/**
+ * Uploads a new workout split to the API.
+ * 
+ * @async
+ * @function uploadSplit
+ * @param {Object} split - The split data to upload.
+ * @returns {Promise<Object>} Response data from the API.
+ */
 export const uploadSplit = async (split) => {
   return postToAPI('/splits/create', split);
 };
 
+/**
+ * Deletes a workout from the API.
+ * 
+ * @async
+ * @function deleteWorkout
+ * @param {string} workoutId - The ID of the workout to delete.
+ * @returns {Promise<Object>} Response data from the API.
+ */
 export const deleteWorkout = async (workoutId) => {
-  return deleteToAPI(`/workouts/delete/${workoutId}`)
-}
+  return deleteToAPI(`/workouts/delete/${workoutId}`);
+};
 
+/**
+ * Deletes a workout split from the API.
+ * 
+ * @async
+ * @function deleteSplit
+ * @param {string} splitId - The ID of the split to delete.
+ * @returns {Promise<Object>} Response data from the API.
+ */
 export const deleteSplit = async (splitId) => {
-  return deleteToAPI (`/splits/delete/${splitId}`)
-}
+  return deleteToAPI(`/splits/delete/${splitId}`);
+};
 
+/**
+ * Retrieves all workouts for a specific user from the API.
+ * 
+ * @async
+ * @function getAllWorkouts
+ * @param {string} username - The username to retrieve workouts for.
+ * @returns {Promise<Object>} Response data from the API.
+ */
 export const getAllWorkouts = async (username) => {
   return getFromAPI(`/workouts/all/${username}`);
 };
 
+/**
+ * Retrieves all workout splits for a specific user from the API.
+ * 
+ * @async
+ * @function getAllSplits
+ * @param {string} username - The username to retrieve splits for.
+ * @returns {Promise<Object>} Response data from the API.
+ */
 export const getAllSplits = async (username) => {
   return getFromAPI(`/splits/all/${username}`);
 };
+
 /**
  * Submits a contact form to the API for processing.
  * 
@@ -70,6 +161,6 @@ export const getAllSplits = async (username) => {
  * @param {string} formData.message - The message from the contact form.
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
-export const submitContactForm = async (formdata) => {
-  return getFromAPI (`/contact`);
+export const submitContactForm = async (formData) => {
+  return postToAPI('/contact', formData);
 };
