@@ -28,15 +28,13 @@ const sns = new AWS.SNS();
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
 async function sendContactEmail(event) {
-  // Parse the request body
-  const body = JSON.parse(event.body);
-  const { name, email, message } = body;
+  const { name, email, message } = event;
 
   // Construct email content to be sent via SNS
   const emailParams = {
     Message: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
     Subject: `Contact Form Submission from ${name}`,
-    TopicArn: 'arn:aws:sns:us-east-1:123456789012:ContactFormTopic' // Replace with your SNS Topic ARN
+    TopicArn: 'arn:aws:sns:us-east-1:244416824020:ContactFormTopic'
   };
 
   try {
