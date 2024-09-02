@@ -15,6 +15,7 @@
 const registerService = require('./services/register');
 const loginService = require('./services/login');
 const verifyService = require('./services/verify');
+const contactService = require('./services/contactService');
 const getWorkoutByIdService = require ('./services/getWorkout');
 const getAllWorkoutsService = require ('./services/getAllWorkouts');
 const getAllSplitsService = require ('./services/getAllSplits');
@@ -29,12 +30,14 @@ const healthPath = '/health';
 const registerPath = '/register';
 const loginPath = '/login';
 const verifyPath = '/verify';
+const contactPath = '/contact';
 const getAllWorkoutsPath = '/workouts/all';
 const getAllSplitsPath = '/splits/all';
 const createWorkoutPath = '/workouts/create';
 const createSplitPath = '/splits/create';
 const deleteWorkoutPath = '/workouts/delete';
 const deleteSplitPath = '/splits/delete';
+
 
 let username;
 
@@ -70,6 +73,12 @@ exports.handler = async (event) => {
         case event.httpMethod === 'POST' && event.path === verifyPath:
             const verifyBody = JSON.parse(event.body);
             response = verifyService.verify(verifyBody);
+            break;
+
+        // Contact us route
+        case event.httpMethod === 'POST' && event.path === contactPath:
+            const contactBody = JSON.parse(event.body);
+            response = contactService.sendContactEmail(contactBody);
             break;
 
         // Retrieve all workouts route
