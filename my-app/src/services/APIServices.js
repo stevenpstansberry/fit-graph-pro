@@ -59,7 +59,17 @@ export const getAllWorkouts = async (username) => {
 export const getAllSplits = async (username) => {
   return getFromAPI(`/splits/all/${username}`);
 };
-
+/**
+ * Submits a contact form to the API for processing.
+ * 
+ * @async
+ * @function submitContactForm
+ * @param {Object} formData - The data from the contact form.
+ * @param {string} formData.name - The name of the person submitting the form.
+ * @param {string} formData.email - The email address of the person submitting the form.
+ * @param {string} formData.message - The message from the contact form.
+ * @returns {Promise<Object>} Response object indicating success or failure.
+ */
 export const submitContactForm = async (formdata) => {
   return getFromAPI (`/contact`);
 };
