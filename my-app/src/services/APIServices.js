@@ -54,15 +54,15 @@ const postToAPI = async (endpoint, data) => {
   console.log('Making POST request to:', url);
   console.log('Request Data:', data);
   console.log('Request Headers:', {
-    'Content-Type': 'application/json', // Example headers; adjust as needed
-    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Replace with your actual API key, if used
+    'Content-Type': 'application/json', 
+    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, 
   });
 
   try {
     const response = await axios.post(url, data, {
       headers: {
-        'Content-Type': 'application/json', // Set Content-Type header for JSON data
-        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Replace with your actual API key if needed
+        'Content-Type': 'application/json', 
+        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, 
       },
     });
     
@@ -160,15 +160,34 @@ export const deleteSplit = async (splitId) => {
 
 /**
  * Retrieves all workouts for a specific user from the API.
+ * Optionally allows filtering by days or by the number of recent workouts.
  * 
  * @async
  * @function getAllWorkouts
  * @param {string} username - The username to retrieve workouts for.
+ * @param {Object} [options] - Optional parameters for filtering.
+ * @param {number} [options.days] - Number of days to look back to filter workouts.
+ * @param {number} [options.count] - Number of recent workouts to retrieve.
  * @returns {Promise<Object>} Response data from the API.
+ * @throws Will throw an error if the request fails.
  */
-export const getAllWorkouts = async (username) => {
-  return getFromAPI(`/workouts/all/${username}`);
+export const getAllWorkouts = async (username, options = {}) => {
+  const { days, count } = options; // Destructure options parameter
+  let endpoint = `/workouts/all/${username}`;
+
+  // Construct query parameters based on the options provided
+  const queryParams = new URLSearchParams();
+  if (days) queryParams.append('days', days);
+  if (count) queryParams.append('count', count);
+
+  // Append query parameters to the endpoint if any are present
+  if (queryParams.toString()) {
+    endpoint += `?${queryParams.toString()}`;
+  }
+
+  return getFromAPI(endpoint);
 };
+
 
 /**
  * Retrieves all workout splits for a specific user from the API.

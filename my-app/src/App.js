@@ -3,7 +3,7 @@ import React, {useEffect} from 'react';
 import axios from 'axios';
 import Home from './pages/Home';
 import About from './pages/About';
-import Success from './pages/Success'
+import Profile from './pages/Profile'
 import NoPage from './pages/NoPage';
 import StrengthChart from './components/StrengthChart';
 import Register from './pages/Register'
@@ -58,7 +58,7 @@ function App() {
           path="/profile"
           element={
             <PrivateRoute>
-              <Success />
+              <Profile />
             </PrivateRoute>
           }
         />        

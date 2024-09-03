@@ -86,10 +86,26 @@ exports.handler = async (event) => {
             response = await getAllWorkoutsService.getAllWorkouts();
             break;
 
-        // Retrieve workouts for a specified user route
+        // Retrieve workouts for a specified user route with query parameters
         case event.httpMethod === 'GET' && event.path.startsWith(getAllWorkoutsPath + '/'):
             username = event.path.split('/').pop();
-            response = await getAllWorkoutsService.getAllWorkoutsForUser(username);
+
+            // Parse query parameters
+            const { days, count } = event.queryStringParameters || {};
+
+            if (days) {
+                // If 'days' parameter is provided, fetch workouts from the past set amount of days
+                response = await getAllWorkoutsService.getWorkoutsForUserByDays(username, parseInt(days, 10));
+                //response = util.buildResponse(200, {message: 'days reached'});
+            } else if (count) {
+                // If 'count' parameter is provided, fetch the last count amount of workouts
+                response = await getAllWorkoutsService.getRecentWorkoutsForUser(username, parseInt(count, 10));
+                //response = util.buildResponse(200, {message: 'count reached'});
+
+            } else {
+                // Default case: fetch all workouts for the user
+                response = await getAllWorkoutsService.getAllWorkoutsForUser(username);
+            }
             break;
         
         // Retrieve workout by workout ID route
