@@ -1,7 +1,6 @@
 // src/pages/Success.js
 
 import React from 'react';
-import Features from '../components/Features'
 import Footer from '../components/Footer'
 import Navbar from '../components/Navbar'
 import { getUser, resetUserSession } from '../services/AuthService';
@@ -9,7 +8,7 @@ import { useNavigate} from 'react-router-dom';
 
 import { Container, Typography, Box, Button } from '@mui/material';
 
-function Success(){
+function Profile(){
     const navigate = useNavigate();
     const user = getUser();
     const name = user !== 'undefined' && user ? user.name : '';
@@ -23,7 +22,7 @@ function Success(){
     <Container>
         <Navbar></Navbar>
         <Typography component="p">
-            {name}
+            {name} fgdgfdg
         </Typography>
         <Button
             type="submit"
@@ -40,4 +39,4 @@ function Success(){
     )
 }
 
-export default Success
+export default Profile
