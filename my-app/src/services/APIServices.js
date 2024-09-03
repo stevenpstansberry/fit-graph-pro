@@ -48,9 +48,28 @@ const getFromAPI = async (endpoint) => {
  * @throws Will throw an error if the request fails.
  */
 const postToAPI = async (endpoint, data) => {
+  const url = `${fitGraphProd}${endpoint}`; // Construct the full URL
+  
+  // Log the request details before making the request
+  console.log('Making POST request to:', url);
+  console.log('Request Data:', data);
+  console.log('Request Headers:', {
+    'Content-Type': 'application/json', // Example headers; adjust as needed
+    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Replace with your actual API key, if used
+  });
+
   try {
-    const url = `${fitGraphProd}${endpoint}`;
-    const response = await axios.post(url, data);
+    const response = await axios.post(url, data, {
+      headers: {
+        'Content-Type': 'application/json', // Set Content-Type header for JSON data
+        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Replace with your actual API key if needed
+      },
+    });
+    
+    // Log the response status and data
+    console.log('Response Status:', response.status);
+    console.log('Response Data:', response.data);
+    
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -65,9 +84,10 @@ const postToAPI = async (endpoint, data) => {
       // Something happened in setting up the request
       console.error('Error', error.message);
     }
-    throw error;
+    throw error; // Re-throw the error after logging it
   }
 };
+
 
 
 /**
