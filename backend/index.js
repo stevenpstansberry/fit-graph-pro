@@ -23,7 +23,7 @@ const createWorkoutService = require ('./services/createWorkout');
 const createSplitService = require ('./services/createSplit');
 const deleteWorkoutService = require ('./services/deleteWorkout');
 const deleteSplitService = require ('./services/deleteSplit');
-const uploadProfilePictureService = require('./services/uploadProfilePictureService');
+const uploadProfilePictureService = require('./services/uploadProfilePicture');
 const util = require('./utils/util');
 
 // Define API paths
