@@ -18,7 +18,7 @@ const S3 = new AWS.S3();
 const util = require('../utils/util');
 
 const s3Bucket = 'fit-graph-profile-pictures';
-const workoutTable = 'fit-graph-users';  // Make sure this matches your DynamoDB table name for user profiles
+const workoutTable = 'fit-graph-users';  
 
 /**
  * Uploads a profile picture to S3 and updates the user's profile with the image URL.

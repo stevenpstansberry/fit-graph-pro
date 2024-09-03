@@ -154,8 +154,8 @@ exports.handler = async (event) => {
             
         // Upload profile picture route
         case event.httpMethod === 'POST' && event.path === uploadProfilePicturePath:
-            response = util.buildResponse(200, {message: 'profile picture method reached'});
-            //response = await uploadProfilePictureService.uploadProfilePicture(event);
+            //response = util.buildResponse(200, {message: 'profile picture method reached'});
+            response = await uploadProfilePictureService.uploadProfilePicture(event);
             break;
 
         // Default - All other routes
