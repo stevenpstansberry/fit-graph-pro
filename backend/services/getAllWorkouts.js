@@ -94,16 +94,17 @@ async function getWorkoutsForUserByDays(username, days) {
   const pastDate = new Date();
   pastDate.setDate(now.getDate() - days); // Calculate the date 'x' days ago
 
+  // Format the pastDate as 'YYYY-MM-DD' for comparison
+  const pastDateString = pastDate.toISOString().split('T')[0];
+
   const params = {
     TableName: workoutTable,
-    FilterExpression: '#username = :username AND #date >= :pastDate',
+    FilterExpression: '#username = :username',
     ExpressionAttributeNames: {
-      '#username': 'username',
-      '#date': 'date'
+      '#username': 'username'
     },
     ExpressionAttributeValues: {
-      ':username': username,
-      ':pastDate': pastDate.toISOString()
+      ':username': username
     }
   };
 
@@ -114,7 +115,14 @@ async function getWorkoutsForUserByDays(username, days) {
       return util.buildResponse(404, { message: `No workouts found for user ${username} in the past ${days} days` });
     }
 
-    return util.buildResponse(200, result.Items);
+    // Filter workouts by date using string comparison for 'YYYY-MM-DD' format
+    const filteredWorkouts = result.Items.filter(workout => workout.date >= pastDateString);
+
+    if (filteredWorkouts.length === 0) {
+      return util.buildResponse(404, { message: `No workouts found for user ${username} in the past ${days} days` });
+    }
+
+    return util.buildResponse(200, filteredWorkouts);
 
   } catch (error) {
     console.log('Error retrieving workouts for user by days:', error);
@@ -149,8 +157,15 @@ async function getRecentWorkoutsForUser(username, count) {
       return util.buildResponse(404, { message: `No workouts found for user ${username}` });
     }
 
-    // Sort workouts by date descending and return the most recent 'count' workouts
-    const sortedWorkouts = result.Items.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, count);
+    console.log('Workouts retrieved from DynamoDB:', result.Items);
+
+    // Sort workouts by date descending
+    const sortedWorkouts = result.Items
+      .filter(item => item.date)  // Ensure there is a date field
+      .sort((a, b) => new Date(b.date) - new Date(a.date)) // Correctly parse date strings
+      .slice(0, count); // Get the 'count' number of recent workouts
+
+    console.log('Sorted and filtered workouts:', sortedWorkouts);
 
     return util.buildResponse(200, sortedWorkouts);
 
@@ -160,10 +175,6 @@ async function getRecentWorkoutsForUser(username, count) {
     return util.buildResponse(500, { message: 'Internal Server Error' });
   }
 }
-
-
-
-
 
 
   
