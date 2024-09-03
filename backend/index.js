@@ -23,6 +23,7 @@ const createWorkoutService = require ('./services/createWorkout');
 const createSplitService = require ('./services/createSplit');
 const deleteWorkoutService = require ('./services/deleteWorkout');
 const deleteSplitService = require ('./services/deleteSplit');
+const uploadProfilePictureService = require('./services/uploadProfilePictureService');
 const util = require('./utils/util');
 
 // Define API paths
@@ -37,6 +38,8 @@ const createWorkoutPath = '/workouts/create';
 const createSplitPath = '/splits/create';
 const deleteWorkoutPath = '/workouts/delete';
 const deleteSplitPath = '/splits/delete';
+const uploadProfilePicturePath = '/profile/upload-picture';
+
 
 
 let username;
@@ -148,7 +151,13 @@ exports.handler = async (event) => {
             const splitIdToDelete = event.path.split('/').pop(); 
             response = await deleteSplitService.deleteSplit(splitIdToDelete);
             break;
-        
+            
+        // Upload profile picture route
+        case event.httpMethod === 'POST' && event.path === uploadProfilePicturePath:
+            response = util.buildResponse(200, {message: 'profile picture method reached'});
+            //response = await uploadProfilePictureService.uploadProfilePicture(event);
+            break;
+
         // Default - All other routes
         default:
             response = util.buildResponse(404, '404 Not Found');
