@@ -1,15 +1,3 @@
-/**
- * @fileoverview Profile page for users to view and manage their personal information,
- * workout history, and view their workout progress graph.
- * 
- * @file src/pages/Profile.js
- * 
- * Provides a user interface for managing profile details and viewing workout progress
- * 
- * @version 1.0.0
- * @author Steven Stansberry
- */
-
 import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
@@ -17,6 +5,7 @@ import { getUser, resetUserSession } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, Avatar, Card, CardContent, CardActions, Grid, Divider } from '@mui/material';
 import WorkoutsPerWeekChart from '../components/WorkoutsPerWeekChart'; 
+import { getAllWorkouts } from '../services/APIServices';
 
 /**
  * Profile page component for displaying user information and managing profile-related actions.
@@ -30,18 +19,27 @@ function Profile() {
   const name = user !== 'undefined' && user ? user.name : '';
   const email = user !== 'undefined' && user ? user.email : '';
   const [recentWorkouts, setRecentWorkouts] = useState([]);
+  const [workoutsPerWeek, setWorkoutsPerWeek] = useState([]);
 
   useEffect(() => {
-    // Fetch user's recent workouts
-    // setRecentWorkouts(fetchedWorkouts);
-    // dummy data:
-    setRecentWorkouts([
-      { id: 1, name: 'Upper Body Strength', date: new Date('2024-08-29'), duration: '45 mins' },
-      { id: 2, name: 'Cardio Session', date: new Date('2024-08-28'), duration: '30 mins' },
-      { id: 3, name: 'Leg Day', date: new Date('2024-08-22'), duration: '50 mins' },
-      { id: 4, name: 'Full Body Workout', date: new Date('2024-08-15'), duration: '60 mins' },
-    ]);
-  }, []);
+    // Fetch the last 4 workouts and the last 5 weeks of workouts for the authenticated user
+    const fetchWorkouts = async () => {
+      try {
+        const recent4Workouts = await getAllWorkouts(user.name, { count: 4 }); // Fetch last 4 workouts
+        const last5WeeksWorkouts = await getAllWorkouts(user.name, { days: 35 }); // Fetch workouts from the last 5 weeks
+
+        setRecentWorkouts(recent4Workouts);
+        setWorkoutsPerWeek(last5WeeksWorkouts);
+
+        console.log('Recent 4 Workouts:', recent4Workouts);
+        console.log('Last 5 Weeks Workouts:', last5WeeksWorkouts);
+      } catch (error) {
+        console.error('Error fetching workouts:', error);
+      }
+    };
+
+    fetchWorkouts();
+  }, [user.name]);
 
   /**
    * Logs the user out and navigates to the login page.
@@ -78,7 +76,7 @@ function Profile() {
         <Typography variant="h5" gutterBottom>
           Workouts Per Week
         </Typography>
-        <WorkoutsPerWeekChart recentWorkouts={recentWorkouts} /> {/* Chart component to display workouts per week */}
+        <WorkoutsPerWeekChart recentWorkouts={workoutsPerWeek} /> {/* Chart component to display workouts per week */}
 
         {/* Divider */}
         <Divider sx={{ width: '100%', my: 4 }} />
@@ -89,16 +87,14 @@ function Profile() {
         </Typography>
         <Grid container spacing={3}>
           {recentWorkouts.map((workout) => (
-            <Grid item xs={12} md={6} key={workout.id}>
+            <Grid item xs={12} md={6} key={workout.workoutId}>
               <Card>
                 <CardContent>
-                  <Typography variant="h6">{workout.name}</Typography>
+                  <Typography variant="h6">{workout.type}</Typography>
                   <Typography variant="body2" color="textSecondary">
-                    Date: {workout.date.toLocaleDateString()}
+                    Date: {new Date(workout.date).toLocaleDateString()}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Duration: {workout.duration}
-                  </Typography>
+                  {/* Add more workout details if needed */}
                 </CardContent>
                 <CardActions>
                   <Button size="small" color="primary">

@@ -37,8 +37,12 @@ const WorkoutsPerWeekChart = ({ recentWorkouts }) => {
     const weeks = {};
 
     workouts.forEach((workout) => {
-      const startOfWeek = new Date(workout.date);
-      startOfWeek.setDate(workout.date.getDate() - workout.date.getDay()); // Get Sunday of the week
+      // Convert the workout date to a Date object
+      const workoutDate = new Date(workout.date);
+      
+      const startOfWeek = new Date(workoutDate);
+      startOfWeek.setDate(workoutDate.getDate() - workoutDate.getDay()); // Get Sunday of the week
+
       const weekKey = startOfWeek.toISOString().split('T')[0];
 
       if (weeks[weekKey]) {
@@ -69,7 +73,7 @@ const WorkoutsPerWeekChart = ({ recentWorkouts }) => {
           <XAxis dataKey="week" />
           <YAxis allowDecimals={false} />
           <Tooltip />
-          <Bar dataKey="count" fill="#8884d8" barSize={200} /> {/* Adjust barSize to make bars skinnier */}
+          <Bar dataKey="count" fill="#8884d8" barSize={50} /> 
         </BarChart>
       </ResponsiveContainer>
     </Box>
