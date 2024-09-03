@@ -54,15 +54,15 @@ const postToAPI = async (endpoint, data) => {
   console.log('Making POST request to:', url);
   console.log('Request Data:', data);
   console.log('Request Headers:', {
-    'Content-Type': 'application/json', // Example headers; adjust as needed
-    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Replace with your actual API key, if used
+    'Content-Type': 'application/json', 
+    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, 
   });
 
   try {
     const response = await axios.post(url, data, {
       headers: {
-        'Content-Type': 'application/json', // Set Content-Type header for JSON data
-        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Replace with your actual API key if needed
+        'Content-Type': 'application/json', 
+        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, 
       },
     });
     

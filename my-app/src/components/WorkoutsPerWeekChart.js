@@ -48,10 +48,13 @@ const WorkoutsPerWeekChart = ({ recentWorkouts }) => {
       }
     });
 
-    return Object.entries(weeks).map(([week, count]) => ({
-      week,
-      count,
-    }));
+    // Convert the object to an array and sort by week date
+    const sortedWeeks = Object.entries(weeks)
+      .map(([week, count]) => ({ week, count }))
+      .sort((a, b) => new Date(a.week) - new Date(b.week));
+
+    // Return only the last 5 weeks
+    return sortedWeeks.slice(-5);
   };
 
   useEffect(() => {
@@ -61,12 +64,12 @@ const WorkoutsPerWeekChart = ({ recentWorkouts }) => {
   return (
     <Box sx={{ width: '100%', textAlign: 'center', mt: 4 }}>
       <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={workoutData}>
+        <BarChart data={workoutData} barCategoryGap={30}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="week" />
           <YAxis allowDecimals={false} />
           <Tooltip />
-          <Bar dataKey="count" fill="#8884d8" />
+          <Bar dataKey="count" fill="#8884d8" barSize={200} /> {/* Adjust barSize to make bars skinnier */}
         </BarChart>
       </ResponsiveContainer>
     </Box>
