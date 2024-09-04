@@ -1,9 +1,10 @@
 // src/components/ProfilePictureUpload.js
 
 import React, { useState } from 'react';
-import { Box, Button, Modal, Typography } from '@mui/material';
+import { Box, Button, Modal, Typography, Card, CardContent, CardActions, TextField } from '@mui/material';
 import { uploadProfilePicture } from '../services/APIServices'; 
 import { getUser} from '../services/AuthService';
+
 
 
 /**
@@ -30,6 +31,14 @@ const ProfilePictureUpload = ({ open, handleClose }) => {
     setSelectedFile(event.target.files[0]);
   };
 
+    // Function to handle the upload click
+    const handleUploadClick = () => {
+        if (selectedFile) {
+            handleUpload(selectedFile);
+            handleClose(); // Close modal after upload
+        }
+        };
+
   /**
    * Converts the selected image to Base64 and uploads it.
    *
@@ -41,12 +50,12 @@ const ProfilePictureUpload = ({ open, handleClose }) => {
     // Convert the image to a Base64 string
     const reader = new FileReader();
     reader.onloadend = async () => {
-      const base64Image = reader.result.split(',')[1]; // Remove data URL scheme part
-
+        const base64Image = reader.result.split(',')[1]; // Remove data URL scheme part
+        console.log("base64 image: " + base64Image)
       // Upload the Base64 image to the backend
       try {
         await uploadProfilePicture({
-          username: user.username, // Replace with the authenticated user's username
+          username: user.username, 
           base64Image: base64Image,
           fileType: selectedFile.type.split('/')[1], // Get the file extension
         });
@@ -61,21 +70,58 @@ const ProfilePictureUpload = ({ open, handleClose }) => {
   };
 
   return (
-    <Modal open={open} onClose={handleClose}>
-      <Box sx={{ width: 400, padding: 4, margin: 'auto', marginTop: '15%' }}>
-        <Typography variant="h6" gutterBottom>
-          Upload Profile Picture
-        </Typography>
-        <input type="file" accept="image/*" onChange={handleFileChange} />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleUpload}
-          disabled={!selectedFile}
-          sx={{ mt: 2 }}
+    <Modal open={open} onClose={handleClose} aria-labelledby="upload-profile-picture-modal">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          outline: 'none', 
+        }}
+      >
+        <Card
+          sx={{
+            width: '400px', 
+            borderRadius: '12px', 
+            boxShadow: 3,
+          }}
         >
-          Upload
-        </Button>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Upload Profile Picture
+            </Typography>
+
+            <Button
+              variant="outlined"
+              component="label"
+              fullWidth
+              sx={{ marginBottom: 2 }}
+            >
+              Choose File
+              <input
+                type="file"
+                hidden
+                onChange={handleFileChange}
+                accept="image/*" // Accept only image files
+              />
+            </Button>
+            {selectedFile && (
+              <Typography variant="body2" color="textSecondary">
+                {selectedFile.name}
+              </Typography>
+            )}
+          </CardContent>
+          <CardActions sx={{ justifyContent: 'flex-end', padding: '16px' }}>
+          <Button variant="outlined" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary" onClick={handleUploadClick} disabled={!selectedFile}>
+              Upload
+            </Button>
+
+          </CardActions>
+        </Card>
       </Box>
     </Modal>
   );

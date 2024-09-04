@@ -5,8 +5,10 @@ import { getUser, resetUserSession } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, Avatar, Card, CardContent, CardActions, Grid, Divider } from '@mui/material';
 import WorkoutsPerWeekChart from '../components/WorkoutsPerWeekChart';
-import ProfilePictureUpload from '../components/ProfilePictureUpload'; // Import the new component
+import ProfilePictureUpload from '../components/ProfilePictureUpload'; 
 import { getAllWorkouts } from '../services/APIServices';
+
+//TODO add logic for no workouts logged if db returns empty
 
 /**
  * Profile page component for displaying user information and managing profile-related actions.
