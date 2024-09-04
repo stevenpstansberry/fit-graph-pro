@@ -56,8 +56,13 @@ async function login(user) {
   const userInfo = {
     username: dynamoUser.username,
     name: dynamoUser.name,
-    s3ProfileURL: dynamoUser.profilePictureUrl
   }
+
+  // Conditionally add the s3ProfileURL if it exists
+  if (dynamoUser.profilePictureUrl) {
+    userInfo.s3ProfileURL = dynamoUser.profilePictureUrl;
+  }
+
   const token = auth.generateToken(userInfo)
 
   // Response Object

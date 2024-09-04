@@ -114,6 +114,8 @@ function Navbar() {
   // Extract the first letter of the user's name for the avatar
   const userInitial = user && user.name ? user.name.charAt(0).toUpperCase() : 'A';
 
+  // Extract S3 profile picture url for user, if it is in the bucket
+
   return (
     <AppBar
       position="static"
