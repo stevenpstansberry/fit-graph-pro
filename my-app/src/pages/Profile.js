@@ -4,7 +4,8 @@ import Navbar from '../components/Navbar';
 import { getUser, resetUserSession } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, Avatar, Card, CardContent, CardActions, Grid, Divider } from '@mui/material';
-import WorkoutsPerWeekChart from '../components/WorkoutsPerWeekChart'; 
+import WorkoutsPerWeekChart from '../components/WorkoutsPerWeekChart';
+import ProfilePictureUpload from '../components/ProfilePictureUpload'; // Import the new component
 import { getAllWorkouts } from '../services/APIServices';
 
 /**
@@ -20,6 +21,7 @@ function Profile() {
   const email = user !== 'undefined' && user ? user.email : '';
   const [recentWorkouts, setRecentWorkouts] = useState([]);
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState([]);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false); // State to manage the modal open/close
 
   useEffect(() => {
     // Fetch the last 4 workouts and the last 5 weeks of workouts for the authenticated user
@@ -30,9 +32,9 @@ function Profile() {
 
         setRecentWorkouts(recent4Workouts);
         setWorkoutsPerWeek(last5WeeksWorkouts);
-
         console.log('Recent 4 Workouts:', recent4Workouts);
         console.log('Last 5 Weeks Workouts:', last5WeeksWorkouts);
+        
       } catch (error) {
         console.error('Error fetching workouts:', error);
       }
@@ -40,7 +42,7 @@ function Profile() {
 
     fetchWorkouts();
   }, [user.name]);
-
+  
   /**
    * Logs the user out and navigates to the login page.
    * 
@@ -51,13 +53,21 @@ function Profile() {
     navigate('/Login');
   };
 
-    // Extract S3 profile picture url for user, if it is associated with the user in DynamoDB
-    let profileImageUrl = null;
-    if (user && user.s3ProfileURI) {
-      profileImageUrl = user.s3ProfileURI;
-    }
+  // Extract S3 profile picture url for user, if it is associated with the user in DynamoDB
+  let profileImageUrl = null;
+  if (user && user.s3ProfileURI) {
+    profileImageUrl = user.s3ProfileURI;
+  }
 
-  // TODO: add function responsible for uploading photo
+  // Handle opening the modal
+  const handleOpenUploadModal = () => {
+    setUploadModalOpen(true);
+  };
+
+  // Handle closing the modal
+  const handleCloseUploadModal = () => {
+    setUploadModalOpen(false);
+  };
 
   return (
     <Container maxWidth="lg">
@@ -67,9 +77,10 @@ function Profile() {
       {/* Profile Section */}
       <Box sx={{ my: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {/* Avatar and User Info */}
-        <Avatar 
-          sx={{ width: 100, height: 100, mb: 2 }}
+        <Avatar
+          sx={{ width: 100, height: 100, mb: 2, cursor: 'pointer' }} // Add cursor pointer to indicate clickability
           src={profileImageUrl ? profileImageUrl : undefined} // If profileImageUrl exists, use it
+          onClick={handleOpenUploadModal} // Open modal on click
         >
           {!profileImageUrl && name.charAt(0).toUpperCase()} {/* If no profile image, show initial */}
         </Avatar>
@@ -105,7 +116,6 @@ function Profile() {
                   <Typography variant="body2" color="textSecondary">
                     Date: {new Date(workout.date).toLocaleDateString()}
                   </Typography>
-                  {/* Add more workout details if needed */}
                 </CardContent>
                 <CardActions>
                   <Button size="small" color="primary">
@@ -130,6 +140,9 @@ function Profile() {
           Logout
         </Button>
       </Box>
+
+      {/* Profile Picture Upload Modal */}
+      <ProfilePictureUpload open={uploadModalOpen} handleClose={handleCloseUploadModal} />
 
       {/* Footer Component */}
       <Footer />

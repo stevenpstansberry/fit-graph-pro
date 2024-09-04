@@ -215,3 +215,8 @@ export const getAllSplits = async (username) => {
 export const submitContactForm = async (formData) => {
   return postToAPI('/contact', formData);
 };
+
+
+export const uploadProfilePicture = async (base64ProfilePictureString) => {
+  return postToAPI('/profile/upload-picture', base64ProfilePictureString);
+}
