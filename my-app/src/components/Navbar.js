@@ -114,7 +114,12 @@ function Navbar() {
   // Extract the first letter of the user's name for the avatar
   const userInitial = user && user.name ? user.name.charAt(0).toUpperCase() : 'A';
 
-  // Extract S3 profile picture url for user, if it is in the bucket
+  // Extract S3 profile picture url for user, if it is associated with the user in DynamoDB
+  let profileImageUrl = null;
+  if (user && user.s3ProfileURI) {
+    profileImageUrl = user.s3ProfileURI;
+    console.log(profileImageUrl);
+  }
 
   return (
     <AppBar
@@ -177,7 +182,11 @@ function Navbar() {
             ) : (
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar>{userInitial}</Avatar>
+                  {profileImageUrl ? (
+                    <Avatar src={profileImageUrl} /> // If user has a profile picture, show it
+                  ) : (
+                    <Avatar>{userInitial}</Avatar> // Otherwise, show the user's initial
+                  )}
                 </IconButton>
               </Tooltip>
             )}
