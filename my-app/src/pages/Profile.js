@@ -51,6 +51,8 @@ function Profile() {
     navigate('/Login');
   };
 
+  // TODO: add function responsible for uploading photo
+
   return (
     <Container maxWidth="lg">
       {/* Navbar Component */}
