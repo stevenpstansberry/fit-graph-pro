@@ -118,7 +118,6 @@ function Navbar() {
   let profileImageUrl = null;
   if (user && user.s3ProfileURI) {
     profileImageUrl = user.s3ProfileURI;
-    console.log(profileImageUrl);
   }
 
   return (

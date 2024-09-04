@@ -51,6 +51,12 @@ function Profile() {
     navigate('/Login');
   };
 
+    // Extract S3 profile picture url for user, if it is associated with the user in DynamoDB
+    let profileImageUrl = null;
+    if (user && user.s3ProfileURI) {
+      profileImageUrl = user.s3ProfileURI;
+    }
+
   // TODO: add function responsible for uploading photo
 
   return (
@@ -61,8 +67,11 @@ function Profile() {
       {/* Profile Section */}
       <Box sx={{ my: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {/* Avatar and User Info */}
-        <Avatar sx={{ width: 100, height: 100, mb: 2 }}>
-          {name.charAt(0).toUpperCase()}
+        <Avatar 
+          sx={{ width: 100, height: 100, mb: 2 }}
+          src={profileImageUrl ? profileImageUrl : undefined} // If profileImageUrl exists, use it
+        >
+          {!profileImageUrl && name.charAt(0).toUpperCase()} {/* If no profile image, show initial */}
         </Avatar>
         <Typography variant="h4" component="h1" gutterBottom>
           {name}
