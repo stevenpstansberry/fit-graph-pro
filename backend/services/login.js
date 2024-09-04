@@ -55,7 +55,8 @@ async function login(user) {
   // Prepare user info and generate an authentication token
   const userInfo = {
     username: dynamoUser.username,
-    name: dynamoUser.name
+    name: dynamoUser.name,
+    s3ProfileURL: dynamoUser.profilePictureUrl
   }
   const token = auth.generateToken(userInfo)
 
