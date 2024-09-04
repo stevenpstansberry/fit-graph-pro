@@ -18,7 +18,7 @@ const S3 = new AWS.S3();
 const util = require('../utils/util');
 
 const s3Bucket = 'fit-graph-profile-pictures';
-const workoutTable = 'fit-graph-users';  
+const userTable = 'fit-graph-users';  
 
 /**
  * Uploads a profile picture to S3 and updates the user's profile with the image URL.
@@ -53,7 +53,7 @@ async function uploadProfilePicture(event) {
 
         // Update the user's profile in DynamoDB
         const dbParams = {
-            TableName: workoutTable,
+            TableName: userTable,
             Key: { username: username },
             UpdateExpression: 'set profilePictureUrl = :url',
             ExpressionAttributeValues: {
