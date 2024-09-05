@@ -37,9 +37,11 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
  * The navbar displays links to key pages
  * 
  * @component
+ * @param {Object} props - Component props.
+ * @param {string|null} props.profileImageUrl - The profile image URL for the user.
  * @returns {React.Element} - The rendered Navbar component.
  */
-function Navbar() {
+function Navbar({ profileImageUrl }) {
   const user = getUser(); // Retrieve the authenticated user's information
   const navigate = useNavigate(); // Hook for navigation
 
@@ -113,12 +115,6 @@ function Navbar() {
 
   // Extract the first letter of the user's name for the avatar
   const userInitial = user && user.name ? user.name.charAt(0).toUpperCase() : 'A';
-
-  // Extract S3 profile picture url for user, if it is associated with the user in DynamoDB
-  let profileImageUrl = null;
-  if (user && user.s3ProfileURI) {
-    profileImageUrl = user.s3ProfileURI;
-  }
 
   return (
     <AppBar

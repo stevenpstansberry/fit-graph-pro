@@ -8,8 +8,6 @@ import WorkoutsPerWeekChart from '../components/WorkoutsPerWeekChart';
 import ProfilePictureUpload from '../components/ProfilePictureUpload'; 
 import { getAllWorkouts, getProfilePicture } from '../services/APIServices';
 
-//TODO add rendering for no workouts
-
 /**
  * Profile page component for displaying user information and managing profile-related actions.
  * 
@@ -91,7 +89,7 @@ function Profile() {
 
   // Handle successful profile picture upload
   const handleProfilePictureUpdate = (newProfileImageUrl) => {
-    // Append a timestamp to force browser to reload the image (cache busting)
+    // Append a timestamp to force browser to reload the image
     const cacheBustedUrl = `${newProfileImageUrl}?t=${new Date().getTime()}`;
     console.log('Profile picture uploaded. New URL:', cacheBustedUrl); // Log new URL after upload
     setProfileImageUrl(cacheBustedUrl); // Update the state with the new URL
@@ -100,14 +98,14 @@ function Profile() {
 
   return (
     <Container maxWidth="lg">
-      {/* Navbar Component */}
-      <Navbar />
+      {/* Navbar Component with profileImageUrl prop */}
+      <Navbar profileImageUrl={profileImageUrl} />
 
       {/* Profile Section */}
       <Box sx={{ my: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {/* Avatar and User Info */}
         <Avatar
-          sx={{ width: 100, height: 100, mb: 2, cursor: 'pointer' }} 
+          sx={{ width: 100, height: 100, mb: 2, cursor: 'pointer' }} // Add cursor pointer to indicate clickability
           src={profileImageUrl ? profileImageUrl : undefined} // If profileImageUrl exists, use it
           onClick={handleOpenUploadModal} // Open modal on click
         >
