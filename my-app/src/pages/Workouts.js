@@ -30,6 +30,7 @@ const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
 const getAllSplitsURL = fitGraphProd + "/splits/all/";
 
 // TODO: add logic to see avg growth for exercises, max, estimated time to reach goal...
+// TODO: add logic to store workouts in session storage
 
 /**
  * Main component to manage user workouts and splits.
