@@ -6,7 +6,8 @@
  * Provides a user interface to select different exercises and timeframes to display a 
  * graph of total weight lifted and reps performed over time.
  * Displays statistics like maximum weight lifted, average weight, maximum reps, total volume, 
- * and average volume per workout.
+ * average volume per workout, and predicts 1-rep max (1RM).
+ * Allows users to toggle whether weight or reps data is displayed in the graph.
  * 
  * @component
  * @param {Object} props - Component props.
@@ -16,8 +17,9 @@
  * @param {number} props.selectedYear - The currently selected year for filtering workouts.
  * @returns {React.Element} - The rendered StrengthChart component.
  * 
- * @version 1.0.0
- * @author Steven Stansberry
+ * @version 1.2.0
+ * @date 2024-09-04
+ * @updated By Steven Stansberry
  */
 
 import React, { useState, useEffect } from 'react';
@@ -26,13 +28,15 @@ import {
 } from 'recharts';
 import {
   Select, MenuItem, FormControl, InputLabel, Box, Container,
-  Typography, Grid
+  Typography, Grid, FormControlLabel, Checkbox
 } from '@mui/material';
 
 /**
  * StrengthChart component for displaying a line chart of workout history.
  * Allows users to select exercises and timeframes to filter and visualize workout data.
  * Displays additional statistics like max weight, average weight, max reps, total volume, and more.
+ * Users can toggle between displaying weight and reps on the graph.
+ * Predicts 1RM (one-repetition maximum) for selected exercises.
  * 
  * @component
  * @param {Object} props - Component props.
@@ -47,6 +51,8 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
   const [timeframe, setTimeframe] = useState('currentMonth'); // Timeframe for filtering data (currentMonth, ytd, allTime)
   const [displayData, setDisplayData] = useState([]); // Data to display in the line chart
   const [stats, setStats] = useState({}); // Statistics for the selected exercise
+  const [showWeight, setShowWeight] = useState(true); // Toggle weight line on the chart
+  const [showReps, setShowReps] = useState(true); // Toggle reps line on the chart
 
   // Extract unique exercise labels from workouts
   const exerciseLabels = Array.from(new Set(workoutHistory.flatMap(workout => 
@@ -84,7 +90,7 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
   };
 
   /**
-   * Calculates various statistics for the selected exercise.
+   * Calculates various statistics for the selected exercise, including the predicted 1RM.
    * 
    * @function calculateStats
    * @param {Array} workouts - List of workouts to analyze.
@@ -97,6 +103,7 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
     let totalWeight = 0;
     let totalSets = 0;
     let workoutCount = 0;
+    let maxPredicted1RM = 0;
 
     workouts.forEach((workout) => {
       const exercise = workout.exercises.find((ex) => ex.label === selectedExercise);
@@ -110,6 +117,10 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
           totalVolume += weight * reps;
           totalWeight += weight;
           totalSets++;
+          
+          // Calculate predicted 1RM for this set using Epley formula
+          const predicted1RM = weight * (1 + 0.0333 * reps);
+          maxPredicted1RM = Math.max(maxPredicted1RM, predicted1RM);
         });
       }
     });
@@ -124,6 +135,7 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
       totalVolume,
       averageVolumePerWorkout,
       workoutCount,
+      maxPredicted1RM: maxPredicted1RM.toFixed(2),
     };
   };
 
@@ -211,6 +223,18 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
         </Select>
       </FormControl>
 
+      {/* Checkboxes to toggle weight and reps display */}
+      <Box sx={{ mt: 2 }}>
+        <FormControlLabel
+          control={<Checkbox checked={showWeight} onChange={() => setShowWeight(!showWeight)} />}
+          label="Show Weight"
+        />
+        <FormControlLabel
+          control={<Checkbox checked={showReps} onChange={() => setShowReps(!showReps)} />}
+          label="Show Reps"
+        />
+      </Box>
+
       <Container sx={{ mt: 2 }}>
         <Typography
           variant="h5"
@@ -246,6 +270,9 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
           <Grid item xs={12} sm={6} md={4}>
             <Typography variant="body1"><strong>Workout Count:</strong> {stats.workoutCount}</Typography>
           </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="body1"><strong>Predicted 1RM:</strong> {stats.maxPredicted1RM} lbs</Typography>
+          </Grid>
         </Grid>
       </Container>
 
@@ -256,8 +283,8 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="weight" stroke="#8884d8" />
-          <Line type="monotone" dataKey="reps" stroke="#82ca9d" />
+          {showWeight && <Line type="monotone" dataKey="weight" stroke="#8884d8" />}
+          {showReps && <Line type="monotone" dataKey="reps" stroke="#82ca9d" />}
         </LineChart>
       </ResponsiveContainer>
     </Box>
