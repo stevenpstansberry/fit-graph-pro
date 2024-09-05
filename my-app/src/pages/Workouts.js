@@ -65,7 +65,9 @@ function Workouts() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success'); 
-
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deleteType, setDeleteType] = useState(''); // 'workout' or 'split'
 
   // Fetch from API using APIServices
   useEffect(() => {
@@ -165,32 +167,50 @@ const fetchSplits = async () => {
     setNewWorkoutExercises([]); // Clear the exercise selection
   };
 
+    // Confirm and delete the selected item (workout or split)
+    const confirmDelete = async () => {
+      if (deleteType === 'workout') {
+        try {
+          await deleteWorkout(itemToDelete);
+          setWorkoutHistory(prevWorkouts => prevWorkouts.filter(workout => workout.workoutId !== itemToDelete));
+          setSnackbarMessage('Workout deleted successfully!');
+          setSnackbarSeverity('success');
+          setSnackbarOpen(true);
+        } catch (error) {
+          console.error("Failed to delete workout:", error);
+          setSnackbarMessage('Failed to delete workout.');
+          setSnackbarSeverity('error');
+          setSnackbarOpen(true);
+        }
+      } else if (deleteType === 'split') {
+        try {
+          await deleteSplit(itemToDelete);
+          setUserSplits(prevSplits => prevSplits.filter(split => split.splitId !== itemToDelete));
+          setSnackbarMessage('Split deleted successfully!');
+          setSnackbarSeverity('success');
+          setSnackbarOpen(true);
+        } catch (error) {
+          console.error("Failed to delete split:", error);
+          setSnackbarMessage('Failed to delete split.');
+          setSnackbarSeverity('error');
+          setSnackbarOpen(true);
+        }
+      }
+      setConfirmDialogOpen(false); // Close confirmation dialog after deleting
+    };
+
   /**
    * Deletes a workout by ID.
    * 
-   * @async
    * @param {string} workoutId - The ID of the workout to delete.
    */  
-  const handleDeleteWorkout = async (workoutId) => {
-    console.log("Deleting workout with ID:", workoutId);
-  
-    try {
-      // Attempt to delete workout from the backend
-      await deleteWorkout(workoutId);
-      console.log("Workout deleted successfully from backend");
-  
-      // Update the state to remove the deleted workout
-      setWorkoutHistory(prevWorkouts =>
-        prevWorkouts.filter(workout => workout.workoutId !== workoutId)
-      );
-  
-      console.log("Updated workout history:", workoutHistory);
-    } catch (error) {
-      console.error("Failed to delete workout:", error);
-    }
+  const handleDeleteWorkout = (workoutId) => {
+    setItemToDelete(workoutId);
+    setDeleteType('workout');
+    setConfirmDialogOpen(true);
   };
-  
-  
+
+
   
 
   /**
@@ -258,6 +278,10 @@ const fetchSplits = async () => {
     setSnackbarOpen(false);
   };
 
+  const handleCloseConfirmDialog = () => {
+    setConfirmDialogOpen(false);
+  };
+
 
   /**
    * Filters workouts based on the selected month and year.
@@ -311,26 +335,12 @@ const fetchSplits = async () => {
   /**
    * Deletes a workout split by ID.
    * 
-   * @async
    * @param {string} splitId - The ID of the split to delete.
    */
-  const handleDeleteSplit = async (splitId) => {
-    console.log("Deleting split with ID: ", splitId);
-
-    try {
-
-      await deleteSplit(splitId);
-      console.log("Split deleted successfully from backend");
-
-      // Update state to remove deleted split
-      setUserSplits(prevSplits =>
-        prevSplits.filter(split => split.splitId !== splitId)
-      );
-
-      console.log("Updated splits: ", userSplits)
-    } catch (error) {
-      console.error("Failed to delete split: ", error)
-    }
+  const handleDeleteSplit = (splitId) => {
+    setItemToDelete(splitId);
+    setDeleteType('split');
+    setConfirmDialogOpen(true);
   };
 
   return (
@@ -346,6 +356,28 @@ const fetchSplits = async () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      {/* Confirmation Dialog */}
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={handleCloseConfirmDialog}
+        aria-labelledby="confirm-delete-dialog"
+      >
+        <DialogTitle id="confirm-delete-dialog">Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this {deleteType === 'workout' ? 'workout' : 'split'}? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Box sx={{ width: '100%' }}>
         <Navbar />
