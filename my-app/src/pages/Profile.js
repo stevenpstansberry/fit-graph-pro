@@ -19,7 +19,7 @@ import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { getUser, resetUserSession, getProfileImageUrlFromSession, setProfileImageUrlToSession } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, Box, Button, Avatar, Card, CardContent, CardActions, Grid, Divider } from '@mui/material';
+import { Container, Typography, Box, Button, Avatar, Card, CardContent, CardActions, Grid, Divider, CircularProgress } from '@mui/material';
 import WorkoutsPerWeekChart from '../components/WorkoutsPerWeekChart';
 import ProfilePictureUpload from '../components/ProfilePictureUpload'; 
 import { getAllWorkouts, getProfilePicture } from '../services/APIServices';
@@ -39,6 +39,8 @@ function Profile() {
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState([]);
   const [uploadModalOpen, setUploadModalOpen] = useState(false); // State to manage the modal open/close
   const [profileImageUrl, setProfileImageUrl] = useState(getProfileImageUrlFromSession()); // Initialize with URL from session storage if available
+  const [loadingWorkouts, setLoadingWorkouts] = useState(true);
+  const [loadingWorkoutsPerWeek, setLoadingWorkoutsPerWeek] = useState(true);
 
   // Fetch the profile picture URL from the backend if not in session storage
   const fetchProfilePicture = useCallback(async () => {
@@ -75,6 +77,8 @@ function Profile() {
     // Fetch the last 4 workouts and the last 5 weeks of workouts for the authenticated user
     const fetchWorkouts = async () => {
       try {
+        setLoadingWorkouts(true);
+        setLoadingWorkoutsPerWeek(true);
         const recent4Workouts = await getAllWorkouts(user.name, { count: 4 }); // Fetch last 4 workouts
         const last5WeeksWorkouts = await getAllWorkouts(user.name, { days: 35 }); // Fetch workouts from the last 5 weeks
 
@@ -85,6 +89,9 @@ function Profile() {
         
       } catch (error) {
         console.error('Error fetching workouts:', error);
+      } finally {
+        setLoadingWorkouts(false);
+        setLoadingWorkoutsPerWeek(false);
       }
     };
 
@@ -152,7 +159,11 @@ function Profile() {
         <Typography variant="h5" gutterBottom>
           Workouts Per Week
         </Typography>
-        <WorkoutsPerWeekChart recentWorkouts={workoutsPerWeek} /> {/* Chart component to display workouts per week */}
+        {/* Display loading spinner if workouts per week data is still being fetched */}
+        {loadingWorkoutsPerWeek ? (
+          <CircularProgress /> // Loading spinner for Workouts Per Week
+        ) : (
+          <WorkoutsPerWeekChart recentWorkouts={workoutsPerWeek} /> )}{/* Chart component to display workouts per week */}
 
         {/* Divider */}
         <Divider sx={{ width: '100%', my: 4 }} />
@@ -161,25 +172,30 @@ function Profile() {
         <Typography variant="h5" gutterBottom>
           Recent Workouts
         </Typography>
-        <Grid container spacing={3}>
-          {recentWorkouts.map((workout) => (
-            <Grid item xs={12} md={6} key={workout.workoutId}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6">{workout.type}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Date: {new Date(workout.date).toLocaleDateString()}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small" color="primary">
-                    View Details
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        {/* Display loading spinner if recent workouts data is still being fetched */}
+        {loadingWorkouts ? (
+          <CircularProgress /> // Loading spinner for Recent Workouts
+        ) : (
+          <Grid container spacing={3}>
+            {recentWorkouts.map((workout) => (
+              <Grid item xs={12} md={6} key={workout.workoutId}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6">{workout.type}</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Date: {new Date(workout.date).toLocaleDateString()}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button size="small" color="primary">
+                      View Details
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
 
         {/* Divider */}
         <Divider sx={{ width: '100%', my: 4 }} />
@@ -206,6 +222,7 @@ function Profile() {
       <Footer />
     </Container>
   );
+
 }
 
 export default Profile;
