@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { getUser, resetUserSession } from '../services/AuthService';
@@ -6,9 +6,9 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, Avatar, Card, CardContent, CardActions, Grid, Divider } from '@mui/material';
 import WorkoutsPerWeekChart from '../components/WorkoutsPerWeekChart';
 import ProfilePictureUpload from '../components/ProfilePictureUpload'; 
-import { getAllWorkouts } from '../services/APIServices';
+import { getAllWorkouts, getProfilePicture } from '../services/APIServices';
 
-//TODO add logic for no workouts logged if db returns empty
+//TODO add rendering for no workouts
 
 /**
  * Profile page component for displaying user information and managing profile-related actions.
@@ -24,8 +24,30 @@ function Profile() {
   const [recentWorkouts, setRecentWorkouts] = useState([]);
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState([]);
   const [uploadModalOpen, setUploadModalOpen] = useState(false); // State to manage the modal open/close
+  const [profileImageUrl, setProfileImageUrl] = useState(null); // State for profile picture URL
+
+  // Fetch the profile picture URL from the backend
+  const fetchProfilePicture = useCallback(async () => {
+    console.log('Fetching profile picture for user:', user.username); // Log fetch attempt
+    try {
+      const response = await getProfilePicture(user.username); // Fetch profile picture from API
+      if (response && response.profilePictureUrl) {
+        // Add a timestamp to the URL to bust cache
+        const cacheBustedUrl = `${response.profilePictureUrl}?t=${new Date().getTime()}`;
+        setProfileImageUrl(cacheBustedUrl);
+        console.log('Profile picture URL fetched:', cacheBustedUrl); // Log fetched URL with cache-busting
+      } else {
+        setProfileImageUrl(null); // Set to null if no profile picture is found
+        console.log('No profile picture found for user:', user.username); // Log absence of profile picture
+      }
+    } catch (error) {
+      console.error('Error fetching profile picture:', error);
+    }
+  }, [user.username]);
 
   useEffect(() => {
+    fetchProfilePicture(); // Fetch profile picture on mount
+
     // Fetch the last 4 workouts and the last 5 weeks of workouts for the authenticated user
     const fetchWorkouts = async () => {
       try {
@@ -42,9 +64,9 @@ function Profile() {
       }
     };
 
-    fetchWorkouts();
-  }, [user.name]);
-  
+    fetchWorkouts(); // Fetch workouts on mount
+  }, [user.name, fetchProfilePicture]); // Re-fetch profile picture when username changes or after an upload
+
   /**
    * Logs the user out and navigates to the login page.
    * 
@@ -55,20 +77,25 @@ function Profile() {
     navigate('/Login');
   };
 
-  // Extract S3 profile picture url for user, if it is associated with the user in DynamoDB
-  let profileImageUrl = null;
-  if (user && user.s3ProfileURI) {
-    profileImageUrl = user.s3ProfileURI;
-  }
-
   // Handle opening the modal
   const handleOpenUploadModal = () => {
     setUploadModalOpen(true);
+    console.log('Profile picture upload modal opened'); // Log modal open
   };
 
   // Handle closing the modal
   const handleCloseUploadModal = () => {
     setUploadModalOpen(false);
+    console.log('Profile picture upload modal closed'); // Log modal close
+  };
+
+  // Handle successful profile picture upload
+  const handleProfilePictureUpdate = (newProfileImageUrl) => {
+    // Append a timestamp to force browser to reload the image (cache busting)
+    const cacheBustedUrl = `${newProfileImageUrl}?t=${new Date().getTime()}`;
+    console.log('Profile picture uploaded. New URL:', cacheBustedUrl); // Log new URL after upload
+    setProfileImageUrl(cacheBustedUrl); // Update the state with the new URL
+    fetchProfilePicture(); // Re-fetch the profile picture after successful upload
   };
 
   return (
@@ -80,7 +107,7 @@ function Profile() {
       <Box sx={{ my: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {/* Avatar and User Info */}
         <Avatar
-          sx={{ width: 100, height: 100, mb: 2, cursor: 'pointer' }} // Add cursor pointer to indicate clickability
+          sx={{ width: 100, height: 100, mb: 2, cursor: 'pointer' }} 
           src={profileImageUrl ? profileImageUrl : undefined} // If profileImageUrl exists, use it
           onClick={handleOpenUploadModal} // Open modal on click
         >
@@ -144,7 +171,11 @@ function Profile() {
       </Box>
 
       {/* Profile Picture Upload Modal */}
-      <ProfilePictureUpload open={uploadModalOpen} handleClose={handleCloseUploadModal} />
+      <ProfilePictureUpload 
+        open={uploadModalOpen} 
+        handleClose={handleCloseUploadModal} 
+        onUploadSuccess={handleProfilePictureUpdate} 
+      />
 
       {/* Footer Component */}
       <Footer />

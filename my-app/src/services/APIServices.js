@@ -220,3 +220,8 @@ export const submitContactForm = async (formData) => {
 export const uploadProfilePicture = async (base64ProfilePictureString) => {
   return postToAPI('/profile/upload-picture', base64ProfilePictureString);
 }
+
+export const getProfilePicture = async(username) => {
+  let endpoint = `/profile/${username}`;
+  return getFromAPI(endpoint);
+}
