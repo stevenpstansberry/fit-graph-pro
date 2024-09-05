@@ -12,7 +12,7 @@
 
 // Imports
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress } from '@mui/material';
+import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress, Snackbar, Alert } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -30,7 +30,7 @@ const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
 const getAllSplitsURL = fitGraphProd + "/splits/all/";
 
 // TODO: add logic to see avg growth for exercises, max, estimated time to reach goal...
-// TODO: add logic to store workouts in session storage
+// TODO: add logic to store workouts in session
 
 /**
  * Main component to manage user workouts and splits.
@@ -62,6 +62,10 @@ function Workouts() {
   const [customSplitName, setCustomSplitName] = useState("");
   const [workoutType, setWorkoutType] = useState("Default");
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); 
+
 
   // Fetch from API using APIServices
   useEffect(() => {
@@ -206,9 +210,19 @@ const fetchSplits = async () => {
       console.log("Saved Workout: ", workoutWithDate);
   
       await uploadWorkout(workout);
-      console.log("Workout uploaded Successfully")
+      console.log("Workout uploaded Successfully");
+
+      // Show success Snackbar
+      setSnackbarMessage('Workout added successfully!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Failed to upload workout: ", error);
+
+      // Show error Snackbar
+      setSnackbarMessage('Failed to add workout.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
   };
 
@@ -225,9 +239,23 @@ const fetchSplits = async () => {
   
       await uploadSplit(split);
       console.log("Split uploaded successfully");
+
+      // Show success Snackbar
+      setSnackbarMessage('Split added successfully!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Failed to upload split: ", error);
+
+      // Show error Snackbar
+      setSnackbarMessage('Failed to add split.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
 
@@ -307,10 +335,22 @@ const fetchSplits = async () => {
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Snackbar for success/error messages */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+
       <Box sx={{ width: '100%' }}>
         <Navbar />
       </Box>
-  
+
       {/* Show loading spinner if data is being fetched */}
       {isLoading ? (
         <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
