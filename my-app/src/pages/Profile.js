@@ -7,7 +7,6 @@
  * Provides a user interface for managing profile details, uploading a profile picture,
  * and viewing recent workouts and workouts per week statistics.
  * 
- * 
  * @component
  * @returns {React.Element} - The rendered Profile page component.
  * 
@@ -18,7 +17,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import { getUser, resetUserSession } from '../services/AuthService';
+import { getUser, resetUserSession, getProfileImageUrlFromSession, setProfileImageUrlToSession } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, Avatar, Card, CardContent, CardActions, Grid, Divider } from '@mui/material';
 import WorkoutsPerWeekChart from '../components/WorkoutsPerWeekChart';
@@ -39,18 +38,28 @@ function Profile() {
   const [recentWorkouts, setRecentWorkouts] = useState([]);
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState([]);
   const [uploadModalOpen, setUploadModalOpen] = useState(false); // State to manage the modal open/close
-  const [profileImageUrl, setProfileImageUrl] = useState(null); // State for profile picture URL
+  const [profileImageUrl, setProfileImageUrl] = useState(getProfileImageUrlFromSession()); // Initialize with URL from session storage if available
 
-  // Fetch the profile picture URL from the backend
+  // Fetch the profile picture URL from the backend if not in session storage
   const fetchProfilePicture = useCallback(async () => {
     console.log('Fetching profile picture for user:', user.username); // Log fetch attempt
+
+    // Check if the profile picture URL is already in session storage
+    const storedProfileImageUrl = getProfileImageUrlFromSession();
+    if (storedProfileImageUrl) {
+      setProfileImageUrl(storedProfileImageUrl);
+      console.log('Profile picture URL loaded from session storage:', storedProfileImageUrl); // Log session storage URL
+      return; // Return early to avoid unnecessary API call
+    }
+
     try {
       const response = await getProfilePicture(user.username); // Fetch profile picture from API
       if (response && response.profilePictureUrl) {
         // Add a timestamp to the URL to bust cache
         const cacheBustedUrl = `${response.profilePictureUrl}?t=${new Date().getTime()}`;
         setProfileImageUrl(cacheBustedUrl);
-        console.log('Profile picture URL fetched:', cacheBustedUrl); // Log fetched URL with cache-busting
+        setProfileImageUrlToSession(cacheBustedUrl); // Store the profile picture URL in session storage
+        console.log('Profile picture URL fetched and stored in session storage:', cacheBustedUrl); // Log fetched URL with cache-busting
       } else {
         setProfileImageUrl(null); // Set to null if no profile picture is found
         console.log('No profile picture found for user:', user.username); // Log absence of profile picture
@@ -110,6 +119,7 @@ function Profile() {
     const cacheBustedUrl = `${newProfileImageUrl}?t=${new Date().getTime()}`;
     console.log('Profile picture uploaded. New URL:', cacheBustedUrl); // Log new URL after upload
     setProfileImageUrl(cacheBustedUrl); // Update the state with the new URL
+    setProfileImageUrlToSession(cacheBustedUrl); // Update session storage with the new URL
     fetchProfilePicture(); // Re-fetch the profile picture after successful upload
   };
 

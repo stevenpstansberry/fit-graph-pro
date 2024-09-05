@@ -12,7 +12,8 @@
  */
 
 import { Link } from 'react-router-dom';
-import { getUser, resetUserSession } from '../services/AuthService';
+import { getUser, resetUserSession, getProfileImageUrlFromSession, setProfileImageUrlToSession } from '../services/AuthService';
+import { getProfilePicture } from '../services/APIServices'; // Import the API service to fetch the profile picture
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -49,6 +50,37 @@ function Navbar({ profileImageUrl }) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   // State for managing the user settings menu anchor element
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [userProfileImageUrl, setUserProfileImageUrl] = React.useState(profileImageUrl || getProfileImageUrlFromSession()); // State for profile image URL
+
+  // Effect to fetch user profile picture if not provided in props or session storage
+  React.useEffect(() => {
+    if (!userProfileImageUrl && user) {
+      // Fetch from the database if no image URL is available in props or session storage
+      fetchUserProfileImage();
+    }
+  }, [profileImageUrl, user]);
+
+  /**
+   * Fetches the profile picture URL from the backend.
+   *
+   * @function fetchUserProfileImage
+   */
+  const fetchUserProfileImage = async () => {
+    console.log('Fetching profile picture for user:', user.username); // Log fetch attempt
+    try {
+      const response = await getProfilePicture(user.username); // Fetch profile picture from API
+      if (response && response.profilePictureUrl) {
+        const cacheBustedUrl = `${response.profilePictureUrl}?t=${new Date().getTime()}`; // Bust cache
+        setUserProfileImageUrl(cacheBustedUrl);
+        setProfileImageUrlToSession(cacheBustedUrl); // Save to session storage
+        console.log('Profile picture URL fetched and saved to session storage:', cacheBustedUrl); // Log fetched URL
+      } else {
+        console.log('No profile picture found for user:', user.username); // Log absence of profile picture
+      }
+    } catch (error) {
+      console.error('Error fetching profile picture:', error);
+    }
+  };
 
   /**
    * Handles the opening of the mobile navigation menu.
@@ -177,8 +209,8 @@ function Navbar({ profileImageUrl }) {
             ) : (
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  {profileImageUrl ? (
-                    <Avatar src={profileImageUrl} /> // If user has a profile picture, show it
+                  {userProfileImageUrl ? (
+                    <Avatar src={userProfileImageUrl} /> // If user has a profile picture, show it
                   ) : (
                     <Avatar>{userInitial}</Avatar> // Otherwise, show the user's initial
                   )}
