@@ -39,8 +39,7 @@ function Profile() {
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState([]);
   const [uploadModalOpen, setUploadModalOpen] = useState(false); // State to manage the modal open/close
   const [profileImageUrl, setProfileImageUrl] = useState(getProfileImageUrlFromSession()); // Initialize with URL from session storage if available
-  const [loadingWorkouts, setLoadingWorkouts] = useState(true);
-  const [loadingWorkoutsPerWeek, setLoadingWorkoutsPerWeek] = useState(true);
+  const [loadingWorkouts, setLoadingWorkouts] = useState(true); // Consolidated loading state
 
   // Fetch the profile picture URL from the backend if not in session storage
   const fetchProfilePicture = useCallback(async () => {
@@ -77,8 +76,7 @@ function Profile() {
     // Fetch the last 4 workouts and the last 5 weeks of workouts for the authenticated user
     const fetchWorkouts = async () => {
       try {
-        setLoadingWorkouts(true);
-        setLoadingWorkoutsPerWeek(true);
+        setLoadingWorkouts(true); // Set loading state to true
         const recent4Workouts = await getAllWorkouts(user.name, { count: 4 }); // Fetch last 4 workouts
         const last5WeeksWorkouts = await getAllWorkouts(user.name, { days: 35 }); // Fetch workouts from the last 5 weeks
 
@@ -90,8 +88,7 @@ function Profile() {
       } catch (error) {
         console.error('Error fetching workouts:', error);
       } finally {
-        setLoadingWorkouts(false);
-        setLoadingWorkoutsPerWeek(false);
+        setLoadingWorkouts(false); // Set loading state back to false
       }
     };
 
@@ -155,46 +152,44 @@ function Profile() {
         {/* Divider */}
         <Divider sx={{ width: '100%', mb: 4 }} />
 
-        {/* Workouts Per Week Chart */}
-        <Typography variant="h5" gutterBottom>
-          Workouts Per Week
-        </Typography>
-        {/* Display loading spinner if workouts per week data is still being fetched */}
-        {loadingWorkoutsPerWeek ? (
-          <CircularProgress /> // Loading spinner for Workouts Per Week
-        ) : (
-          <WorkoutsPerWeekChart recentWorkouts={workoutsPerWeek} /> )}{/* Chart component to display workouts per week */}
-
-        {/* Divider */}
-        <Divider sx={{ width: '100%', my: 4 }} />
-
-        {/* Recent Workouts Section */}
-        <Typography variant="h5" gutterBottom>
-          Recent Workouts
-        </Typography>
-        {/* Display loading spinner if recent workouts data is still being fetched */}
+        {/* Workouts Per Week Chart and Recent Workouts Section */}
         {loadingWorkouts ? (
-          <CircularProgress /> // Loading spinner for Recent Workouts
+          <CircularProgress /> // Single loading spinner for both sections
         ) : (
-          <Grid container spacing={3}>
-            {recentWorkouts.map((workout) => (
-              <Grid item xs={12} md={6} key={workout.workoutId}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6">{workout.type}</Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Date: {new Date(workout.date).toLocaleDateString()}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small" color="primary">
-                      View Details
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+          <>
+            {/* Workouts Per Week Chart */}
+            <Typography variant="h5" gutterBottom>
+              Workouts Per Week
+            </Typography>
+            <WorkoutsPerWeekChart recentWorkouts={workoutsPerWeek} /> {/* Chart component to display workouts per week */}
+
+            {/* Divider */}
+            <Divider sx={{ width: '100%', my: 4 }} />
+
+            {/* Recent Workouts Section */}
+            <Typography variant="h5" gutterBottom>
+              Recent Workouts
+            </Typography>
+            <Grid container spacing={3}>
+              {recentWorkouts.map((workout) => (
+                <Grid item xs={12} md={6} key={workout.workoutId}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6">{workout.type}</Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Date: {new Date(workout.date).toLocaleDateString()}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button size="small" color="primary">
+                        View Details
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </>
         )}
 
         {/* Divider */}
@@ -222,7 +217,6 @@ function Profile() {
       <Footer />
     </Container>
   );
-
 }
 
 export default Profile;
