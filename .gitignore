@@ -24,3 +24,4 @@ yarn-error.log*
 notes/
 backend/node_modules/
 my-app/.env
+my-app/src/util/ideas.md
