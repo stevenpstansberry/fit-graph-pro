@@ -1,3 +1,20 @@
+/**
+ * @fileoverview Profile page component for users to view and manage their personal information,
+ * workout history, and view their workout progress graph.
+ * 
+ * @file src/pages/Profile.js
+ * 
+ * Provides a user interface for managing profile details, uploading a profile picture,
+ * and viewing recent workouts and workouts per week statistics.
+ * 
+ * 
+ * @component
+ * @returns {React.Element} - The rendered Profile page component.
+ * 
+ * @version 1.0.0
+ * @author Steven Stansberry
+ */
+
 import React, { useState, useEffect, useCallback } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
