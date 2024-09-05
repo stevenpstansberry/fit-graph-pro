@@ -12,7 +12,7 @@
 
 // Imports
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress, Snackbar, Alert, Tooltip } from '@mui/material';
+import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress, Snackbar, Alert, Tooltip, Tabs, Tab } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -22,6 +22,7 @@ import Workout_Card from '../components/Workout_Card';
 import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
+import FuturePrediction from '../components/FuturePrediction';
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
 
 // API URLs
@@ -68,6 +69,7 @@ function Workouts() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteType, setDeleteType] = useState(''); // 'workout' or 'split'
+  const [tabIndex, setTabIndex] = useState(0);
 
   // Fetch from API using APIServices
   useEffect(() => {
@@ -128,6 +130,16 @@ const fetchSplits = async () => {
     console.error('Error fetching splits:', error);
   }
 };
+
+  /**
+   * Handles tab change.
+   * 
+   * @param {Object} event - The event object.
+   * @param {number} newValue - The new value of the selected tab.
+   */
+  const handleTabChange = (event, newValue) => {
+    setTabIndex(newValue);
+  };
 
   /**
    * Toggles the visibility of the workout card and sets its mode.
@@ -388,44 +400,53 @@ const fetchSplits = async () => {
         <Navbar />
       </Box>
 
-      {/* Show loading spinner if data is being fetched */}
+      {/* Tabs for toggling between different views */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+        <Tabs value={tabIndex} onChange={handleTabChange} centered>
+          <Tab label="View Workouts" />
+          <Tab label="Graph Workout History" />
+          <Tab label="Predict Future Performance" />
+        </Tabs>
+      </Box>
+
       {isLoading ? (
         <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <CircularProgress />
         </Box>
       ) : (
         <>
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center',
-            }}
-          >
-            <Typography variant="h4" component="p" sx={{ mb: 4 }}>
-              Your Workouts for {name}
-            </Typography>
-  
-            {/* Sticky container for selectors and button */}
-            <Box
-              sx={{
-                position: 'sticky',
-                top: 0,
-                zIndex: 100,
-                backgroundColor: 'white',
-                padding: '10px 0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 2,
-                mb: 4,
-                width: '100%',
-              }}
-            >
-              {!showGraph && (
-                <>
+          {tabIndex === 0 && (
+            <Box>
+              {/* View Workouts */}
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                }}
+              >
+                <Typography variant="h4" component="p" sx={{ mb: 4 }}>
+                  Your Workouts for {name}
+                </Typography>
+
+                {/* Sticky container for selectors and button */}
+                <Box
+                  sx={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 100,
+                    backgroundColor: 'white',
+                    padding: '10px 0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 2,
+                    mb: 4,
+                    width: '100%',
+                  }}
+                >
                   <Select
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
@@ -446,177 +467,162 @@ const fetchSplits = async () => {
                       </MenuItem>
                     ))}
                   </Select>
-                </>
-              )}
-{filteredWorkouts.length > 1 ? (
-  <Button
-    variant="contained"
-    color="secondary"
-    onClick={handleGraphButtonClick}
-    sx={{ padding: '8px 16px', fontSize: '14px' }}
-  >
-    {showGraph ? 'View Workout History' : 'Graph This Month'}
-  </Button>
-) : (
-  <Tooltip title="You need more than one workout to graph this month">
-    <span>
-      <Button
-        variant="contained"
-        color="secondary"
-        sx={{ padding: '8px 16px', fontSize: '14px' }}
-        disabled
-      >
-        Graph This Month
-      </Button>
-    </span>
-  </Tooltip>
-)}
+                </Box>
 
+                {/* Conditionally render workout cards */}
+                {filteredWorkouts.length > 0 ? (
+                  <Box
+                    sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}
+                  >
+                    {filteredWorkouts.map((workout, index) => (
+                      <WorkoutCardPreview
+                        key={workout.workoutId || index}
+                        workout={workout}
+                        onDelete={() => handleDeleteWorkout(workout.workoutId)}
+                      />
+                    ))}
+                  </Box>
+                ) : (
+                  <Typography variant="h6" sx={{ mb: 4 }}>
+                    No workouts for {monthNames[selectedMonth - 1]} {selectedYear}
+                  </Typography>
+                )}
+
+                {/* Workout creation buttons and edit icon */}
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 4, gap: 2 }}>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    {/* Default Workout Button */}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => toggleAddWorkoutCard([], 'createWorkout', "Default")}
+                      sx={{ padding: '10px 20px', fontSize: '16px' }}
+                    >
+                      Add Default Workout
+                    </Button>
+
+                    {/* Dynamically generate predefined workout buttons */}
+                    {userSplits.map((workout, index) => (
+                      <Button
+                        key={index}
+                        variant="contained"
+                        color="primary"
+                        onClick={() => toggleAddWorkoutCard(workout.exercises, 'createWorkout', workout.name)}
+                        sx={{ padding: '10px 20px', fontSize: '16px' }}
+                      >
+                        Add {workout.name}
+                      </Button>
+                    ))}
+                  </Box>
+                  <IconButton onClick={handleOpenEditDialog}>
+                    <EditIcon />
+                  </IconButton>
+                </Box>
+              </Box>
             </Box>
-  
-            {/* Conditionally render either the workout cards or the graph */}
-            {showGraph ? (
+          )}
+
+          {tabIndex === 1 && (
+            <Box>
+              {/* Graph Workout History */}
               <StrengthChart
                 workoutHistory={workoutHistory}
                 filteredWorkouts={filteredWorkouts}
                 selectedMonth={monthNames[selectedMonth - 1]}
                 selectedYear={selectedYear}
               />
-            ) : filteredWorkouts.length > 0 ? (
-              <Box
-                sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}
-              >
-                {filteredWorkouts.map((workout, index) => {
-                  console.log('Workout object:', workout); // Log workout to see its structure
-                  return (
-                    <WorkoutCardPreview
-                      key={workout.workoutId || index}
-                      workout={workout}
-                      onDelete={() => handleDeleteWorkout(workout.workoutId)}
-                    />
-                  );
-                })}
-              </Box>
-            ) : (
-              <Typography variant="h6" sx={{ mb: 4 }}>
-                No workouts for {monthNames[selectedMonth - 1]} {selectedYear}
-              </Typography>
-            )}
-          </Box>
-  
-          {/* Workout creation buttons and edit icon */}
-          {!showGraph && (
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 4, gap: 2 }}>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                {/* Default Workout Button */}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => toggleAddWorkoutCard([], 'createWorkout', "Default")}
-                  sx={{ padding: '10px 20px', fontSize: '16px' }}
-                >
-                  Add Default Workout
-                </Button>
-  
-                {/* Dynamically generate predefined workout buttons */}
-                {userSplits.map((workout, index) => (
-                  <Button
-                    key={index}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => toggleAddWorkoutCard(workout.exercises, 'createWorkout', workout.name)}
-                    sx={{ padding: '10px 20px', fontSize: '16px' }}
-                  >
-                    Add {workout.name}
-                  </Button>
-                ))}
-              </Box>
-              <IconButton onClick={handleOpenEditDialog}>
-                <EditIcon />
-              </IconButton>
             </Box>
           )}
-  
-          {/* Edit Dialog */}
-          <Dialog open={isEditDialogOpen} onClose={handleCloseEditDialog}>
-            <DialogTitle>Edit Workout Splits</DialogTitle>
-            <DialogContent>
-              <Typography variant="h6">Available Workout Splits</Typography>
-              {userSplits.map((split, index) => (
-                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-                  <TextField
-                    value={split.name}
-                    onChange={(e) => {
-                      const updatedSplits = [...userSplits];
-                      updatedSplits[index].name = e.target.value;
-                      setUserSplits(updatedSplits);
-                    }}
-                    sx={{ mr: 2 }}
-                  />
-                  <IconButton color="error" onClick={() => handleDeleteSplit(split.splitId)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              ))}
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<AddIcon />}
-                  onClick={() => setIsCustomSplitDialogOpen(true)}
-                >
-                  Add Custom Split
-                </Button>
-              </Box>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
-            </DialogActions>
-          </Dialog>
-  
-          <Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
-            <DialogTitle sx={{ pb: 2 }}>Name Your Custom Split</DialogTitle>
-            <DialogContent sx={{ minWidth: 500, minHeight: 200 }}>
-              <TextField
-                label="Split Name"
-                value={customSplitName}
-                onChange={(e) => setCustomSplitName(e.target.value)}
-                sx={{
-                  width: 500,
-                  mb: 2,
-                  '& .MuiInputLabel-root': { fontSize: '1rem' },
-                  '& .MuiInputBase-root': { paddingRight: 2 },
-                }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setNewSplitName(customSplitName);
-                  setIsCardVisible(true);
-                  setCardMode("addSplit");
-                  setIsCustomSplitDialogOpen(false);
-                }}
-              >
-                Create Split
-              </Button>
-            </DialogContent>
-          </Dialog>
-          <Workout_Card
-            open={isCardVisible}
-            onClose={handleClose}
-            preloadedExercises={selectedWorkout}
-            mode={cardMode}
-            saveWorkout={saveWorkout}
-            saveSplit={saveSplit}
-            newSplitName={newSplitName}
-            type={workoutType}
-          />
+
+          {tabIndex === 2 && (
+            <Box>
+              {/* Predict Future Performance */}
+              <FuturePrediction workoutHistory={workoutHistory} />
+            </Box>
+          )}
         </>
       )}
-  
+
+      {/* Footer */}
       <Box sx={{ width: '100%' }}>
         <Footer />
       </Box>
+
+      {/* Add/Edit Dialogs */}
+      <Dialog open={isEditDialogOpen} onClose={handleCloseEditDialog}>
+        <DialogTitle>Edit Workout Splits</DialogTitle>
+        <DialogContent>
+          <Typography variant="h6">Available Workout Splits</Typography>
+          {userSplits.map((split, index) => (
+            <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+              <TextField
+                value={split.name}
+                onChange={(e) => {
+                  const updatedSplits = [...userSplits];
+                  updatedSplits[index].name = e.target.value;
+                  setUserSplits(updatedSplits);
+                }}
+                sx={{ mr: 2 }}
+              />
+              <IconButton color="error" onClick={() => handleDeleteSplit(split.splitId)}>
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          ))}
+          <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={() => setIsCustomSplitDialogOpen(true)}
+            >
+              Add Custom Split
+            </Button>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
+        <DialogTitle sx={{ pb: 2 }}>Name Your Custom Split</DialogTitle>
+        <DialogContent sx={{ minWidth: 500, minHeight: 200 }}>
+          <TextField
+            label="Split Name"
+            value={customSplitName}
+            onChange={(e) => setCustomSplitName(e.target.value)}
+            sx={{
+              width: 500,
+              mb: 2,
+              '& .MuiInputLabel-root': { fontSize: '1rem' },
+              '& .MuiInputBase-root': { paddingRight: 2 },
+            }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setNewSplitName(customSplitName);
+              setIsCardVisible(true);
+              setCardMode("addSplit");
+              setIsCustomSplitDialogOpen(false);
+            }}
+          >
+            Create Split
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      <Workout_Card
+        open={isCardVisible}
+        onClose={handleClose}
+        preloadedExercises={selectedWorkout}
+        mode={cardMode}
+        saveWorkout={saveWorkout}
+        saveSplit={saveSplit}
+        newSplitName={newSplitName}
+        type={workoutType}
+      />
     </Box>
   );
 }
