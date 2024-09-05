@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from 'react';
-import { Box, Button, Modal, Typography, Card, CardContent, CardActions } from '@mui/material';
+import { Box, Button, Modal, Typography, Card, CardContent, CardActions, LinearProgress, Snackbar, Alert } from '@mui/material';
 import { uploadProfilePicture, getProfilePicture } from '../services/APIServices';
 import { getUser } from '../services/AuthService';
 
@@ -36,10 +36,9 @@ import { getUser } from '../services/AuthService';
  */
 const ProfilePictureUpload = ({ open, handleClose, onUploadSuccess }) => {
   const user = getUser();
-
-  //console.log(getProfilePicture(user.username));
-
   const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false); // State to handle uploading status
+  const [successMessageOpen, setSuccessMessageOpen] = useState(false); // State to manage Snackbar visibility
 
   /**
    * Handles file selection.
@@ -58,6 +57,8 @@ const ProfilePictureUpload = ({ open, handleClose, onUploadSuccess }) => {
    */
   const handleUpload = async () => {
     if (!selectedFile) return;
+
+    setUploading(true); // Set uploading state to true
 
     // Convert the image to a Base64 string
     const reader = new FileReader();
@@ -79,70 +80,106 @@ const ProfilePictureUpload = ({ open, handleClose, onUploadSuccess }) => {
           console.log("success! uploaded picture: " + response.profilePictureUrl);
         }
 
-        alert('Profile picture uploaded successfully!');
+        setSuccessMessageOpen(true); // Show success message
         handleClose(); // Close modal after upload
       } catch (error) {
         console.error('Error uploading profile picture:', error);
         alert('Failed to upload profile picture.');
+      } finally {
+        setUploading(false); // Set uploading state back to false
       }
     };
     reader.readAsDataURL(selectedFile);
   };
 
+  /**
+   * Handles closing of the success message Snackbar.
+   *
+   * @function handleCloseSuccessMessage
+   */
+  const handleCloseSuccessMessage = () => {
+    setSuccessMessageOpen(false);
+  };
+
   return (
-    <Modal open={open} onClose={handleClose} aria-labelledby="upload-profile-picture-modal">
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-          outline: 'none',
-        }}
+    <>
+      {/* Success message Snackbar */}
+      <Snackbar
+        open={successMessageOpen}
+        autoHideDuration={3000} // Duration in milliseconds
+        onClose={handleCloseSuccessMessage}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Position at the top center
       >
-        <Card
+        <Alert onClose={handleCloseSuccessMessage} severity="success" sx={{ width: '100%' }}>
+          Profile picture uploaded successfully!
+        </Alert>
+      </Snackbar>
+
+      {/* Modal for uploading profile picture */}
+      <Modal open={open} onClose={handleClose} aria-labelledby="upload-profile-picture-modal">
+        <Box
           sx={{
-            width: '400px',
-            borderRadius: '12px',
-            boxShadow: 3,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+            outline: 'none',
           }}
         >
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Upload Profile Picture
-            </Typography>
-
-            <Button
-              variant="outlined"
-              component="label"
-              fullWidth
-              sx={{ marginBottom: 2 }}
-            >
-              Choose File
-              <input
-                type="file"
-                hidden
-                onChange={handleFileChange}
-                accept="image/*" // Accept only image files
-              />
-            </Button>
-            {selectedFile && (
-              <Typography variant="body2" color="textSecondary">
-                {selectedFile.name}
+          <Card
+            sx={{
+              width: '400px',
+              borderRadius: '12px',
+              boxShadow: 3,
+            }}
+          >
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Upload Profile Picture
               </Typography>
+
+              {/* Show a linear progress bar when uploading */}
+              {uploading ? (
+                <LinearProgress /> // Uploading progress bar
+              ) : (
+                <>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    fullWidth
+                    sx={{ marginBottom: 2 }}
+                  >
+                    Choose File
+                    <input
+                      type="file"
+                      hidden
+                      onChange={handleFileChange}
+                      accept="image/*" // Accept only image files
+                    />
+                  </Button>
+                  {selectedFile && (
+                    <Typography variant="body2" color="textSecondary">
+                      {selectedFile.name}
+                    </Typography>
+                  )}
+                </>
+              )}
+            </CardContent>
+            {/* Hide the actions if uploading */}
+            {!uploading && (
+              <CardActions sx={{ justifyContent: 'flex-end', padding: '16px' }}>
+                <Button variant="outlined" onClick={handleClose}>
+                  Cancel
+                </Button>
+                <Button variant="contained" color="primary" onClick={handleUpload} disabled={!selectedFile}>
+                  Upload
+                </Button>
+              </CardActions>
             )}
-          </CardContent>
-          <CardActions sx={{ justifyContent: 'flex-end', padding: '16px' }}>
-            <Button variant="outlined" onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleUpload} disabled={!selectedFile}>
-              Upload
-            </Button>
-          </CardActions>
-        </Card>
-      </Box>
-    </Modal>
+          </Card>
+        </Box>
+      </Modal>
+    </>
   );
 };
 
