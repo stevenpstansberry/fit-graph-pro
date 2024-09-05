@@ -12,7 +12,7 @@
 
 // Imports
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress, Snackbar, Alert } from '@mui/material';
+import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress, Snackbar, Alert, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -273,11 +273,16 @@ const fetchSplits = async () => {
       setSnackbarOpen(true);
     }
   };
-
+  /**
+   * Closes snackbar alert
+   */
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
 
+  /**
+   * Closes confirm dialog alert
+   */
   const handleCloseConfirmDialog = () => {
     setConfirmDialogOpen(false);
   };
@@ -443,16 +448,30 @@ const fetchSplits = async () => {
                   </Select>
                 </>
               )}
-              {filteredWorkouts.length > 0 && (
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={handleGraphButtonClick}
-                  sx={{ padding: '8px 16px', fontSize: '14px' }}
-                >
-                  {showGraph ? 'View Workout History' : 'Graph This Month'}
-                </Button>
-              )}
+{filteredWorkouts.length > 1 ? (
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={handleGraphButtonClick}
+    sx={{ padding: '8px 16px', fontSize: '14px' }}
+  >
+    {showGraph ? 'View Workout History' : 'Graph This Month'}
+  </Button>
+) : (
+  <Tooltip title="You need more than one workout to graph this month">
+    <span>
+      <Button
+        variant="contained"
+        color="secondary"
+        sx={{ padding: '8px 16px', fontSize: '14px' }}
+        disabled
+      >
+        Graph This Month
+      </Button>
+    </span>
+  </Tooltip>
+)}
+
             </Box>
   
             {/* Conditionally render either the workout cards or the graph */}
