@@ -7,8 +7,10 @@ module.exports = {
         if (user === 'undefined' || !user) {
             return null;
         } else {
+            console.log("user info: " + user);
             return JSON.parse(user);
         }
+
     },
     // Retrieves the token from session storage
     getToken: function() {

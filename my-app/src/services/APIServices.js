@@ -215,3 +215,29 @@ export const getAllSplits = async (username) => {
 export const submitContactForm = async (formData) => {
   return postToAPI('/contact', formData);
 };
+
+
+/**
+ * Uploads a profile picture to the API.
+ * 
+ * @async
+ * @function uploadProfilePicture
+ * @param {string} base64ProfilePictureString - The Base64-encoded string of the profile picture.
+ * @returns {Promise<Object>} Response data from the API.
+ */
+export const uploadProfilePicture = async (base64ProfilePictureString) => {
+  return postToAPI('/profile/upload-picture', base64ProfilePictureString);
+}
+
+/**
+ * Retrieves a user's profile picture URL from the API.
+ * 
+ * @async
+ * @function getProfilePicture
+ * @param {string} username - The username to retrieve the profile picture for.
+ * @returns {Promise<Object>} Response data containing the profile picture URL.
+ */
+export const getProfilePicture = async(username) => {
+  let endpoint = `/profile/${username}`;
+  return getFromAPI(endpoint);
+}

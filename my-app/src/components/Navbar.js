@@ -37,9 +37,11 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
  * The navbar displays links to key pages
  * 
  * @component
+ * @param {Object} props - Component props.
+ * @param {string|null} props.profileImageUrl - The profile image URL for the user.
  * @returns {React.Element} - The rendered Navbar component.
  */
-function Navbar() {
+function Navbar({ profileImageUrl }) {
   const user = getUser(); // Retrieve the authenticated user's information
   const navigate = useNavigate(); // Hook for navigation
 
@@ -175,7 +177,11 @@ function Navbar() {
             ) : (
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar>{userInitial}</Avatar>
+                  {profileImageUrl ? (
+                    <Avatar src={profileImageUrl} /> // If user has a profile picture, show it
+                  ) : (
+                    <Avatar>{userInitial}</Avatar> // Otherwise, show the user's initial
+                  )}
                 </IconButton>
               </Tooltip>
             )}

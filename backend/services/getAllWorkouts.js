@@ -6,6 +6,8 @@
  * Exposes two functions:
  * - `getAllWorkouts()`: Fetches all workouts.
  * - `getAllWorkoutsForUser(username)`: Fetches workouts for a specific user.
+ * - `getRecentWorkoutsForUser(username, count)`: Fetches most recent x amount of workouts for specific user
+ * - `getWorkoutsForUserByDays(username, days)`: Fetches the workouts of the user in the last x days
  * 
  * This service interfaces with AWS DynamoDB using AWS SDK.
  * 
