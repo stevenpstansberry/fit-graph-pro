@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./Exercise_Sub_Card";
-import { v4 as uuidv4 } from 'uuid'; // Import UUID for unique IDs
+import { v4 as uuidv4 } from 'uuid'; 
 import { getUser } from '../services/AuthService';
 
 

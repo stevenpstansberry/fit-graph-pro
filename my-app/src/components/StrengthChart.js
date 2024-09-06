@@ -17,8 +17,7 @@
  * @param {number} props.selectedYear - The currently selected year for filtering workouts.
  * @returns {React.Element} - The rendered StrengthChart component.
  * 
- * @version 1.2.0
- * @date 2024-09-04
+ * @version 1.0.0
  * @updated By Steven Stansberry
  */
 
@@ -28,8 +27,9 @@ import {
 } from 'recharts';
 import {
   Select, MenuItem, FormControl, InputLabel, Box, Container,
-  Typography, Grid, FormControlLabel, Checkbox
+  Typography, Grid, FormControlLabel, Checkbox, Button, Collapse
 } from '@mui/material';
+
 
 /**
  * StrengthChart component for displaying a line chart of workout history.
@@ -53,6 +53,8 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
   const [stats, setStats] = useState({}); // Statistics for the selected exercise
   const [showWeight, setShowWeight] = useState(true); // Toggle weight line on the chart
   const [showReps, setShowReps] = useState(true); // Toggle reps line on the chart
+  const [showStats, setShowStats] = useState(false); // Toggle statistics visibility
+
 
   // Extract unique exercise labels from workouts
   const exerciseLabels = Array.from(new Set(workoutHistory.flatMap(workout => 
@@ -250,30 +252,41 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
           {getTitle()}
         </Typography>
 
-        {/* Display Exercise Stats */}
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="body1"><strong>Max Weight:</strong> {stats.maxWeight} lbs</Typography>
+        {/* Button to toggle statistics visibility */}
+        <Button
+          variant="text"
+          onClick={() => setShowStats(!showStats)}
+          sx={{ mt: 2, mb: 2 }}
+        >
+          {showStats ? 'Hide Statistics' : 'Show Statistics'}
+        </Button>
+
+        {/* Collapsible Exercise Stats */}
+        <Collapse in={showStats}>
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Max Weight:</strong> {stats.maxWeight} lbs</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Average Weight:</strong> {stats.averageWeight} lbs</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Max Reps:</strong> {stats.maxReps}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Total Volume:</strong> {stats.totalVolume} lbs</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Average Volume per Workout:</strong> {stats.averageVolumePerWorkout} lbs</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Workout Count:</strong> {stats.workoutCount}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Predicted 1RM:</strong> {stats.maxPredicted1RM} lbs</Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="body1"><strong>Average Weight:</strong> {stats.averageWeight} lbs</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="body1"><strong>Max Reps:</strong> {stats.maxReps}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="body1"><strong>Total Volume:</strong> {stats.totalVolume} lbs</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="body1"><strong>Average Volume per Workout:</strong> {stats.averageVolumePerWorkout} lbs</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="body1"><strong>Workout Count:</strong> {stats.workoutCount}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="body1"><strong>Predicted 1RM:</strong> {stats.maxPredicted1RM} lbs</Typography>
-          </Grid>
-        </Grid>
+        </Collapse>
       </Container>
 
       <ResponsiveContainer width="100%" height={400}>
