@@ -269,3 +269,16 @@ export const loginUser = async (credentials) => {
 export const registerUser = async (userDetails) => {
   return postToAPI('/register', userDetails);
 };
+
+/**
+ * Sends a password reset request to the API.
+ * 
+ * @async
+ * @function requestPasswordReset
+ * @param {Object} credentials - The user credentials (email) to request a password reset.
+ * @param {string} credentials.email - The user's email address.
+ * @returns {Promise<Object>} Response object indicating success or failure.
+ */
+export const requestPasswordReset = async (credentials) => {
+  return postToAPI('/password-reset', credentials);  // Assuming '/password-reset' is the endpoint for password reset
+};
