@@ -51,13 +51,13 @@ async function resetPassword(event) {
     const newPassword = generateRandomPassword();
   
     // Hash the new password before saving it
-    const encryptedPassword = bcrypt.hashSync(newPassword, 10);
+    const encryptedPW = bcrypt.hashSync(newPassword.trim(), 10);
   
     // Update the user's password in DynamoDB
-    await updateUserPasswordByEmail(email.toLowerCase().trim(), encryptedPassword);
+    await updateUserPasswordByUsername(dynamoUser.username, encryptedPW);
   
     // Temporarily log the new password to the console for testing
-    console.log(`Password reset successful. New password for user with email ${email}: ${newPassword}`);
+    console.log(`Password reset successful. New password for user with email ${email}: ${newPassword}... ${encryptedPW}`);
   
     // Commented out email sending for now until SES is set up
     // await sendResetEmail(dynamoUser.email, newPassword);
@@ -91,32 +91,28 @@ async function getUserByEmail(email) {
 }
 
 /**
- * Updates the user's password in DynamoDB by their username.
+ * Updates the user's password in DynamoDB 
  * 
  * @async
  * @function updateUserPasswordByUsername
- * @param {string} username - The username of the user to update.
+ * @param {string} user - The user
  * @param {string} newPassword - The new encrypted password to be set.
  * @returns {Promise<void>}
  */
-async function updateUserPasswordByEmail(email, newPassword) {
+async function updateUserPasswordByUsername(username, newPassword) {
   // Fetch the user by scanning the table to get the username (primary key)
-  const user = await getUserByEmail(email);
-  if (!user) {
-    console.error('User not found during password update');
-    return;
-  }
+
 
   const params = {
     TableName: userTable,
-    Key: { username: user.username }, // Update based on username (primary key)
+    Key: { username: username }, // Update based on username (primary key)
     UpdateExpression: 'set #password = :password',
     ExpressionAttributeNames: { '#password': 'password' },
     ExpressionAttributeValues: { ':password': newPassword }
   };
 
   return await dynamodb.update(params).promise().then(() => {
-    console.log('Password updated successfully for user with email:', email);
+    console.log('Password updated successfully for user with username:', username);
   }, error => {
     console.error('There is an error updating user password by email: ', error);
   });
