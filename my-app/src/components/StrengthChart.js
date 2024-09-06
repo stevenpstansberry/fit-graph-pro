@@ -1,5 +1,25 @@
-// src/components/StrengthChart.js
-
+/**
+ * @fileoverview Component for visualizing the user's workout history in a line chart format.
+ * 
+ * @file src/components/StrengthChart.js
+ * 
+ * Provides a user interface to select different exercises and timeframes to display a 
+ * graph of total weight lifted and reps performed over time.
+ * Displays statistics like maximum weight lifted, average weight, maximum reps, total volume, 
+ * average volume per workout, and predicts 1-rep max (1RM).
+ * Allows users to toggle whether weight or reps data is displayed in the graph.
+ * 
+ * @component
+ * @param {Object} props - Component props.
+ * @param {Array} props.workoutHistory - The complete workout history of the user.
+ * @param {Array} props.filteredWorkouts - Workouts filtered by the selected month and year.
+ * @param {string} props.selectedMonth - The currently selected month for filtering workouts.
+ * @param {number} props.selectedYear - The currently selected year for filtering workouts.
+ * @returns {React.Element} - The rendered StrengthChart component.
+ * 
+ * @version 1.0.0
+ * @updated By Steven Stansberry
+ */
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -7,16 +27,34 @@ import {
 } from 'recharts';
 import {
   Select, MenuItem, FormControl, InputLabel, Box, Container,
-  Typography
+  Typography, Grid, FormControlLabel, Checkbox, Button, Collapse
 } from '@mui/material';
 
 
+/**
+ * StrengthChart component for displaying a line chart of workout history.
+ * Allows users to select exercises and timeframes to filter and visualize workout data.
+ * Displays additional statistics like max weight, average weight, max reps, total volume, and more.
+ * Users can toggle between displaying weight and reps on the graph.
+ * Predicts 1RM (one-repetition maximum) for selected exercises.
+ * 
+ * @component
+ * @param {Object} props - Component props.
+ * @param {Array} props.workoutHistory - Full workout data of the user.
+ * @param {Array} props.filteredWorkouts - Workouts filtered by the selected month and year.
+ * @param {string} props.selectedMonth - The currently selected month for filtering workouts.
+ * @param {number} props.selectedYear - The currently selected year for filtering workouts.
+ * @returns {React.Element} - The rendered StrengthChart component.
+ */
+const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, selectedYear }) => {
+  const [selectedExercise, setSelectedExercise] = useState(''); // Selected exercise for filtering data
+  const [timeframe, setTimeframe] = useState('currentMonth'); // Timeframe for filtering data (currentMonth, ytd, allTime)
+  const [displayData, setDisplayData] = useState([]); // Data to display in the line chart
+  const [stats, setStats] = useState({}); // Statistics for the selected exercise
+  const [showWeight, setShowWeight] = useState(true); // Toggle weight line on the chart
+  const [showReps, setShowReps] = useState(true); // Toggle reps line on the chart
+  const [showStats, setShowStats] = useState(false); // Toggle statistics visibility
 
-
-const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, selectedYear }) => { 
-  const [selectedExercise, setSelectedExercise] = useState('');
-  const [timeframe, setTimeframe] = useState('currentMonth');
-  const [displayData, setDisplayData] = useState([]);
 
   // Extract unique exercise labels from workouts
   const exerciseLabels = Array.from(new Set(workoutHistory.flatMap(workout => 
@@ -30,7 +68,13 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
     }
   }, [exerciseLabels, selectedExercise]);
 
-  // Function to filter data based on the selected exercise
+  /**
+   * Filters workout data based on the selected exercise.
+   * 
+   * @function getFilteredData
+   * @param {Array} workouts - List of workouts to filter.
+   * @returns {Array} - Filtered and formatted data for the line chart.
+   */
   const getFilteredData = (workouts) => {
     return workouts.map((workout) => {
       const exercise = workout.exercises.find((ex) => ex.label === selectedExercise);
@@ -47,26 +91,97 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
     }).filter(Boolean); // Remove any null values
   };
 
-  // Update display data based on timeframe and selected exercise
-  useEffect(() => {
-    if (timeframe === 'currentMonth') {
-      setDisplayData(getFilteredData(filteredWorkouts));
-    } else if (timeframe === 'ytd') {
-      const currentYearWorkouts = workoutHistory.filter(workout => workout.date.getFullYear() === selectedYear);
-      setDisplayData(getFilteredData(currentYearWorkouts));
-    } else if (timeframe === 'allTime') {
-      setDisplayData(getFilteredData(workoutHistory));
-    }
-  }, [filteredWorkouts, workoutHistory, timeframe, selectedExercise]);
+  /**
+   * Calculates various statistics for the selected exercise, including the predicted 1RM.
+   * 
+   * @function calculateStats
+   * @param {Array} workouts - List of workouts to analyze.
+   * @returns {Object} - Object containing calculated statistics.
+   */
+  const calculateStats = (workouts) => {
+    let maxWeight = 0;
+    let maxReps = 0;
+    let totalVolume = 0;
+    let totalWeight = 0;
+    let totalSets = 0;
+    let workoutCount = 0;
+    let maxPredicted1RM = 0;
 
+    workouts.forEach((workout) => {
+      const exercise = workout.exercises.find((ex) => ex.label === selectedExercise);
+      if (exercise) {
+        workoutCount++;
+        exercise.sets.forEach((set) => {
+          const weight = parseInt(set.weight, 10);
+          const reps = parseInt(set.reps, 10);
+          maxWeight = Math.max(maxWeight, weight);
+          maxReps = Math.max(maxReps, reps);
+          totalVolume += weight * reps;
+          totalWeight += weight;
+          totalSets++;
+          
+          // Calculate predicted 1RM for this set using Epley formula
+          const predicted1RM = weight * (1 + 0.0333 * reps);
+          maxPredicted1RM = Math.max(maxPredicted1RM, predicted1RM);
+        });
+      }
+    });
+
+    const averageWeight = totalSets ? (totalWeight / totalSets).toFixed(2) : 0;
+    const averageVolumePerWorkout = workoutCount ? (totalVolume / workoutCount).toFixed(2) : 0;
+
+    return {
+      maxWeight,
+      maxReps,
+      averageWeight,
+      totalVolume,
+      averageVolumePerWorkout,
+      workoutCount,
+      maxPredicted1RM: maxPredicted1RM.toFixed(2),
+    };
+  };
+
+  // Update display data and statistics based on timeframe and selected exercise
+  useEffect(() => {
+    let dataToDisplay;
+    if (timeframe === 'currentMonth') {
+      dataToDisplay = filteredWorkouts;
+    } else if (timeframe === 'ytd') {
+      dataToDisplay = workoutHistory.filter(workout => workout.date.getFullYear() === selectedYear);
+    } else if (timeframe === 'allTime') {
+      dataToDisplay = workoutHistory;
+    }
+
+    setDisplayData(getFilteredData(dataToDisplay));
+    setStats(calculateStats(dataToDisplay));
+  }, [filteredWorkouts, workoutHistory, timeframe, selectedExercise, selectedYear]);
+
+  /**
+   * Handles the change of selected exercise.
+   * 
+   * @function handleExerciseChange
+   * @param {Object} event - The event object from the exercise selection.
+   */
   const handleExerciseChange = (event) => {
     setSelectedExercise(event.target.value);
   };
 
+  /**
+   * Handles the change of selected timeframe.
+   * 
+   * @function handleTimeframeChange
+   * @param {Object} event - The event object from the timeframe selection.
+   */
   const handleTimeframeChange = (event) => {
     setTimeframe(event.target.value);
   };
 
+  /**
+   * Generates the title for the chart based on the selected timeframe and exercise.
+   * 
+   * @function getTitle
+   * @returns {string} - The title for the chart.
+   */
   const getTitle = () => {
     if (timeframe === 'currentMonth') {
       return `Displaying Workout History for: ${selectedExercise}, ${selectedMonth} ${selectedYear}`;
@@ -78,8 +193,6 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
       return `Displaying Workout History for: ${selectedExercise}`;
     }
   };
-
-  //TODO add tick boxes to remove weight /reps
 
   return (
     <Box sx={{ width: '100%', textAlign: 'center' }}>
@@ -111,6 +224,19 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
           <MenuItem value="allTime">All Time</MenuItem>
         </Select>
       </FormControl>
+
+      {/* Checkboxes to toggle weight and reps display */}
+      <Box sx={{ mt: 2 }}>
+        <FormControlLabel
+          control={<Checkbox checked={showWeight} onChange={() => setShowWeight(!showWeight)} />}
+          label="Show Weight"
+        />
+        <FormControlLabel
+          control={<Checkbox checked={showReps} onChange={() => setShowReps(!showReps)} />}
+          label="Show Reps"
+        />
+      </Box>
+
       <Container sx={{ mt: 2 }}>
         <Typography
           variant="h5"
@@ -125,6 +251,42 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
         >
           {getTitle()}
         </Typography>
+
+        {/* Button to toggle statistics visibility */}
+        <Button
+          variant="text"
+          onClick={() => setShowStats(!showStats)}
+          sx={{ mt: 2, mb: 2 }}
+        >
+          {showStats ? 'Hide Statistics' : 'Show Statistics'}
+        </Button>
+
+        {/* Collapsible Exercise Stats */}
+        <Collapse in={showStats}>
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Max Weight:</strong> {stats.maxWeight} lbs</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Average Weight:</strong> {stats.averageWeight} lbs</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Max Reps:</strong> {stats.maxReps}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Total Volume:</strong> {stats.totalVolume} lbs</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Average Volume per Workout:</strong> {stats.averageVolumePerWorkout} lbs</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Workout Count:</strong> {stats.workoutCount}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography variant="body1"><strong>Predicted 1RM:</strong> {stats.maxPredicted1RM} lbs</Typography>
+            </Grid>
+          </Grid>
+        </Collapse>
       </Container>
 
       <ResponsiveContainer width="100%" height={400}>
@@ -134,8 +296,8 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="weight" stroke="#8884d8" />
-          <Line type="monotone" dataKey="reps" stroke="#82ca9d" />
+          {showWeight && <Line type="monotone" dataKey="weight" stroke="#8884d8" />}
+          {showReps && <Line type="monotone" dataKey="reps" stroke="#82ca9d" />}
         </LineChart>
       </ResponsiveContainer>
     </Box>
