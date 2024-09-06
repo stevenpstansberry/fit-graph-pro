@@ -23,6 +23,7 @@ import { getUser } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
 import FuturePrediction from '../components/FuturePrediction';
+import HeatMap from '../components/HeatMap';
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
 
 // API URLs
@@ -406,6 +407,7 @@ const fetchSplits = async () => {
           <Tab label="View Workouts" />
           <Tab label="Graph Workout History" />
           <Tab label="Predict Future Performance" />
+          <Tab label="Heat Map" /> 
         </Tabs>
       </Box>
 
@@ -539,6 +541,12 @@ const fetchSplits = async () => {
               {/* Predict Future Performance */}
               <FuturePrediction workoutHistory={workoutHistory} />
             </Box>
+          )}
+          {tabIndex === 3 && (
+            <Box>
+              {/* Heat Map */}
+              <HeatMap workoutHistory={workoutHistory} /> 
+            </Box>      
           )}
         </>
       )}
