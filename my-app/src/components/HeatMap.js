@@ -18,10 +18,52 @@
  * intensity of workouts, helping users quickly identify periods of high or low activity.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Typography } from '@mui/material';
-import Model, { IExerciseData, IMuscleStats } from 'react-body-highlighter';
+import Model from 'react-body-highlighter';
 
+/**
+ * Maps body parts to muscles in the format expected by react-body-highlighter.
+ */
+const muscleMap = {
+  Chest: ['chest'],
+  Shoulders: ['front-deltoids', 'back-deltoids'],
+  Arms: ['biceps', 'triceps', 'forearm'],
+  Abs: ['abs', 'obliques'],
+  Legs: ['quadriceps', 'hamstring', 'calves', 'adductor', 'abductors', 'gluteal'],
+  Back: ['trapezius', 'upper-back', 'lower-back'],
+  Forearms: ['forearm'],
+};
+
+/**
+ * Converts workout history data into the format required by react-body-highlighter.
+ *
+ * @param {Array} workoutHistory - The workout history array.
+ * @returns {Array} - The formatted exercise data for the heat map.
+ */
+const convertWorkoutHistoryToHeatmapData = (workoutHistory) => {
+  const exerciseDataMap = {};
+
+  workoutHistory.forEach((workout) => {
+    workout.exercises.forEach((exercise) => {
+      const { label, bodyPart } = exercise;
+      
+      if (!exerciseDataMap[label]) {
+        exerciseDataMap[label] = { name: label, muscles: [], frequency: 0 };
+      }
+
+      // Increment frequency for each occurrence
+      exerciseDataMap[label].frequency += 1;
+
+      // Map body part to muscles
+      if (muscleMap[bodyPart]) {
+        exerciseDataMap[label].muscles = muscleMap[bodyPart];
+      }
+    });
+  });
+
+  return Object.values(exerciseDataMap); // Convert the map to an array
+};
 
 /**
  * HeatMap component for displaying a heat map of workout history.
@@ -33,18 +75,24 @@ import Model, { IExerciseData, IMuscleStats } from 'react-body-highlighter';
  * @returns {React.Element} - The rendered HeatMap component.
  */
 const HeatMap = ({ workoutHistory }) => {
+  const data = useMemo(() => convertWorkoutHistoryToHeatmapData(workoutHistory), [workoutHistory]);
+
+  const handleClick = React.useCallback(({ muscle, data }) => {
+    const { exercises, frequency } = data;
+
+    alert(`You clicked the ${muscle}! You've worked out this muscle ${frequency} times through the following exercises: ${JSON.stringify(exercises)}`);
+  }, [data]);
+
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" gutterBottom>
         Workout Heat Map
       </Typography>
-      {/* Placeholder content - replace with actual heat map logic */}
-      <Typography variant="body1">
-        hello
-      </Typography>
       <Model
-      style={{ width: '20rem', padding: '5rem' }}
-    />
+        data={data}
+        style={{ width: '20rem', padding: '5rem' }}
+        onClick={handleClick}
+      />
     </Box>
   );
 };
