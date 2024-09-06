@@ -9,8 +9,8 @@
  * @component
  * @returns {React.Element} - The rendered SignIn component.
  * 
- * @version 1.1.0
- * @updated By Steven Stansberry
+ * @version 1.0.0
+ * @author Steven Stansberry
  */
 
 import { Alert, Button, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, Snackbar } from "@mui/material";

@@ -11,7 +11,7 @@
  * @returns {React.Element} - The rendered SignUp component.
  * 
  * @version 1.0.0
- * @updated By Steven Stansberry
+ * @author Steven Stansberry
  */
 
 import React, { useState } from 'react';
