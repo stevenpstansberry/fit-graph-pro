@@ -1,4 +1,22 @@
-// src/components/WorkoutCardPreview.js
+/**
+ * @fileoverview Component for displaying a preview of a workout in a collapsible card format.
+ * 
+ * @file src/components/WorkoutCardPreview.js
+ * 
+ * Provides a user interface to display a brief overview of a workout, including the date and type. 
+ * Users can expand the card to view detailed information about exercises, sets, and reps. 
+ * It also provides a delete option to remove the workout.
+ * 
+ * @component
+ * @param {Object} props - Component props.
+ * @param {Object} props.workout - The workout object containing details such as date, type, and exercises.
+ * @param {Function} props.onDelete - Callback function to handle the deletion of the workout.
+ * @returns {React.Element} - The rendered WorkoutCardPreview component.
+ * 
+ * @version 1.0.0
+ * @author Steven Stansberry
+ */
+
 
 import React, { useState } from 'react';
 import { Card, CardContent, Typography, Box, Button, Collapse, IconButton } from '@mui/material';

@@ -29,7 +29,28 @@ import {
   Select, MenuItem, FormControl, InputLabel, Box, Container,
   Typography, Grid, FormControlLabel, Checkbox, Button, Collapse
 } from '@mui/material';
+import WorkoutDetailsCard from './WorkoutDetailsCard'; // Import the WorkoutDetailsCard component
 
+/**
+ * Custom tooltip for displaying workout details on hover.
+ *
+ * @param {Object} props - The properties passed to the tooltip.
+ * @returns {React.Element} - The rendered custom tooltip.
+ */
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const workoutId = payload[0].payload.workoutId; // Get the workoutId from the data point
+    const workout = payload[0].payload.workout; // Get the full workout object from the data point
+
+    return (
+      <div className="custom-tooltip" style={{ backgroundColor: 'white', padding: '10px', border: '1px solid #ccc' }}>
+        <WorkoutDetailsCard workout={workout} /> {/* Render WorkoutDetailsCard for the hovered workout */}
+      </div>
+    );
+  }
+
+  return null;
+};
 
 /**
  * StrengthChart component for displaying a line chart of workout history.
@@ -55,7 +76,6 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
   const [showReps, setShowReps] = useState(true); // Toggle reps line on the chart
   const [showStats, setShowStats] = useState(false); // Toggle statistics visibility
 
-
   // Extract unique exercise labels from workouts
   const exerciseLabels = Array.from(new Set(workoutHistory.flatMap(workout => 
     workout.exercises.map(exercise => exercise.label)
@@ -68,13 +88,7 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
     }
   }, [exerciseLabels, selectedExercise]);
 
-  /**
-   * Filters workout data based on the selected exercise.
-   * 
-   * @function getFilteredData
-   * @param {Array} workouts - List of workouts to filter.
-   * @returns {Array} - Filtered and formatted data for the line chart.
-   */
+  // Function to filter workout data based on the selected exercise
   const getFilteredData = (workouts) => {
     return workouts.map((workout) => {
       const exercise = workout.exercises.find((ex) => ex.label === selectedExercise);
@@ -85,19 +99,15 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
           date: workout.date.toLocaleDateString(), // Format the date for X-axis
           weight: totalWeight,
           reps: totalReps,
+          workoutId: workout.workoutId, // Include workoutId for tooltip reference
+          workout: workout, // Include the full workout object for detailed view
         };
       }
       return null;
     }).filter(Boolean); // Remove any null values
   };
 
-  /**
-   * Calculates various statistics for the selected exercise, including the predicted 1RM.
-   * 
-   * @function calculateStats
-   * @param {Array} workouts - List of workouts to analyze.
-   * @returns {Object} - Object containing calculated statistics.
-   */
+  // Function to calculate various statistics for the selected exercise
   const calculateStats = (workouts) => {
     let maxWeight = 0;
     let maxReps = 0;
@@ -156,32 +166,17 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
     setStats(calculateStats(dataToDisplay));
   }, [filteredWorkouts, workoutHistory, timeframe, selectedExercise, selectedYear]);
 
-  /**
-   * Handles the change of selected exercise.
-   * 
-   * @function handleExerciseChange
-   * @param {Object} event - The event object from the exercise selection.
-   */
+  // Function to handle the change of selected exercise
   const handleExerciseChange = (event) => {
     setSelectedExercise(event.target.value);
   };
 
-  /**
-   * Handles the change of selected timeframe.
-   * 
-   * @function handleTimeframeChange
-   * @param {Object} event - The event object from the timeframe selection.
-   */
+  // Function to handle the change of selected timeframe
   const handleTimeframeChange = (event) => {
     setTimeframe(event.target.value);
   };
 
-  /**
-   * Generates the title for the chart based on the selected timeframe and exercise.
-   * 
-   * @function getTitle
-   * @returns {string} - The title for the chart.
-   */
+  // Function to generate the title for the chart based on the selected timeframe and exercise
   const getTitle = () => {
     if (timeframe === 'currentMonth') {
       return `Displaying Workout History for: ${selectedExercise}, ${selectedMonth} ${selectedYear}`;
@@ -196,6 +191,23 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
 
   return (
     <Box sx={{ width: '100%', textAlign: 'center' }}>
+      {/* Chart Title */}
+      <Typography
+        variant="h5"
+        sx={{
+          color: '#4A4A4A', 
+          fontWeight: 'bold',
+          backgroundColor: '#e0e0e0', 
+          padding: '8px 16px',
+          borderRadius: '8px',
+          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+          marginBottom: 2, 
+        }}
+      >
+        {getTitle()}
+      </Typography>
+
+      {/* Exercise and Timeframe Selectors */}
       <FormControl sx={{ m: 1, minWidth: 120 }}>
         <InputLabel id="exercise-select-label">Exercise</InputLabel>
         <Select
@@ -238,20 +250,6 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
       </Box>
 
       <Container sx={{ mt: 2 }}>
-        <Typography
-          variant="h5"
-          sx={{
-            color: '#4A4A4A', 
-            fontWeight: 'bold',
-            backgroundColor: '#e0e0e0', 
-            padding: '8px 16px',
-            borderRadius: '8px',
-            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', 
-          }}
-        >
-          {getTitle()}
-        </Typography>
-
         {/* Button to toggle statistics visibility */}
         <Button
           variant="text"
@@ -289,12 +287,13 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
         </Collapse>
       </Container>
 
+      {/* Line Chart Display */}
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={displayData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
           <YAxis />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} /> {/* Use custom tooltip for displaying workout details */}
           <Legend />
           {showWeight && <Line type="monotone" dataKey="weight" stroke="#8884d8" />}
           {showReps && <Line type="monotone" dataKey="reps" stroke="#82ca9d" />}
