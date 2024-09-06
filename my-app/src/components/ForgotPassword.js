@@ -15,7 +15,7 @@
 
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Container, Snackbar, Alert } from '@mui/material';
-import { requestPasswordReset } from '../services/APIServices';  // Import the password reset function
+import { requestPasswordReset } from '../services/APIServices'; 
 
 /**
  * ForgotPassword component for requesting a password reset link.

@@ -25,6 +25,7 @@ const deleteWorkoutService = require ('./services/deleteWorkout');
 const deleteSplitService = require ('./services/deleteSplit');
 const uploadProfilePictureService = require('./services/uploadProfilePicture');
 const getProfilePictureService = require ('./services/getProfilePicture');
+const PasswordResetService = require ('./services/PasswordReset');
 const util = require('./utils/util');
 
 // Define API paths
@@ -41,6 +42,7 @@ const deleteWorkoutPath = '/workouts/delete';
 const deleteSplitPath = '/splits/delete';
 const uploadProfilePicturePath = '/profile/upload-picture';
 const getProfilePicturePath = '/profile'
+const PasswordResetPath = '/password-reset'
 
 
 
@@ -163,9 +165,13 @@ exports.handler = async (event) => {
         // Retrieve profile picture route
         case event.httpMethod === 'GET' && event.path.startsWith(getProfilePicturePath + '/'):
             username = event.path.split('/').pop();
-            //response = util.buildResponse(200, {message : "reached get profile picture: " + username}) 
             response = await getProfilePictureService.getProfilePicture(username);   
             break;
+
+        // Password Reset Route
+        case event.httpMethod === 'POST' && event.path === PasswordResetPath:
+            response = await PasswordResetService.resetPassword(event);
+            break;    
 
         // Default - All other routes
         default:
