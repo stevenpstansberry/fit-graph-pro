@@ -13,7 +13,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, TextField, Button, Grid, Container, Select, MenuItem, FormControl, InputLabel, Tooltip, IconButton, Tabs, Tab } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, Container, Tooltip, IconButton, Tabs, Tab, Autocomplete, FormControl } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 const FuturePrediction = ({ workoutHistory = [] }) => {
@@ -54,8 +54,8 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
       setPredictionResult(result);
     };
 
-    const handleExerciseChange = (event) => {
-      setSelectedExercise(event.target.value);
+    const handleExerciseChange = (event, newValue) => {
+      setSelectedExercise(newValue);
     };
 
     const handleTabChange = (event, newValue) => {
@@ -130,22 +130,15 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
 
                     {/* Aligning form elements */}
                     <Grid container spacing={3} sx={{ mt: 2 }} alignItems="center">
-                        {/* Dropdown to select the exercise */}
+                        {/* Autocomplete to select the exercise */}
                         <Grid item xs={12} md={4}>
-                            <FormControl fullWidth>
-                                <InputLabel id="exercise-select-label">Exercise</InputLabel>
-                                <Select
-                                    labelId="exercise-select-label"
-                                    id="exercise-select"
-                                    value={selectedExercise}
-                                    label="Exercise"
-                                    onChange={handleExerciseChange}
-                                >
-                                    {exerciseLabels.map((label) => (
-                                        <MenuItem key={label} value={label}>{label}</MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            <Autocomplete
+                                options={exerciseLabels}
+                                value={selectedExercise}
+                                onChange={handleExerciseChange}
+                                renderInput={(params) => <TextField {...params} label="Exercise" />}
+                                fullWidth
+                            />
                         </Grid>
 
                         {/* Input for goal weight */}
@@ -242,21 +235,15 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
                         </Tooltip>
                     </Typography>
 
-                    {/* Dropdown to select the exercise for 1RM */}
-                    <FormControl fullWidth sx={{ m: 1, minWidth: 120 }}>
-                        <InputLabel id="exercise-select-label-1rm">Exercise</InputLabel>
-                        <Select
-                            labelId="exercise-select-label-1rm"
-                            id="exercise-select-1rm"
-                            value={selectedExercise}
-                            label="Exercise"
-                            onChange={handleExerciseChange}
-                        >
-                            {exerciseLabels.map((label) => (
-                                <MenuItem key={label} value={label}>{label}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    {/* Autocomplete to select the exercise for 1RM */}
+                    <Autocomplete
+                        options={exerciseLabels}
+                        value={selectedExercise}
+                        onChange={handleExerciseChange}
+                        renderInput={(params) => <TextField {...params} label="Exercise" />}
+                        fullWidth
+                        sx={{ m: 1, minWidth: 120 }}
+                    />
 
                     {/* Button to estimate 1RM */}
                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 8 }}>
