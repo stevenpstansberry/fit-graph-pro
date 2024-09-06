@@ -256,3 +256,16 @@ export const getProfilePicture = async(username) => {
 export const loginUser = async (credentials) => {
   return postToAPI('/login', credentials);
 };
+
+/**
+ * Registers a new user to the API.
+ * 
+ * @async
+ * @function registerUser
+ * @param {Object} userDetails - The registration details including username, email, name, and password.
+ * @returns {Promise<Object>} Response data from the API.
+ * @throws Will throw an error if the request fails.
+ */
+export const registerUser = async (userDetails) => {
+  return postToAPI('/register', userDetails);
+};
