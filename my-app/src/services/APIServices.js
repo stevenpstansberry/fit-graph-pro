@@ -241,3 +241,18 @@ export const getProfilePicture = async(username) => {
   let endpoint = `/profile/${username}`;
   return getFromAPI(endpoint);
 }
+
+/**
+ * Logs in a user by sending their credentials to the API.
+ * 
+ * @async
+ * @function loginUser
+ * @param {Object} credentials - The login credentials.
+ * @param {string} credentials.username - The username of the user.
+ * @param {string} credentials.password - The password of the user.
+ * @returns {Promise<Object>} Response data from the API containing the user and token.
+ * @throws Will throw an error if the request fails.
+ */
+export const loginUser = async (credentials) => {
+  return postToAPI('/login', credentials);
+};

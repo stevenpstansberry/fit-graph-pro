@@ -1,52 +1,79 @@
-// src/components/SignIn.js
+/**
+ * @fileoverview Component for user sign-in functionality.
+ * 
+ * @file src/components/SignIn.js
+ * 
+ * Provides a user interface for logging into the application. Allows users to input their username and password, and handles authentication with the backend API.
+ * Upon successful login, the user session is set, and the user is redirected to their profile page.
+ * 
+ * @component
+ * @returns {React.Element} - The rendered SignIn component.
+ * 
+ * @version 1.1.0
+ * @updated By Steven Stansberry
+ */
 
-//TODO: refactor these API calls to be made via API services
-import { Alert, Button, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container } from "@mui/material";
-import React, {useState, useEffect} from 'react';
-import axios from 'axios';
+import { Alert, Button, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, Snackbar } from "@mui/material";
+import React, { useState } from 'react';
 import { setUserSession } from "../services/AuthService";
-import { useNavigate} from 'react-router-dom';
-
-const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
-const loginURL = fitGraphProd + "/login";
+import { useNavigate } from 'react-router-dom';
+import { loginUser } from "../services/APIServices";  // Import the loginUser function from APIServices
 
 function SignIn() {
-  axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PROD_KEY;
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // React Router hook for navigation
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' }); // State to handle Snackbar
 
-
-  const [message,setMessage] = useState(null);
-
-  const handleSubmit = (event) => {
+  /**
+   * Handles the form submission for signing in the user.
+   * 
+   * @function handleSubmit
+   * @param {Object} event - The form submission event object.
+   */
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     const username = data.get('username');
     const password = data.get('password');
 
-    if (username.trim() === '' || password.trim() === ''){
-      setMessage('Fields must be filled')
+    if (username.trim() === '' || password.trim() === '') {
+      showSnackbar('Fields must be filled', 'warning');
       return;
     }
 
-    const requestBody = {
+    const credentials = {
       username: username,
       password: password
-    }
-    const requestCofig = {
-      headers : {
-        'x-api-key' :  process.env.REACT_APP_FIT_GRAPH_PROD_KEY
-      }
-    }
+    };
 
-    axios.post(loginURL,requestBody).then((response) => {
-      setMessage('success')
-      setUserSession(response.data.user, response.data.token);
-      navigate('/profile');
-    }).catch((error) => {
-      setMessage('error')
-    })
+    try {
+      const response = await loginUser(credentials);  // Use the loginUser function
+      setUserSession(response.user, response.token); // Set the user session
+      showSnackbar('Login successful!', 'success');  // Show success message
+      navigate('/profile'); // Redirect to profile page
+    } catch (error) {
+      showSnackbar('Login failed. Please check your credentials.', 'error');  // Show error message on login failure
+    }
+  };
 
+  /**
+   * Displays a Snackbar message.
+   * 
+   * @function showSnackbar
+   * @param {string} message - The message to display.
+   * @param {string} severity - The severity level of the message ('success', 'error', 'warning', 'info').
+   */
+  const showSnackbar = (message, severity) => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  /**
+   * Closes the Snackbar message.
+   * 
+   * @function handleCloseSnackbar
+   */
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
@@ -113,9 +140,20 @@ function SignIn() {
           </Grid>
         </Box>
       </Box>
-      {message && <Alert severity="info" sx={{ mb: 2, width: '100%' }}>{message}</Alert>}
+
+      {/* Snackbar for showing messages */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}  // Automatically close after 3 seconds
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
 
-export default SignIn
+export default SignIn;
