@@ -56,6 +56,7 @@ async function login(user) {
   const userInfo = {
     username: dynamoUser.username,
     name: dynamoUser.name,
+    email: dynamoUser.email
   }
 
   // Conditionally add the s3ProfileURL if it exists
