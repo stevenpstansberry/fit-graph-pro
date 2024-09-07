@@ -16,19 +16,18 @@
  * @version 1.0.0
  * @author Steven Stansberry
  */
-
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, Alert } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, Alert, Snackbar } from '@mui/material';
 import { verifyPassword, UserPasswordReset } from '../services/APIServices';
 
 function ManualPasswordReset({ open, onClose, user }) {
-    console.log("here is the user: " + user.username)
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [step, setStep] = useState(1);
-    const [message, setMessage] = useState('');
-    const [alertType, setAlertType] = useState('info'); // 'info', 'error', 'success'
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [step, setStep] = useState(1);
+  const [message, setMessage] = useState('');
+  const [alertType, setAlertType] = useState('info'); // 'info', 'error', 'success'
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar visibility
 
   /**
    * Handles changes to the current password input field.
@@ -57,29 +56,29 @@ function ManualPasswordReset({ open, onClose, user }) {
     setNewPassword(e.target.value);
   };
 
-/**
- * Handles verification of the current password by calling the verifyPassword API.
- */
-const verifyCurrentPassword = async () => {
+  /**
+   * Handles verification of the current password by calling the verifyPassword API.
+   */
+  const verifyCurrentPassword = async () => {
     try {
-        const response = await verifyPassword({
-        email: user.email, 
+      const response = await verifyPassword({
+        email: user.email,
         username: user.username,
         password: currentPassword,
-        });
+      });
 
-        if (response.message === 'Password verified successfully') {
+      if (response.message === 'Password verified successfully') {
         setStep(2);  // Move to the next step
         setMessage('');
-        } else {
+      } else {
         setMessage('Incorrect current password.');
         setAlertType('error');
-        }
+      }
     } catch (error) {
-        setMessage('An error occurred while verifying the password.');
-        setAlertType('error');
+      setMessage('An error occurred while verifying the password.');
+      setAlertType('error');
     }
-    };
+  };
 
   /**
    * Handles the user clicking "Next" to verify the current password.
@@ -106,15 +105,16 @@ const verifyCurrentPassword = async () => {
     }
 
     try {
-      const response = await UserPasswordReset({ 
-        email: user.email, 
+      const response = await UserPasswordReset({
+        email: user.email,
         username: user.username,
-        password: newPassword 
+        password: newPassword,
       });
 
       if (response.message === 'Password reset successful') {
         setMessage('Password reset successful.');
         setAlertType('success');
+        setSnackbarOpen(true); // Show Snackbar on success
         onClose();
         resetState();
       } else {
@@ -137,6 +137,14 @@ const verifyCurrentPassword = async () => {
     setCurrentPassword('');
     setConfirmPassword('');
     setNewPassword('');
+  };
+
+  /**
+   * Handles closing the Snackbar.
+   * @function handleSnackbarClose
+   */
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -164,7 +172,7 @@ const verifyCurrentPassword = async () => {
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
             />
-            {message && <Alert severity="error" sx={{ mt: 2 }}>{message}</Alert>}
+            {message && <Alert severity={alertType} sx={{ mt: 2 }}>{message}</Alert>}
           </>
         ) : (
           <>
@@ -179,7 +187,7 @@ const verifyCurrentPassword = async () => {
               value={newPassword}
               onChange={handleNewPasswordChange}
             />
-            {message && <Alert severity="error" sx={{ mt: 2 }}>{message}</Alert>}
+            {message && <Alert severity={alertType} sx={{ mt: 2 }}>{message}</Alert>}
           </>
         )}
       </DialogContent>
@@ -197,6 +205,19 @@ const verifyCurrentPassword = async () => {
           Cancel
         </Button>
       </DialogActions>
+
+      {/* Snackbar for Success Message */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message="Password reset successful!"
+        action={
+          <Button color="inherit" size="small" onClick={handleSnackbarClose}>
+            Close
+          </Button>
+        }
+      />
     </Dialog>
   );
 }
