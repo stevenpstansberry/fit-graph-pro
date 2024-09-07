@@ -3,10 +3,10 @@ import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { getUser, resetUserSession, getProfileImageUrlFromSession, setProfileImageUrlToSession } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, Box, Button, Avatar, Card, CardContent, CardActions, Grid, Divider, CircularProgress, Collapse, IconButton } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; // Import icon for expanding workout details
+import { Container, Typography, Box, Button, Avatar, Divider, CircularProgress, Collapse, IconButton } from '@mui/material';
 import WorkoutsPerWeekChart from '../components/WorkoutsPerWeekChart';
 import ProfilePictureUpload from '../components/ProfilePictureUpload'; 
+import RecentWorkouts from '../components/RecentWorkouts'; 
 import { getAllWorkouts, getProfilePicture } from '../services/APIServices';
 
 /**
@@ -107,12 +107,8 @@ function Profile() {
 
   return (
     <Container maxWidth="lg">
-      {/* Navbar Component with profileImageUrl prop */}
       <Navbar profileImageUrl={profileImageUrl} />
-
-      {/* Profile Section */}
       <Box sx={{ my: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {/* Avatar and User Info */}
         <Avatar
           sx={{ width: 100, height: 100, mb: 2, cursor: 'pointer' }}
           src={profileImageUrl ? profileImageUrl : undefined}
@@ -127,17 +123,14 @@ function Profile() {
           {email}
         </Typography>
 
-        {/* Divider */}
         <Divider sx={{ width: '100%', mb: 4 }} />
 
-        {/* Workouts Per Week Chart and Recent Workouts Section */}
         {loadingWorkouts ? (
           <CircularProgress />
         ) : (
           <>
             {workoutsPerWeek.length > 0 ? (
               <>
-                {/* Workouts Per Week Chart */}
                 <Typography variant="h5" gutterBottom>
                   Workouts Per Week
                 </Typography>
@@ -160,61 +153,12 @@ function Profile() {
               </Box>
             )}
 
-            {recentWorkouts.length > 0 ? (
-              <>
-                {/* Recent Workouts Section */}
-                <Typography variant="h5" gutterBottom>
-                  Recent Workouts
-                </Typography>
-                <Grid container spacing={3}>
-                  {recentWorkouts.map((workout) => (
-                    <Grid item xs={12} md={6} key={workout.workoutId}>
-                      <Card>
-                        <CardContent>
-                          <Typography variant="h6">{workout.type}</Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            Date: {new Date(workout.date).toLocaleDateString()}
-                          </Typography>
-                        </CardContent>
-                        <CardActions>
-                          <Button size="small" color="primary" onClick={() => handleExpandClick(workout.workoutId)}>
-                            {expandedWorkout === workout.workoutId ? 'Hide Details' : 'View Details'}
-                          </Button>
-                          <IconButton
-                            onClick={() => handleExpandClick(workout.workoutId)}
-                            aria-expanded={expandedWorkout === workout.workoutId}
-                            aria-label="show more"
-                          >
-                            <ExpandMoreIcon />
-                          </IconButton>
-                        </CardActions>
-                        <Collapse in={expandedWorkout === workout.workoutId} timeout="auto" unmountOnExit>
-                          <CardContent>
-                            {workout.exercises.map((exercise, index) => (
-                              <Box key={index} sx={{ mb: 2 }}>
-                                <Typography variant="subtitle1">{exercise.label} ({exercise.bodyPart})</Typography>
-                                {exercise.sets.map((set, setIndex) => (
-                                  <Typography key={setIndex} variant="body2" color="textSecondary">
-                                    Set {setIndex + 1}: {set.weight} lbs x {set.reps} reps
-                                  </Typography>
-                                ))}
-                              </Box>
-                            ))}
-                          </CardContent>
-                        </Collapse>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              </>
-            ) : null}
+            {recentWorkouts.length > 0 && <RecentWorkouts recentWorkouts={recentWorkouts} />}
           </>
         )}
 
-        {/* Divider */}
         <Divider sx={{ width: '100%', my: 4 }} />
 
-        {/* Logout Button */}
         <Button
           variant="contained"
           color="secondary"
@@ -225,14 +169,12 @@ function Profile() {
         </Button>
       </Box>
 
-      {/* Profile Picture Upload Modal */}
       <ProfilePictureUpload 
         open={uploadModalOpen} 
         handleClose={handleCloseUploadModal} 
         onUploadSuccess={handleProfilePictureUpdate} 
       />
 
-      {/* Footer Component */}
       <Footer />
     </Container>
   );

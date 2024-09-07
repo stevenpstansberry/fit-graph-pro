@@ -47,7 +47,7 @@ const ViewWorkouts = ({
   userSplits, 
   handleDeleteWorkout, 
   handleOpenEditDialog,
-  workoutHistory  // Added workoutHistory prop to check if the user has any workouts at all
+  workoutHistory  
 }) => {
   const hasWorkoutsInHistory = workoutHistory.length > 0;  // Check if there are any workouts at all
   const hasWorkoutsForSelectedDate = filteredWorkouts.length > 0;  // Check if there are workouts for the selected month/year
@@ -155,11 +155,11 @@ const ViewWorkouts = ({
               </Button>
             ))}
             
-            {/* Edit Icon with Tooltip and Light Blue Color */}
+            {/* Edit Icon*/}
             <Tooltip title="Add/Edit your splits here">
               <IconButton 
                 onClick={handleOpenEditDialog}
-                sx={{ color: '#64b5f6' }}  // Light blue color
+                sx={{ color: '#64b5f6' }} 
               >
                 <EditIcon />
               </IconButton>
@@ -170,7 +170,7 @@ const ViewWorkouts = ({
         <Box
           sx={{
             textAlign: 'center',
-            mt: 8,  // Add margin-top to create space for the background image
+            mt: 8,  
             mb: 4,
             display: 'flex',
             flexDirection: 'column',
@@ -181,7 +181,7 @@ const ViewWorkouts = ({
           <img
             src={fitnessImage}
             alt="Fitness Background"
-            style={{ width: '100%', maxWidth: '400px', marginBottom: '16px' }}  // Adjust size and margin as needed
+            style={{ width: '100%', maxWidth: '400px', marginBottom: '16px' }}  
           />
 
           {/* Message encouraging the user to add their first workout */}
@@ -214,11 +214,11 @@ const ViewWorkouts = ({
               </Button>
             ))}
 
-            {/* Edit Icon with Tooltip and Light Blue Color */}
+            {/* Edit Icon with Tooltip */}
             <Tooltip title="Add/Edit your splits here">
               <IconButton 
                 onClick={handleOpenEditDialog}
-                sx={{ color: '#64b5f6' }}  // Light blue color
+                sx={{ color: '#64b5f6' }}  
               >
                 <EditIcon />
               </IconButton>
