@@ -511,6 +511,7 @@ const fetchWorkouts = async () => {
               userSplits={userSplits}
               handleDeleteWorkout={handleDeleteWorkout}
               handleOpenEditDialog={handleOpenEditDialog}
+              workoutHistory={workoutHistory}
             />
           )}
 
@@ -551,22 +552,33 @@ const fetchWorkouts = async () => {
         <DialogTitle>Edit Workout Splits</DialogTitle>
         <DialogContent>
           <Typography variant="h6">Available Workout Splits</Typography>
-          {userSplits.map((split, index) => (
-            <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-              <TextField
-                value={split.name}
-                onChange={(e) => {
-                  const updatedSplits = [...userSplits];
-                  updatedSplits[index].name = e.target.value;
-                  setUserSplits(updatedSplits);
-                }}
-                sx={{ mr: 2 }}
-              />
-              <IconButton color="error" onClick={() => handleDeleteSplit(split.splitId)}>
-                <DeleteIcon />
-              </IconButton>
-            </Box>
-          ))}
+          
+          {/* Check if there are any user splits */}
+          {userSplits.length > 0 ? (
+            userSplits.map((split, index) => (
+              <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                <TextField
+                  value={split.name}
+                  onChange={(e) => {
+                    const updatedSplits = [...userSplits];
+                    updatedSplits[index].name = e.target.value;
+                    setUserSplits(updatedSplits);
+                  }}
+                  sx={{ mr: 2 }}
+                />
+                <IconButton color="error" onClick={() => handleDeleteSplit(split.splitId)}>
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            ))
+          ) : (
+            // Display message when there are no splits
+            <Typography variant="body1" color="textSecondary" sx={{ mt: 2 }}>
+              Add your first split!
+            </Typography>
+          )}
+
+          {/* Button to add a new custom split */}
           <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
             <Button
               variant="outlined"
@@ -581,6 +593,7 @@ const fetchWorkouts = async () => {
           <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
         </DialogActions>
       </Dialog>
+
 
       <Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
         <DialogTitle sx={{ pb: 2 }}>Name Your Custom Split</DialogTitle>

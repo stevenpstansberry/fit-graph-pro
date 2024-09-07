@@ -6,17 +6,15 @@
  * Exposes the `ViewWorkouts` component, which handles viewing workouts, filtering by date,
  * and adding new workouts for the authenticated user.
  *
- *
  * @version 1.0.0
  * @author Steven Stansberry
  */
 
 import React from 'react';
-import { Typography, Box, Button, IconButton, Select, MenuItem } from '@mui/material';
+import { Typography, Box, Button, IconButton, Select, MenuItem, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import fitnessImage from '../assets/fitnessImage.png';
-
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -35,6 +33,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June", "Jul
  * @param {Array} props.userSplits - The list of user-defined workout splits.
  * @param {function} props.handleDeleteWorkout - Function to handle workout deletion.
  * @param {function} props.handleOpenEditDialog - Function to open the edit dialog for workout splits.
+ * @param {Array} props.workoutHistory - The complete workout history of the user.
  * @returns {React.Element} - The rendered component.
  */
 const ViewWorkouts = ({ 
@@ -47,9 +46,11 @@ const ViewWorkouts = ({
   toggleAddWorkoutCard, 
   userSplits, 
   handleDeleteWorkout, 
-  handleOpenEditDialog 
+  handleOpenEditDialog,
+  workoutHistory  // Added workoutHistory prop to check if the user has any workouts at all
 }) => {
-  const hasWorkouts = filteredWorkouts.length > 0;
+  const hasWorkoutsInHistory = workoutHistory.length > 0;  // Check if there are any workouts at all
+  const hasWorkoutsForSelectedDate = filteredWorkouts.length > 0;  // Check if there are workouts for the selected month/year
 
   return (
     <Box
@@ -72,7 +73,7 @@ const ViewWorkouts = ({
       </Typography>
 
       {/* Conditionally render workout cards or show a message if none exist */}
-      {hasWorkouts ? (
+      {hasWorkoutsInHistory ? (  // Check if there are any workouts at all
         <>
           {/* Calendar selectors for filtering by date */}
           <Box
@@ -112,15 +113,57 @@ const ViewWorkouts = ({
             </Select>
           </Box>
 
-          {/* Display workout cards */}
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
-            {filteredWorkouts.map((workout, index) => (
-              <WorkoutCardPreview
-                key={workout.workoutId || index}
-                workout={workout}
-                onDelete={() => handleDeleteWorkout(workout.workoutId)}
-              />
+          {/* Check if there are workouts for the selected date */}
+          {hasWorkoutsForSelectedDate ? (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
+              {filteredWorkouts.map((workout, index) => (
+                <WorkoutCardPreview
+                  key={workout.workoutId || index}
+                  workout={workout}
+                  onDelete={() => handleDeleteWorkout(workout.workoutId)}
+                />
+              ))}
+            </Box>
+          ) : (
+            <Typography variant="h6" color="textSecondary" sx={{ mb: 4 }}>
+              No workouts for {monthNames[selectedMonth - 1]} {selectedYear}
+            </Typography>
+          )}
+
+          {/* Workout creation buttons and edit icon - Always show */}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 4, gap: 2 }}>
+            {/* Default Workout Button */}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => toggleAddWorkoutCard([], 'createWorkout', "Default")}
+              sx={{ padding: '10px 20px', fontSize: '16px' }}
+            >
+              Add Default Workout
+            </Button>
+
+            {/* Dynamically generate predefined workout buttons */}
+            {userSplits.map((workout, index) => (
+              <Button
+                key={index}
+                variant="contained"
+                color="primary"
+                onClick={() => toggleAddWorkoutCard(workout.exercises, 'createWorkout', workout.name)}
+                sx={{ padding: '10px 20px', fontSize: '16px' }}
+              >
+                Add {workout.name}
+              </Button>
             ))}
+            
+            {/* Edit Icon with Tooltip and Light Blue Color */}
+            <Tooltip title="Add/Edit your splits here">
+              <IconButton 
+                onClick={handleOpenEditDialog}
+                sx={{ color: '#64b5f6' }}  // Light blue color
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
         </>
       ) : (
@@ -143,7 +186,7 @@ const ViewWorkouts = ({
 
           {/* Message encouraging the user to add their first workout */}
           <Typography variant="h6" color="textSecondary" sx={{ mb: 8 }}>
-            Let's get started with your first workout!
+            Let's get started with your first workout! You can either add a custom split via the edit icon or get started with logging a workout right now!
           </Typography>
 
           {/* Workout creation buttons and edit icon */}
@@ -170,9 +213,16 @@ const ViewWorkouts = ({
                 Add {workout.name}
               </Button>
             ))}
-            <IconButton onClick={handleOpenEditDialog}>
-              <EditIcon />
-            </IconButton>
+
+            {/* Edit Icon with Tooltip and Light Blue Color */}
+            <Tooltip title="Add/Edit your splits here">
+              <IconButton 
+                onClick={handleOpenEditDialog}
+                sx={{ color: '#64b5f6' }}  // Light blue color
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Box>
       )}
