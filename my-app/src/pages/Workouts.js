@@ -19,12 +19,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import Workout_Card from '../components/Workout_Card';
-import { getUser } from '../services/AuthService';
+import { getUser,getSessionData, setSessionData } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
 import FuturePrediction from '../components/FuturePrediction';
 import HeatMap from '../components/HeatMap';
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
+
 
 
 // TODO: add logic to see avg growth for exercises, max, estimated time to reach goal...
@@ -74,59 +75,90 @@ function Workouts() {
       fetchWorkoutsAndSplits();
     }
   }, [name]);
-
+  
   /**
    * Fetches workouts and splits for the user and updates state.
+   * Checks session storage first to avoid redundant API calls.
    */
   const fetchWorkoutsAndSplits = async () => {
     setIsLoading(true); // Start loading for load icon
     try {
-      await fetchWorkouts();
-      await fetchSplits();
+      // Attempt to retrieve from session storage first
+      const storedWorkouts = getSessionData('workouts');
+      const storedSplits = getSessionData('splits');
+  
+      if (storedWorkouts) {
+        // Parse date strings back into Date objects
+        const parsedWorkouts = storedWorkouts.map(workout => ({
+          ...workout,
+          date: new Date(workout.date), // Convert back to Date object
+        }));
+        setWorkoutHistory(parsedWorkouts);
+      } else {
+        await fetchWorkouts(); // Fetch from API if not found in session
+      }
+  
+      if (storedSplits) {
+        setUserSplits(storedSplits);
+      } else {
+        await fetchSplits(); // Fetch from API if not found in session
+      }
     } finally {
       setIsLoading(false); // End loading for load icon
     }
   };
-
-  /**
-   * Fetches workouts for the user and updates state.
-   */
-  const fetchWorkouts = async () => {
-    try {
-      const data = await getAllWorkouts(name);
-      console.log('Workouts API Response:', data);
-
-      if (data && Array.isArray(data)) {
-        const formattedWorkouts = data.map(workout => ({
-          ...workout,
-          date: new Date(workout.date), // Convert date to Date object
-        }));
-        setWorkoutHistory(formattedWorkouts);
-      }
-    } catch (error) {
-      console.error('Error fetching workouts:', error);
-    }
-  };
+  
+  
 /**
- * Fetches splits for the user and updates state.
+ * Fetches workouts for the user and updates state.
  */
-const fetchSplits = async () => {
+const fetchWorkouts = async () => {
   try {
-    const data = await getAllSplits(name);
-    console.log('Splits API Response:', data);
+    const data = await getAllWorkouts(name);
+    console.log('Workouts API Response:', data);
 
     if (data && Array.isArray(data)) {
-      const formattedSplits = data.map(split => ({
-        splitId: split.splitId,
-        name: split.splitName,
-        exercises: split.exercises,
+      const formattedWorkouts = data.map(workout => ({
+        ...workout,
+        date: new Date(workout.date), // Convert date to Date object
       }));
-      setUserSplits(formattedSplits);
+      setWorkoutHistory(formattedWorkouts);
+      
+      // Convert Date objects to ISO strings for storage
+      const workoutsToStore = formattedWorkouts.map(workout => ({
+        ...workout,
+        date: workout.date.toISOString(),
+      }));
+      setSessionData('workouts', workoutsToStore);
     }
   } catch (error) {
-    console.error('Error fetching splits:', error);
+    console.error('Error fetching workouts:', error);
   }
 };
+  
+  /**
+   * Fetches splits for the user and updates state.
+   */
+  const fetchSplits = async () => {
+    try {
+      const data = await getAllSplits(name);
+      console.log('Splits API Response:', data);
+  
+      if (data && Array.isArray(data)) {
+        const formattedSplits = data.map(split => ({
+          splitId: split.splitId,
+          name: split.splitName,
+          exercises: split.exercises,
+        }));
+        setUserSplits(formattedSplits);
+        
+        // Save splits to session storage
+        setSessionData('splits', formattedSplits);
+      }
+    } catch (error) {
+      console.error('Error fetching splits:', error);
+    }
+  };
 
   /**
    * Handles tab change.

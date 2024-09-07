@@ -97,6 +97,7 @@ module.exports = {
     if (data === 'undefined' || !data) {
       return null;
     } else {
+      console.log(data)
       return JSON.parse(data);
     }
   },
