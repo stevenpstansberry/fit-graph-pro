@@ -19,13 +19,17 @@
 
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, Alert } from '@mui/material';
+import { verifyPassword } from '../services/APIServices';
 
-function ManualPasswordReset({ open, onClose }) {
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [step, setStep] = useState(1);
-  const [message, setMessage] = useState('');
+function ManualPasswordReset({ open, onClose, user }) {
+    console.log("here is the user: " + user.username)
+    const bcrypt = require('bcryptjs');
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [step, setStep] = useState(1);
+    const [message, setMessage] = useState('');
+    const [alertType, setAlertType] = useState('info'); // 'info', 'error', 'success'
 
   /**
    * Handles changes to the current password input field.
@@ -54,23 +58,41 @@ function ManualPasswordReset({ open, onClose }) {
     setNewPassword(e.target.value);
   };
 
+/**
+ * Handles verification of the current password by calling the verifyPassword API.
+ */
+const verifyCurrentPassword = async () => {
+    try {
+        const response = await verifyPassword({
+        email: user.email, 
+        username: user.username,
+        password: currentPassword,
+        });
+
+        if (response.message === 'Password verified successfully') {
+        setStep(2);  // Move to the next step
+        setMessage('');
+        } else {
+        setMessage('Incorrect current password.');
+        setAlertType('error');
+        }
+    } catch (error) {
+        setMessage('An error occurred while verifying the password.');
+        setAlertType('error');
+    }
+    };
+
   /**
-   * Validates the current password entries and advances to the next step if valid.
-   * @function handleNextStep
+   * Handles the user clicking "Next" to verify the current password.
    */
   const handleNextStep = () => {
     if (currentPassword !== confirmPassword) {
       setMessage('Current passwords do not match!');
+      setAlertType('error');
       return;
     }
 
-    // Simulate password validation (you should replace this with actual validation logic)
-    if (currentPassword === 'password123') {
-      setStep(2);
-      setMessage('');
-    } else {
-      setMessage('Incorrect current password.');
-    }
+    verifyCurrentPassword();
   };
 
   /**

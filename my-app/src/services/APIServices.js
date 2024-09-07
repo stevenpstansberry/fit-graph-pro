@@ -280,5 +280,20 @@ export const registerUser = async (userDetails) => {
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
 export const requestPasswordReset = async (credentials) => {
-  return postToAPI('/password-reset', credentials);  // Assuming '/password-reset' is the endpoint for password reset
+  return postToAPI('/password-reset', credentials);  
 };
+
+/**
+ * Verifies the user's current password by sending the email and password to the API.
+ * 
+ * @async
+ * @function verifyPassword
+ * @param {Object} credentials - The user credentials (email and password) to verify.
+ * @param {string} credentials.email - The user's email address.
+ * @param {string} credentials.password - The user's current password.
+ * @returns {Promise<Object>} Response object indicating success or failure.
+ */
+export const verifyPassword = async (credentials) => {
+  return postToAPI('/verify-password', credentials);  
+};
+

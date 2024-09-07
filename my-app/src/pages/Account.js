@@ -85,7 +85,7 @@ function Account() {
       </Box>
 
       {/* ManualPasswordReset Dialog */}
-      <ManualPasswordReset open={resetPasswordOpen} onClose={handleCloseResetPassword} />
+      <ManualPasswordReset open={resetPasswordOpen} onClose={handleCloseResetPassword} user ={user}/>
 
       {/* Footer Section */}
       <Footer />

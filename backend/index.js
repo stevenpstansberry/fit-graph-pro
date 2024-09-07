@@ -26,6 +26,7 @@ const deleteSplitService = require ('./services/deleteSplit');
 const uploadProfilePictureService = require('./services/uploadProfilePicture');
 const getProfilePictureService = require ('./services/getProfilePicture');
 const PasswordResetService = require ('./services/PasswordReset');
+const VerifyPasswordService = require ('./services/VerifyPassword');
 const util = require('./utils/util');
 
 // Define API paths
@@ -43,6 +44,7 @@ const deleteSplitPath = '/splits/delete';
 const uploadProfilePicturePath = '/profile/upload-picture';
 const getProfilePicturePath = '/profile'
 const PasswordResetPath = '/password-reset'
+const VerifyPasswordPath = '/verify-password'
 
 
 
@@ -173,6 +175,11 @@ exports.handler = async (event) => {
             response = await PasswordResetService.resetPassword(event);
             break;    
 
+        // Password Verify Route
+        case event.httpMethod === 'POST' && event.path === VerifyPasswordPath:
+            const verifyPasswordBody = JSON.parse(event.body);
+            response = await VerifyPasswordService.verifyPassword(verifyPasswordBody);
+            break;      
         // Default - All other routes
         default:
             response = util.buildResponse(404, '404 Not Found');
