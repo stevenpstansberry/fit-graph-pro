@@ -22,20 +22,8 @@
  * @author Steven Stansberry
  */
 
-// Import necessary components and hooks
 import React, { useState, useEffect } from "react";
-import {
-  Autocomplete,
-  TextField,
-  IconButton,
-  Box,
-  Modal,
-  Card,
-  CardActions,
-  CardContent,
-  Button,
-  Typography,
-} from "@mui/material";
+import { Autocomplete, TextField ,IconButton ,Box ,Modal ,Card ,CardContent ,Button ,Typography} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./Exercise_Sub_Card";
 import { v4 as uuidv4 } from 'uuid'; 
@@ -59,7 +47,6 @@ import { getUser } from '../../services/AuthService';
  */
 function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type }) {
   const user = getUser();
-  const name = user !== 'undefined' && user ? user.name : '';
 
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState('');
@@ -270,6 +257,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
             </Button>
           </Box>
 
+          {/* List of exercises */}
           <Box>
             {exercises.map((exercise, index) => (
               <ExerciseSubcard
@@ -282,21 +270,21 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
               />
             ))}
           </Box>
-        </CardContent>
 
-        <CardActions sx={{ position: 'sticky', bottom: 0, backgroundColor: 'white', zIndex: 10, p: 2 }}>
-          <Button
-            size="large"
-            variant="contained"
-            onClick={createWorkout}
-            sx={{
-              boxShadow: 4,
-              ml: 'auto',
-            }}
-          >
-            {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
-          </Button>
-        </CardActions>
+          {/* Create Workout button at the bottom */}
+          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              size="large"
+              variant="contained"
+              onClick={createWorkout}
+              sx={{
+                boxShadow: 4,
+              }}
+            >
+              {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
+            </Button>
+          </Box>
+        </CardContent>
       </Card>
     </Modal>
   );
