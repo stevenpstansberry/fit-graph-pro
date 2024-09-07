@@ -54,7 +54,7 @@ async function manualPasswordReset(event) {
 
   console.log(`Password reset successful for user with username ${username}.`);
 
-  return util.buildResponse(200, { message: `Password reset successful for user ${username}.` });
+  return util.buildResponse(200, { message: 'Password reset successful' });
 }
 
 /**
