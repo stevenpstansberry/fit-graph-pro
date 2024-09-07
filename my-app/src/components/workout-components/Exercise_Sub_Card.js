@@ -10,8 +10,8 @@
  * @author Steven Stansberry
  */
 
-import React from "react";
-import { Card, CardContent, Box, TextField, Button, Typography, IconButton } from "@mui/material";
+import React, { useState } from "react";
+import { Card, CardContent, Box, TextField, Button, Typography, IconButton, Snackbar, Alert } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
@@ -29,8 +29,11 @@ import AddIcon from "@mui/icons-material/Add";
  * @returns {React.Element} - The rendered ExerciseSubcard component.
  */
 function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode }) {
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // State to control snackbar visibility
+
   /**
    * Handles the change in input for weight or reps in a specific set.
+   * Prevents negative and zero values.
    * 
    * @function handleSetChange
    * @param {number} setIndex - The index of the set being modified.
@@ -38,10 +41,16 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, 
    * @param {string} value - The new value for the specified key.
    */
   const handleSetChange = (setIndex, key, value) => {
-    const newSets = exercise.sets.map((set, i) =>
-      i === setIndex ? { ...set, [key]: value } : set
-    );
-    updateExerciseSets(index, newSets); // Update sets in the parent component
+    // Validate to ensure only positive numbers are accepted
+    if (value === '' || (Number(value) > 0 && !value.startsWith('0'))) {
+      const newSets = exercise.sets.map((set, i) =>
+        i === setIndex ? { ...set, [key]: value } : set
+      );
+      updateExerciseSets(index, newSets); // Update sets in the parent component
+    } else {
+      // Show snackbar notification if invalid value is entered
+      setSnackbarOpen(true);
+    }
   };
 
   /**
@@ -63,6 +72,15 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, 
   const handleRemoveSet = (setIndex) => {
     const newSets = exercise.sets.filter((_, i) => i !== setIndex);
     updateExerciseSets(index, newSets); // Remove the set from the sets array
+  };
+
+  /**
+   * Closes the snackbar notification.
+   * 
+   * @function handleCloseSnackbar
+   */
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -100,6 +118,7 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, 
                 value={set.weight}
                 onChange={(e) => handleSetChange(setIndex, "weight", e.target.value)}
                 type='number'
+                inputProps={{ min: 1 }} // Ensure minimum value of 1 for type 'number'
                 sx={{ flex: 1 }}
               />
             )}
@@ -113,6 +132,7 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, 
                 value={set.reps}
                 onChange={(e) => handleSetChange(setIndex, "reps", e.target.value)}
                 type='number'
+                inputProps={{ min: 1 }} // Ensure minimum value of 1 for type 'number'
                 sx={{ flex: 1 }}
               />
             )}
@@ -128,6 +148,18 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, 
             </IconButton>
           </Box>
         ))}
+
+        {/* Snackbar notification */}
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={4000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert onClose={handleCloseSnackbar} severity="warning" sx={{ width: '100%' }}>
+            Only positive values greater than 0 are accepted.
+          </Alert>
+        </Snackbar>
       </CardContent>
     </Card>
   );
