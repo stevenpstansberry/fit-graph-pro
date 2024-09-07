@@ -15,16 +15,14 @@ import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress, Snackbar, Alert, Tooltip, Tabs, Tab } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import Workout_Card from '../components/Workout_Card';
+import Workout_Card from '../components/workout-components/Workout_Card';
 import { getUser,getSessionData, setSessionData } from '../services/AuthService';
-import WorkoutCardPreview from '../components/WorkoutCardPreview';
-import ViewWorkouts from '../components/ViewWorkouts';
-import StrengthChart from '../components/StrengthChart';
-import FuturePrediction from '../components/FuturePrediction';
-import HeatMap from '../components/HeatMap';
+import ViewWorkouts from '../components/workout-components/ViewWorkouts';
+import StrengthChart from '../components/workout-components/StrengthChart';
+import FuturePrediction from '../components/workout-components/FuturePrediction';
+import HeatMap from '../components/workout-components/HeatMap';
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
 
 

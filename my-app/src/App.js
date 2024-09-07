@@ -5,10 +5,8 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Profile from './pages/Profile'
 import NoPage from './pages/NoPage';
-import StrengthChart from './components/StrengthChart';
 import Register from './pages/Register'
 import Login from './pages/Login'
-import Test from './pages/Test';
 import Contact from './pages/Contact';
 import PublicRoute from './routes/PublicRoute';
 import PrivateRoute from './routes/PrivateRoute';
@@ -18,8 +16,6 @@ import Workouts from './pages/Workouts';
 import ResetPassword from './pages/ResetPassword';
 import Account from './pages/Account';
 import Attributions from './pages/Attributions';
-import ExerciseSubcard from './components/Exercise_Sub_Card';
-//<Route path="/login" component={Login} />
 
 const verifyTokenAPIURL = process.env.REACT_APP_FIT_GRAPH_PROD + "/verify";
 
@@ -54,8 +50,6 @@ function App() {
           <Route path ="/login" element={<Login/>} />
           <Route path = "/register" element={<Register/>} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/test" element={<Test />} />
-          <Route path="/testchart" element={<StrengthChart />} />
           <Route path="/forgot-password" element={<ResetPassword />} />
           <Route path="/account" element={<Account />} />
           <Route path="/attributions" element={<Attributions />} />

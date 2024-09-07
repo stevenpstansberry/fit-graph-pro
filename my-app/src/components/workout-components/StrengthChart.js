@@ -29,7 +29,7 @@ import {
   Select, MenuItem, FormControl, InputLabel, Box, Container,
   Typography, Grid, FormControlLabel, Checkbox, Button, Collapse
 } from '@mui/material';
-import WorkoutDetailsCard from './WorkoutDetailsCard'; // Import the WorkoutDetailsCard component
+import WorkoutDetailsCard from './WorkoutDetailsCard'
 
 /**
  * Custom tooltip for displaying workout details on hover.

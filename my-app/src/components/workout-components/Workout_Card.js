@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for creating and managing workouts and workout splits.
  * 
- * @file src/components/Workout_Card.js
+ * @file src/components/WorkoutCard.js
  * 
  * Provides a user interface to add exercises to a workout or split, specify sets, reps, and weights, and save workouts to the backend.
  * Allows users to create custom workout splits and customize individual workouts by selecting exercises and adding details.
@@ -39,7 +39,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./Exercise_Sub_Card";
 import { v4 as uuidv4 } from 'uuid'; 
-import { getUser } from '../services/AuthService';
+import { getUser } from '../../services/AuthService';
 
 /**
  * Workout_Card component for managing and creating workouts or workout splits.

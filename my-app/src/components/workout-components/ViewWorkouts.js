@@ -13,8 +13,8 @@
 import React from 'react';
 import { Typography, Box, Button, IconButton, Select, MenuItem, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import WorkoutCardPreview from '../components/WorkoutCardPreview';
-import fitnessImage from '../assets/fitnessImage.png';
+import WorkoutCardPreview from './WorkoutCardPreview';
+import fitnessImage from '../../assets/fitnessImage.png';
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
