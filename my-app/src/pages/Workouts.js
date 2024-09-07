@@ -264,12 +264,22 @@ const fetchWorkouts = async () => {
     try {
       const workoutWithDate = {
         ...workout,
-        date: new Date(workout.date),
+        date: new Date(workout.date), // Ensure the date is a Date object
       };
-      
-      setWorkoutHistory([...workoutHistory, workoutWithDate]);
+
+      // Update state
+      const updatedWorkoutHistory = [...workoutHistory, workoutWithDate];
+      setWorkoutHistory(updatedWorkoutHistory);
       console.log("Saved Workout: ", workoutWithDate);
-  
+
+      // Update session storage with the new workout
+      const workoutsToStore = updatedWorkoutHistory.map(workout => ({
+        ...workout,
+        date: workout.date.toISOString(), // Store date as a string in ISO format
+      }));
+      setSessionData('workouts', workoutsToStore); // Save to session storage
+
+      // Upload the workout to the backend
       await uploadWorkout(workout);
       console.log("Workout uploaded Successfully");
 
@@ -287,17 +297,24 @@ const fetchWorkouts = async () => {
     }
   };
 
+
   /**
    * Saves a workout split to the backend and updates state.
    * 
    * @async
    * @param {Object} split - The split object to save.
-   */  
+   */
   const saveSplit = async (split) => {
     try {
-      setUserSplits([...userSplits, split]);
+      // Update state
+      const updatedUserSplits = [...userSplits, split];
+      setUserSplits(updatedUserSplits);
       console.log("Saved Workout Split: ", split);
-  
+
+      // Update session storage with the new split
+      setSessionData('splits', updatedUserSplits); // Save to session storage
+
+      // Upload the split to the backend
       await uploadSplit(split);
       console.log("Split uploaded successfully");
 
