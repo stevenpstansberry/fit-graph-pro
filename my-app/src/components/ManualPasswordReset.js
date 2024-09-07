@@ -19,11 +19,10 @@
 
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, Alert } from '@mui/material';
-import { verifyPassword } from '../services/APIServices';
+import { verifyPassword, UserPasswordReset } from '../services/APIServices';
 
 function ManualPasswordReset({ open, onClose, user }) {
     console.log("here is the user: " + user.username)
-    const bcrypt = require('bcryptjs');
     const [currentPassword, setCurrentPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -96,18 +95,43 @@ const verifyCurrentPassword = async () => {
   };
 
   /**
-   * Handles the password reset action, validating the new password and resetting it if valid.
+   * Handles the password reset action by calling the ManualPasswordReset API.
    * @function handlePasswordReset
    */
-  const handlePasswordReset = () => {
+  const handlePasswordReset = async () => {
     if (newPassword.trim().length < 8) {
       setMessage('Password must be at least 8 characters long.');
+      setAlertType('error');
       return;
     }
 
-    // TODO: Implement the actual password reset logic with the backend API
+    try {
+      const response = await UserPasswordReset({ 
+        email: user.email, 
+        username: user.username,
+        password: newPassword 
+      });
 
-    onClose();
+      if (response.message === 'Password reset successful') {
+        setMessage('Password reset successful.');
+        setAlertType('success');
+        onClose();
+        resetState();
+      } else {
+        setMessage('Failed to reset the password.');
+        setAlertType('error');
+      }
+    } catch (error) {
+      setMessage('An error occurred while resetting the password.');
+      setAlertType('error');
+    }
+  };
+
+  /**
+   * Resets the component state to initial values.
+   * @function resetState
+   */
+  const resetState = () => {
     setStep(1);
     setMessage('');
     setCurrentPassword('');
