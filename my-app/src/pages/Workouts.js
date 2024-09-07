@@ -21,6 +21,7 @@ import Navbar from '../components/Navbar';
 import Workout_Card from '../components/Workout_Card';
 import { getUser,getSessionData, setSessionData } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
+import ViewWorkouts from '../components/ViewWorkouts';
 import StrengthChart from '../components/StrengthChart';
 import FuturePrediction from '../components/FuturePrediction';
 import HeatMap from '../components/HeatMap';
@@ -29,7 +30,6 @@ import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts,
 
 
 // TODO: add logic to see avg growth for exercises, max, estimated time to reach goal...
-// TODO: add logic to store workouts in session
 
 /**
  * Main component to manage user workouts and splits.
@@ -162,12 +162,19 @@ const fetchWorkouts = async () => {
 
   /**
    * Handles tab change.
+   * Prevent changing tabs if there are no workouts available.
    * 
    * @param {Object} event - The event object.
    * @param {number} newValue - The new value of the selected tab.
    */
   const handleTabChange = (event, newValue) => {
-    setTabIndex(newValue);
+    if (workoutHistory.length === 0 && newValue !== 0) {
+      setSnackbarMessage('Please add a workout first before exploring other tabs!');
+      setSnackbarSeverity('info');
+      setSnackbarOpen(true);
+    } else {
+      setTabIndex(newValue);
+    }
   };
 
   /**
@@ -493,110 +500,19 @@ const fetchWorkouts = async () => {
       ) : (
         <>
           {tabIndex === 0 && (
-            <Box>
-              {/* View Workouts */}
-              <Box
-                sx={{
-                  flexGrow: 1,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  textAlign: 'center',
-                }}
-              >
-                <Typography variant="h4" component="p" sx={{ mb: 4 }}>
-                  Your Workouts for {name}
-                </Typography>
-
-                {/* Sticky container for selectors and button */}
-                <Box
-                  sx={{
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 100,
-                    backgroundColor: 'white',
-                    padding: '10px 0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 2,
-                    mb: 4,
-                    width: '100%',
-                  }}
-                >
-                  <Select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                  >
-                    {monthNames.map((month, index) => (
-                      <MenuItem key={index} value={index + 1}>
-                        {month}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <Select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                  >
-                    {[2023, 2024, 2025].map((year) => (
-                      <MenuItem key={year} value={year}>
-                        {year}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </Box>
-
-                {/* Conditionally render workout cards */}
-                {filteredWorkouts.length > 0 ? (
-                  <Box
-                    sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}
-                  >
-                    {filteredWorkouts.map((workout, index) => (
-                      <WorkoutCardPreview
-                        key={workout.workoutId || index}
-                        workout={workout}
-                        onDelete={() => handleDeleteWorkout(workout.workoutId)}
-                      />
-                    ))}
-                  </Box>
-                ) : (
-                  <Typography variant="h6" sx={{ mb: 4 }}>
-                    No workouts for {monthNames[selectedMonth - 1]} {selectedYear}
-                  </Typography>
-                )}
-
-                {/* Workout creation buttons and edit icon */}
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 4, gap: 2 }}>
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    {/* Default Workout Button */}
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => toggleAddWorkoutCard([], 'createWorkout', "Default")}
-                      sx={{ padding: '10px 20px', fontSize: '16px' }}
-                    >
-                      Add Default Workout
-                    </Button>
-
-                    {/* Dynamically generate predefined workout buttons */}
-                    {userSplits.map((workout, index) => (
-                      <Button
-                        key={index}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => toggleAddWorkoutCard(workout.exercises, 'createWorkout', workout.name)}
-                        sx={{ padding: '10px 20px', fontSize: '16px' }}
-                      >
-                        Add {workout.name}
-                      </Button>
-                    ))}
-                  </Box>
-                  <IconButton onClick={handleOpenEditDialog}>
-                    <EditIcon />
-                  </IconButton>
-                </Box>
-              </Box>
-            </Box>
+            <ViewWorkouts
+              name={name}
+              filteredWorkouts={filteredWorkouts}
+              selectedMonth={selectedMonth}
+              setSelectedMonth={setSelectedMonth}
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
+              toggleAddWorkoutCard={toggleAddWorkoutCard}
+              userSplits={userSplits}
+              handleDeleteWorkout={handleDeleteWorkout}
+              handleOpenEditDialog={handleOpenEditDialog}
+              workoutHistory={workoutHistory}
+            />
           )}
 
           {tabIndex === 1 && (
@@ -636,22 +552,33 @@ const fetchWorkouts = async () => {
         <DialogTitle>Edit Workout Splits</DialogTitle>
         <DialogContent>
           <Typography variant="h6">Available Workout Splits</Typography>
-          {userSplits.map((split, index) => (
-            <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-              <TextField
-                value={split.name}
-                onChange={(e) => {
-                  const updatedSplits = [...userSplits];
-                  updatedSplits[index].name = e.target.value;
-                  setUserSplits(updatedSplits);
-                }}
-                sx={{ mr: 2 }}
-              />
-              <IconButton color="error" onClick={() => handleDeleteSplit(split.splitId)}>
-                <DeleteIcon />
-              </IconButton>
-            </Box>
-          ))}
+          
+          {/* Check if there are any user splits */}
+          {userSplits.length > 0 ? (
+            userSplits.map((split, index) => (
+              <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                <TextField
+                  value={split.name}
+                  onChange={(e) => {
+                    const updatedSplits = [...userSplits];
+                    updatedSplits[index].name = e.target.value;
+                    setUserSplits(updatedSplits);
+                  }}
+                  sx={{ mr: 2 }}
+                />
+                <IconButton color="error" onClick={() => handleDeleteSplit(split.splitId)}>
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            ))
+          ) : (
+            // Display message when there are no splits
+            <Typography variant="body1" color="textSecondary" sx={{ mt: 2 }}>
+              Add your first split!
+            </Typography>
+          )}
+
+          {/* Button to add a new custom split */}
           <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
             <Button
               variant="outlined"
@@ -666,6 +593,7 @@ const fetchWorkouts = async () => {
           <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
         </DialogActions>
       </Dialog>
+
 
       <Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
         <DialogTitle sx={{ pb: 2 }}>Name Your Custom Split</DialogTitle>

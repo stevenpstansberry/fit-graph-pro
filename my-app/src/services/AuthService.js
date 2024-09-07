@@ -55,14 +55,12 @@ module.exports = {
   },
 
   /**
-   * Clears the user session by removing the user and token from session storage.
+   * Clears the user session by 
    * 
    * @function resetUserSession
    */
   resetUserSession: function() {
-    sessionStorage.removeItem('user');
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('profileImageUrl'); // Also remove the profile image URL
+    sessionStorage.clear();
   },
 
   /**
