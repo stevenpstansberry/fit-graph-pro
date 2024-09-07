@@ -241,3 +241,76 @@ export const getProfilePicture = async(username) => {
   let endpoint = `/profile/${username}`;
   return getFromAPI(endpoint);
 }
+
+/**
+ * Logs in a user by sending their credentials to the API.
+ * 
+ * @async
+ * @function loginUser
+ * @param {Object} credentials - The login credentials.
+ * @param {string} credentials.username - The username of the user.
+ * @param {string} credentials.password - The password of the user.
+ * @returns {Promise<Object>} Response data from the API containing the user and token.
+ * @throws Will throw an error if the request fails.
+ */
+export const loginUser = async (credentials) => {
+  return postToAPI('/login', credentials);
+};
+
+/**
+ * Registers a new user to the API.
+ * 
+ * @async
+ * @function registerUser
+ * @param {Object} userDetails - The registration details including username, email, name, and password.
+ * @returns {Promise<Object>} Response data from the API.
+ * @throws Will throw an error if the request fails.
+ */
+export const registerUser = async (userDetails) => {
+  return postToAPI('/register', userDetails);
+};
+
+/**
+ * Sends a password reset request to the API.
+ * 
+ * @async
+ * @function requestPasswordReset
+ * @param {Object} credentials - The user credentials (email) to request a password reset.
+ * @param {string} credentials.email - The user's email address.
+ * @returns {Promise<Object>} Response object indicating success or failure.
+ */
+export const requestPasswordReset = async (credentials) => {
+  return postToAPI('/password-reset', credentials);  
+};
+
+/**
+ * Sends a manual password reset request to the API.
+ * 
+ * @async
+ * @function UserPasswordReset
+ * @param {Object} credentials - The users new credentials .
+ * @param {string} credentials.email - The user's email address.
+ * @param {string} credentials.username - The user's username.
+ * @param {string} credentials.password - The user's new password.
+ * @returns {Promise<Object>} Response object indicating success or failure.
+ */
+export const UserPasswordReset = async (credentials) => {
+  return postToAPI('/password-reset/manual', credentials);  
+};
+
+
+/**
+ * Verifies the user's current password by sending the email and password to the API.
+ * 
+ * @async
+ * @function verifyPassword
+ * @param {Object} credentials - The user credentials to verify.
+ * @param {string} credentials.email - The user's email address.
+ * @param {string} credentials.username - The user's username.
+ * @param {string} credentials.password - The user's current password.
+ * @returns {Promise<Object>} Response object indicating success or failure.
+ */
+export const verifyPassword = async (credentials) => {
+  return postToAPI('/verify-password', credentials);  
+};
+

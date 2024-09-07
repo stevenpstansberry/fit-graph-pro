@@ -1,11 +1,30 @@
-// src/pages/About.js
-
+/**
+ * @fileoverview Page component for the About section.
+ * 
+ * @file src/pages/About.js
+ * 
+ * This page provides information about the Fit Graph Pro application, its features, and its benefits.
+ * 
+ * @component
+ * @returns {React.Element} - The rendered About page component.
+ * 
+ * @version 1.0.0
+ * 
+ * @author Steven Stansberry
+ */
 
 import React from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Typography, Box } from '@mui/material';
 
+/**
+ * About page component that provides information about the Fit Graph Pro application.
+ * Renders a Navbar at the top, followed by content describing the app, and a Footer at the bottom.
+ * 
+ * @component
+ * @returns {React.Element} - The rendered component for the about page.
+ */
 function About() {
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -31,8 +50,6 @@ function About() {
           Join the Fit Graph Pro community and take your fitness tracking to the next level!
         </Typography>
       </Box>
-
-      {/* Ensure Footer spans the entire width */}
       <Footer />
     </Box>
   );

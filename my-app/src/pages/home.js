@@ -1,4 +1,17 @@
-// src/pages/Home.js
+/**
+ * @fileoverview Page component for the Home section.
+ * 
+ * @file src/pages/Home.js
+ * 
+ * This page serves as the landing page of the application.
+ * 
+ * @component
+ * @returns {React.Element} - The rendered Home page component.
+ * 
+ * @version 1.0.0
+ * 
+ * @author Steven Stansberry
+ */
 
 import React from 'react';
 import Features from '../components/Features';
@@ -7,6 +20,14 @@ import Navbar from '../components/Navbar';
 import { Container, Typography, Box, Grid } from '@mui/material';
 import backgroundImage from '../assets/backgroundImage.jpg';
 
+/**
+ * Home page component that serves as the landing page for the Fit Graph Pro application.
+ * Renders a Navbar, a hero section with the app's title and introduction, a list of features, 
+ * a motivational quote, and a Footer.
+ * 
+ * @component
+ * @returns {React.Element} - The rendered component for the home page.
+ */
 function Home() {
   return (
     <Box
@@ -25,7 +46,7 @@ function Home() {
           flex: 1,
           padding: 4,
           color: '#fff',
-          paddingTop: '250px', // Controls padding between navbar and tiles/title
+          paddingTop: '250px', 
         }}
       >
         <Grid container spacing={2} sx={{ height: '100%' }}>

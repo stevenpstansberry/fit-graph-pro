@@ -15,6 +15,8 @@ import PrivateRoute from './routes/PrivateRoute';
 import {BrowserRouter, Routes, Route } from 'react-router-dom'
 import {getUser, getToken, setUserSession, resetUserSession} from './services/AuthService'
 import Workouts from './pages/Workouts';
+import ResetPassword from './pages/ResetPassword';
+import Account from './pages/Account';
 import ExerciseSubcard from './components/Exercise_Sub_Card';
 //<Route path="/login" component={Login} />
 
@@ -53,6 +55,9 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/test" element={<Test />} />
           <Route path="/testchart" element={<StrengthChart />} />
+          <Route path="/forgot-password" element={<ResetPassword />} />
+          <Route path="/account" element={<Account />} />
+
 
           <Route
           path="/profile"

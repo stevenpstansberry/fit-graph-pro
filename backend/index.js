@@ -25,6 +25,9 @@ const deleteWorkoutService = require ('./services/deleteWorkout');
 const deleteSplitService = require ('./services/deleteSplit');
 const uploadProfilePictureService = require('./services/uploadProfilePicture');
 const getProfilePictureService = require ('./services/getProfilePicture');
+const PasswordResetService = require ('./services/PasswordReset');
+const ManualPasswordResetService = require ('./services/ManualPasswordReset');
+const VerifyPasswordService = require ('./services/VerifyPassword');
 const util = require('./utils/util');
 
 // Define API paths
@@ -41,6 +44,9 @@ const deleteWorkoutPath = '/workouts/delete';
 const deleteSplitPath = '/splits/delete';
 const uploadProfilePicturePath = '/profile/upload-picture';
 const getProfilePicturePath = '/profile'
+const PasswordResetPath = '/password-reset'
+const ManualPasswordResetPath = '/password-reset/manual';
+const VerifyPasswordPath = '/verify-password'
 
 
 
@@ -163,9 +169,25 @@ exports.handler = async (event) => {
         // Retrieve profile picture route
         case event.httpMethod === 'GET' && event.path.startsWith(getProfilePicturePath + '/'):
             username = event.path.split('/').pop();
-            //response = util.buildResponse(200, {message : "reached get profile picture: " + username}) 
             response = await getProfilePictureService.getProfilePicture(username);   
             break;
+
+        // Password Reset Route
+        case event.httpMethod === 'POST' && event.path === PasswordResetPath:
+            response = await PasswordResetService.resetPassword(event);
+            break;    
+
+        // Manual Password Reset Route
+        case event.httpMethod === 'POST' && event.path === ManualPasswordResetPath:
+            response = await ManualPasswordResetService.manualPasswordReset(event);
+            break;    
+
+        // Password Verify Route
+        case event.httpMethod === 'POST' && event.path === VerifyPasswordPath:
+            const verifyPasswordBody = JSON.parse(event.body);
+            response = await VerifyPasswordService.verifyPassword(verifyPasswordBody);
+            break;      
+
 
         // Default - All other routes
         default:

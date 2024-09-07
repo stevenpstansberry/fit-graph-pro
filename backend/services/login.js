@@ -16,6 +16,8 @@ AWS.config.update({
 const util = require('../utils/util');
 const bcrypt = require('bcryptjs');
 const auth = require('../utils/auth');
+const verifyPasswordService = require('./VerifyPassword');  
+
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const userTable = 'fit-graph-users';
@@ -47,15 +49,22 @@ async function login(user) {
     return util.buildResponse(403, { message: 'user does not exist'});
   }
 
-  // Verify the provided password against the stored hashed password
-  if (!bcrypt.compareSync(password, dynamoUser.password)) {
-    return util.buildResponse(403, { message: 'password is incorrect'});
+  // Use verifyPassword function to check the password
+  const verificationResult = await verifyPasswordService.verifyPassword({
+    username: username.toLowerCase().trim(),
+    password: password
+  });
+
+  // If password verification fails, return the error response
+  if (verificationResult.statusCode !== 200) {
+    return verificationResult;
   }
 
   // Prepare user info and generate an authentication token
   const userInfo = {
     username: dynamoUser.username,
     name: dynamoUser.name,
+    email: dynamoUser.email
   }
 
   // Conditionally add the s3ProfileURL if it exists
