@@ -26,7 +26,7 @@ const deleteSplitService = require ('./services/deleteSplit');
 const uploadProfilePictureService = require('./services/uploadProfilePicture');
 const getProfilePictureService = require ('./services/getProfilePicture');
 const PasswordResetService = require ('./services/PasswordReset');
-const ManualPasswordResetService = require ('./service/ManualPasswordReset');
+const ManualPasswordResetService = require ('./services/ManualPasswordReset');
 const VerifyPasswordService = require ('./services/VerifyPassword');
 const util = require('./utils/util');
 
@@ -179,7 +179,7 @@ exports.handler = async (event) => {
 
         // Manual Password Reset Route
         case event.httpMethod === 'POST' && event.path === ManualPasswordResetPath:
-            response = util.buildResponse(200, {message : 'manual pw reset reached'})
+            response = await ManualPasswordResetService.manualPasswordReset(event);
             break;    
 
         // Password Verify Route
