@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for displaying detailed information of a workout.
  *
- * @file src/components/WorkoutDetailsCard.js
+ * @file src/components/workout-components/WorkoutDetailsCard.js
  *
  * Provides a user interface to show detailed information about a workout, including exercises and sets.
  * Designed to be used by StrengthChart.js

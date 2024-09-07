@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for visualizing the user's workout history in a heat map format.
  * 
- * @file src/components/HeatMap.js
+ * @file src/components/workout-components/HeatMap.js
  * 
  * Provides a user interface to visualize workout frequency and intensity over time using a heat map.
  * 

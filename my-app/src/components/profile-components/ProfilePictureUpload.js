@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component to handle uploading a profile picture for the Fit Graph application.
  * 
- * @file src/components/ProfilePictureUpload.js
+ * @file src/components/profile-components/ProfilePictureUpload.js
  * 
  * Provides a modal interface for users to upload and update their profile picture.
  * Converts the selected image to a Base64 string and uploads it to the backend.
@@ -21,8 +21,8 @@
 
 import React, { useState } from 'react';
 import { Box, Button, Modal, Typography, Card, CardContent, CardActions, LinearProgress, Snackbar, Alert } from '@mui/material';
-import { uploadProfilePicture, getProfilePicture } from '../services/APIServices';
-import { getUser } from '../services/AuthService';
+import { uploadProfilePicture, getProfilePicture } from '../../services/APIServices';
+import { getUser } from '../../services/AuthService';
 
 /**
  * ProfilePictureUpload component for uploading a profile picture.

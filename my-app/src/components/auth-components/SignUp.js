@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for user registration functionality.
  * 
- * @file src/components/SignUp.js
+ * @file src/components/auth-components/SignUp.js
  * 
  * Provides a user interface for registering a new user account. 
  * Allows users to input their name, username, email, and password to create a new account. 
@@ -16,9 +16,9 @@
 
 import React, { useState } from 'react';
 import { Container, Typography, Box, TextField, FormControlLabel, Checkbox, Link, Grid, Button, Snackbar, Alert } from '@mui/material';
-import { setUserSession } from "../services/AuthService";
+import { setUserSession } from "../../services/AuthService";
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from "../services/APIServices"; // Import the registerUser function from APIServices
+import { registerUser } from "../../services/APIServices"; // Import the registerUser function from APIServices
 
 function SignUp() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' }); // State to handle Snackbar
@@ -146,10 +146,6 @@ function SignUp() {
             id="confirm-password"
             autoComplete="current-password"
           />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
           <Button
             type="submit"
             fullWidth
@@ -160,9 +156,7 @@ function SignUp() {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
+
             </Grid>
             <Grid item>
               <Link href="/login" variant="body2">

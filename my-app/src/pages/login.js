@@ -20,7 +20,7 @@ import React from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Box } from '@mui/material';
-import SignIn from '../components/SignIn';
+import SignIn from '../components/auth-components/SignIn';
 
 /**
  * Login page component that renders the login form along with the navbar and footer.

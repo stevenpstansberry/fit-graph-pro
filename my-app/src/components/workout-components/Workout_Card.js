@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for creating and managing workouts and workout splits.
  * 
- * @file src/components/WorkoutCard.js
+ * @file src/components/workout-components/WorkoutCard.js
  * 
  * Provides a user interface to add exercises to a workout or split, specify sets, reps, and weights, and save workouts to the backend.
  * Allows users to create custom workout splits and customize individual workouts by selecting exercises and adding details.

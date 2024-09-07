@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component to display the number of workouts per week for the user.
  * 
- * @file src/components/WorkoutsPerWeekChart.js
+ * @file src/components/profile-components/WorkoutsPerWeekChart.js
  * 
  * Uses Recharts to visualize the number of workouts completed each week as a bar chart.
  * 

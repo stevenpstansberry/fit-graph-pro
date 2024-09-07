@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import { Box, Typography, Button, Grid, Paper } from '@mui/material';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import ManualPasswordReset from '../components/ManualPasswordReset';
+import ManualPasswordReset from '../components/auth-components/ManualPasswordReset';
 import { getUser } from '../services/AuthService';
 
 function Account() {

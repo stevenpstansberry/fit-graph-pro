@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component to manage and display user workouts.
  *
- * @file src/components/ViewWorkouts.js
+ * @file src/components/workout-components/ViewWorkouts.js
  *
  * Exposes the `ViewWorkouts` component, which handles viewing workouts, filtering by date,
  * and adding new workouts for the authenticated user.

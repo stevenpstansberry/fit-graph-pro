@@ -4,7 +4,7 @@ import React from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Box } from '@mui/material';
-import ForgotPassword from '../components/ForgotPassword';
+import ForgotPassword from '../components/auth-components/ForgotPassword';
 
 
 function ResetPassword() {

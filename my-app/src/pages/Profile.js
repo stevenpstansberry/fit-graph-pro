@@ -4,9 +4,9 @@ import Navbar from '../components/Navbar';
 import { getUser, resetUserSession, getProfileImageUrlFromSession, setProfileImageUrlToSession } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, Avatar, Divider, CircularProgress, Collapse, IconButton } from '@mui/material';
-import WorkoutsPerWeekChart from '../components/WorkoutsPerWeekChart';
-import ProfilePictureUpload from '../components/ProfilePictureUpload'; 
-import RecentWorkouts from '../components/RecentWorkouts'; 
+import WorkoutsPerWeekChart from '../components/profile-components/WorkoutsPerWeekChart';
+import ProfilePictureUpload from '../components/profile-components/ProfilePictureUpload'; 
+import RecentWorkouts from '../components/profile-components/RecentWorkouts'; 
 import { getAllWorkouts, getProfilePicture } from '../services/APIServices';
 
 /**

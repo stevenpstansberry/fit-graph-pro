@@ -18,7 +18,7 @@
 import React from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import SignUp from '../components/SignUp';
+import SignUp from '../components/auth-components/SignUp';
 import { Box } from '@mui/material';
 
 /**

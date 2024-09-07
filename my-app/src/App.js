@@ -33,6 +33,8 @@ function App() {
       token: getToken()
     }
 
+
+    // TODO: move this to api services
     axios.post(verifyTokenAPIURL, requestBody).then(response => {
       setUserSession(response.data.user, response.data.token);
     }).catch(() => {

@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for visualizing the user's workout history in a line chart format.
  * 
- * @file src/components/StrengthChart.js
+ * @file src/components/workout-components/StrengthChart.js
  * 
  * Provides a user interface to select different exercises and timeframes to display a 
  * graph of total weight lifted and reps performed over time.

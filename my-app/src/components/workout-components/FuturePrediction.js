@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for predicting future performance based on user goals.
  * 
- * @file src/components/FuturePrediction.js
+ * @file src/components/workout-components/FuturePrediction.js
  * 
  * Provides a user interface to input target goals for weight and timeline and predict future workout performance.
  * 
