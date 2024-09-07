@@ -162,12 +162,19 @@ const fetchWorkouts = async () => {
 
   /**
    * Handles tab change.
+   * Prevent changing tabs if there are no workouts available.
    * 
    * @param {Object} event - The event object.
    * @param {number} newValue - The new value of the selected tab.
    */
   const handleTabChange = (event, newValue) => {
-    setTabIndex(newValue);
+    if (workoutHistory.length === 0 && newValue !== 0) {
+      setSnackbarMessage('Please add a workout first before exploring other tabs!');
+      setSnackbarSeverity('info');
+      setSnackbarOpen(true);
+    } else {
+      setTabIndex(newValue);
+    }
   };
 
   /**
