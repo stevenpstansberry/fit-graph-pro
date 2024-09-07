@@ -23,7 +23,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Autocomplete, TextField ,IconButton ,Box ,Modal ,Card ,CardContent ,Button ,Typography} from "@mui/material";
+import { Autocomplete, TextField ,IconButton ,Box ,Modal ,Card ,CardContent ,Button ,Typography, Alert, Snackbar} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./Exercise_Sub_Card";
 import { v4 as uuidv4 } from 'uuid'; 
@@ -52,6 +52,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
   const [message, setMessage] = useState('');
   const [exercises, setExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); 
 
   // Workout metadata
   const [workoutId, setWorkoutId] = useState(null);
@@ -119,12 +120,11 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     // Check to see if any exercises have been added
     if (exercises.length === 0) {
       setMessage("Workout is empty, add sets.");
-      console.log(message); 
+      setSnackbarOpen(true);
       return;
     }
 
     if (mode === "createWorkout") {
-
       // Check to see if any of the reps or weights are empty
       const isAnyExerciseEmpty = exercises.some(exercise => 
         exercise.sets.length === 0 || exercise.sets.some(set => set.weight === '' || set.reps === '')
@@ -132,7 +132,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
 
       if (isAnyExerciseEmpty) {
         setMessage("One or more exercises have empty sets, please fill them in.");
-        console.log(message);
+        setSnackbarOpen(true);
         return;
       }
 
@@ -155,7 +155,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
 
       if (isAnySetEmpty) {
         setMessage("One or more exercises have empty sets.");
-        console.log(message);
+        setSnackbarOpen(true);
         return;
       }
 
@@ -170,125 +170,143 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
           sets: exercise.sets.map(set => ({ setCount: set.setCount })) // Only include set count
         })),
       };
-      console.log(newSplitName);
       saveSplit(workoutSplit); 
     }
     onClose();
   };
 
-  return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      BackdropProps={{
-        style: { backgroundColor: 'rgba(0,0,0,0.5)' },
-      }}
-    >
-      <Card
-        sx={{
-          maxWidth: 1000,
-          minWidth: 1000,
-          maxHeight: 600,
-          minHeight: 600,
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          bgcolor: 'background.paper',
-          border: '2px solid #000',
-          boxShadow: 12,
-          p: 4,
-          overflowY: 'auto',
+    // Handle closing the snackbar
+    const handleCloseSnackbar = () => {
+      setSnackbarOpen(false);
+    };
+
+    return (
+      <Modal
+        open={open}
+        onClose={onClose}
+        BackdropProps={{
+          style: { backgroundColor: 'rgba(0,0,0,0.5)' },
         }}
       >
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
+        <Card
           sx={{
+            maxWidth: 1000,
+            minWidth: 1000,
+            maxHeight: 600,
+            minHeight: 600,
             position: 'absolute',
-            left: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 12,
+            p: 4,
+            overflowY: 'auto',
           }}
         >
-          <CloseIcon />
-        </IconButton>
-
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {mode === "addSplit" ? "Create a Workout Split" : "Add a Workout"}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            {mode === "addSplit"
-              ? "Define your workout split by adding exercises and specifying the number of sets."
-              : "Add exercises to your workout and customize sets, weights, and reps."}
-          </Typography>
-
-          <Box
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              mb: 2,
-              position: 'sticky',
-              top: 0,
-              zIndex: 10,
-              backgroundColor: 'white',
-              paddingBottom: 2,
-              borderBottom: '1px solid #ccc',
+              position: 'absolute',
+              left: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
             }}
           >
-            <Autocomplete
-              disablePortal
-              id="combo-box-demo"
-              options={strengthWorkouts}
-              value={selectedExercise}
-              onChange={(event, newValue) => {
-                setSelectedExercise(newValue);
-              }}
-              inputValue={inputValue}
-              onInputChange={(event, newInputValue) => {
-                setInputValue(newInputValue);
-              }}
-              sx={{ width: 300, mr: 2 }}
-              renderInput={(params) => <TextField {...params} label="Exercise" />}
-            />
-            <Button onClick={addExercise} variant="contained" color="primary">
-              Add Exercise
-            </Button>
-          </Box>
-
-          {/* List of exercises */}
-          <Box>
-            {exercises.map((exercise, index) => (
-              <ExerciseSubcard
-                key={index}
-                exercise={exercise}
-                index={index}
-                removeExercise={removeExercise}
-                updateExerciseSets={updateExerciseSets}
-                allowWeightAndReps={mode === "createWorkout"} // Show weights/reps only in "createWorkout" mode
-              />
-            ))}
-          </Box>
-
-          {/* Create Workout button at the bottom */}
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              size="large"
-              variant="contained"
-              onClick={createWorkout}
+            <CloseIcon />
+          </IconButton>
+  
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              {mode === "addSplit" ? "Create a Workout Split" : "Add a Workout"}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              {mode === "addSplit"
+                ? "Define your workout split by adding exercises and specifying the number of sets."
+                : "Add exercises to your workout and customize sets, weights, and reps."}
+            </Typography>
+  
+            <Box
               sx={{
-                boxShadow: 4,
+                display: 'flex',
+                alignItems: 'center',
+                mb: 2,
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
+                backgroundColor: 'white',
+                paddingBottom: 2,
+                borderBottom: '1px solid #ccc',
               }}
             >
-              {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
-    </Modal>
-  );
-}
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                options={strengthWorkouts}
+                value={selectedExercise}
+                onChange={(event, newValue) => {
+                  setSelectedExercise(newValue);
+                }}
+                inputValue={inputValue}
+                onInputChange={(event, newInputValue) => {
+                  setInputValue(newInputValue);
+                }}
+                sx={{ width: 300, mr: 2 }}
+                renderInput={(params) => <TextField {...params} label="Exercise" />}
+              />
+              <Button onClick={addExercise} variant="contained" color="primary">
+                Add Exercise
+              </Button>
+            </Box>
+  
+            {/* List of exercises */}
+            <Box>
+              {exercises.map((exercise, index) => (
+                <ExerciseSubcard
+                  key={index}
+                  exercise={exercise}
+                  index={index}
+                  removeExercise={removeExercise}
+                  updateExerciseSets={updateExerciseSets}
+                  allowWeightAndReps={mode === "createWorkout"} // Show weights/reps only in "createWorkout" mode
+                />
+              ))}
+            </Box>
+  
+            {/* Create Workout button at the bottom */}
+            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
+              {/* Snackbar positioned to the left of the button */}
+              <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={4000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                sx={{ position: 'absolute', right: 180, bottom: 20 }} // Position to the left of the button
+              >
+                <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+                  {message}
+                </Alert>
+              </Snackbar>
+  
+              <Button
+                size="large"
+                variant="contained"
+                onClick={createWorkout}
+                sx={{
+                  boxShadow: 4,
+                  marginLeft: 'auto',
+                }}
+              >
+                {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      </Modal>
+    );
+  }
 
 export default Workout_Card;
 
