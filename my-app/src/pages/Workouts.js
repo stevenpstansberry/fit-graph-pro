@@ -19,17 +19,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import Workout_Card from '../components/Workout_Card';
-import { getUser } from '../services/AuthService';
+import { getUser,getSessionData, setSessionData } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
 import StrengthChart from '../components/StrengthChart';
 import FuturePrediction from '../components/FuturePrediction';
 import HeatMap from '../components/HeatMap';
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
 
-// API URLs
-const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
-const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
-const getAllSplitsURL = fitGraphProd + "/splits/all/";
+
 
 // TODO: add logic to see avg growth for exercises, max, estimated time to reach goal...
 // TODO: add logic to store workouts in session
@@ -78,59 +75,90 @@ function Workouts() {
       fetchWorkoutsAndSplits();
     }
   }, [name]);
-
+  
   /**
    * Fetches workouts and splits for the user and updates state.
+   * Checks session storage first to avoid redundant API calls.
    */
   const fetchWorkoutsAndSplits = async () => {
     setIsLoading(true); // Start loading for load icon
     try {
-      await fetchWorkouts();
-      await fetchSplits();
+      // Attempt to retrieve from session storage first
+      const storedWorkouts = getSessionData('workouts');
+      const storedSplits = getSessionData('splits');
+  
+      if (storedWorkouts) {
+        // Parse date strings back into Date objects
+        const parsedWorkouts = storedWorkouts.map(workout => ({
+          ...workout,
+          date: new Date(workout.date), // Convert back to Date object
+        }));
+        setWorkoutHistory(parsedWorkouts);
+      } else {
+        await fetchWorkouts(); // Fetch from API if not found in session
+      }
+  
+      if (storedSplits) {
+        setUserSplits(storedSplits);
+      } else {
+        await fetchSplits(); // Fetch from API if not found in session
+      }
     } finally {
       setIsLoading(false); // End loading for load icon
     }
   };
-
-  /**
-   * Fetches workouts for the user and updates state.
-   */
-  const fetchWorkouts = async () => {
-    try {
-      const data = await getAllWorkouts(name);
-      console.log('Workouts API Response:', data);
-
-      if (data && Array.isArray(data)) {
-        const formattedWorkouts = data.map(workout => ({
-          ...workout,
-          date: new Date(workout.date), // Convert date to Date object
-        }));
-        setWorkoutHistory(formattedWorkouts);
-      }
-    } catch (error) {
-      console.error('Error fetching workouts:', error);
-    }
-  };
+  
+  
 /**
- * Fetches splits for the user and updates state.
+ * Fetches workouts for the user and updates state.
  */
-const fetchSplits = async () => {
+const fetchWorkouts = async () => {
   try {
-    const data = await getAllSplits(name);
-    console.log('Splits API Response:', data);
+    const data = await getAllWorkouts(name);
+    console.log('Workouts API Response:', data);
 
     if (data && Array.isArray(data)) {
-      const formattedSplits = data.map(split => ({
-        splitId: split.splitId,
-        name: split.splitName,
-        exercises: split.exercises,
+      const formattedWorkouts = data.map(workout => ({
+        ...workout,
+        date: new Date(workout.date), // Convert date to Date object
       }));
-      setUserSplits(formattedSplits);
+      setWorkoutHistory(formattedWorkouts);
+      
+      // Convert Date objects to ISO strings for storage
+      const workoutsToStore = formattedWorkouts.map(workout => ({
+        ...workout,
+        date: workout.date.toISOString(),
+      }));
+      setSessionData('workouts', workoutsToStore);
     }
   } catch (error) {
-    console.error('Error fetching splits:', error);
+    console.error('Error fetching workouts:', error);
   }
 };
+  
+  /**
+   * Fetches splits for the user and updates state.
+   */
+  const fetchSplits = async () => {
+    try {
+      const data = await getAllSplits(name);
+      console.log('Splits API Response:', data);
+  
+      if (data && Array.isArray(data)) {
+        const formattedSplits = data.map(split => ({
+          splitId: split.splitId,
+          name: split.splitName,
+          exercises: split.exercises,
+        }));
+        setUserSplits(formattedSplits);
+        
+        // Save splits to session storage
+        setSessionData('splits', formattedSplits);
+      }
+    } catch (error) {
+      console.error('Error fetching splits:', error);
+    }
+  };
 
   /**
    * Handles tab change.
@@ -180,37 +208,67 @@ const fetchSplits = async () => {
     setNewWorkoutExercises([]); // Clear the exercise selection
   };
 
-    // Confirm and delete the selected item (workout or split)
-    const confirmDelete = async () => {
-      if (deleteType === 'workout') {
-        try {
-          await deleteWorkout(itemToDelete);
-          setWorkoutHistory(prevWorkouts => prevWorkouts.filter(workout => workout.workoutId !== itemToDelete));
-          setSnackbarMessage('Workout deleted successfully!');
-          setSnackbarSeverity('success');
-          setSnackbarOpen(true);
-        } catch (error) {
-          console.error("Failed to delete workout:", error);
-          setSnackbarMessage('Failed to delete workout.');
-          setSnackbarSeverity('error');
-          setSnackbarOpen(true);
-        }
-      } else if (deleteType === 'split') {
-        try {
-          await deleteSplit(itemToDelete);
-          setUserSplits(prevSplits => prevSplits.filter(split => split.splitId !== itemToDelete));
-          setSnackbarMessage('Split deleted successfully!');
-          setSnackbarSeverity('success');
-          setSnackbarOpen(true);
-        } catch (error) {
-          console.error("Failed to delete split:", error);
-          setSnackbarMessage('Failed to delete split.');
-          setSnackbarSeverity('error');
-          setSnackbarOpen(true);
-        }
+  /**
+   * Confirm and delete the selected item (workout or split)
+   */
+  const confirmDelete = async () => {
+    if (deleteType === 'workout') {
+      try {
+        // Delete the workout from the backend
+        await deleteWorkout(itemToDelete);
+        
+        // Update state
+        const updatedWorkouts = workoutHistory.filter(workout => workout.workoutId !== itemToDelete);
+        setWorkoutHistory(updatedWorkouts);
+
+        // Update session storage
+        const workoutsToStore = updatedWorkouts.map(workout => ({
+          ...workout,
+          date: workout.date.toISOString(), // Store date as a string in ISO format
+        }));
+        setSessionData('workouts', workoutsToStore); // Save to session storage
+
+        // Show success Snackbar
+        setSnackbarMessage('Workout deleted successfully!');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error("Failed to delete workout:", error);
+
+        // Show error Snackbar
+        setSnackbarMessage('Failed to delete workout.');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
       }
-      setConfirmDialogOpen(false); // Close confirmation dialog after deleting
-    };
+    } else if (deleteType === 'split') {
+      try {
+        // Delete the split from the backend
+        await deleteSplit(itemToDelete);
+        
+        // Update state
+        const updatedSplits = userSplits.filter(split => split.splitId !== itemToDelete);
+        setUserSplits(updatedSplits);
+
+        // Update session storage
+        setSessionData('splits', updatedSplits); // Save to session storage
+
+        // Show success Snackbar
+        setSnackbarMessage('Split deleted successfully!');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error("Failed to delete split:", error);
+
+        // Show error Snackbar
+        setSnackbarMessage('Failed to delete split.');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
+    }
+
+    setConfirmDialogOpen(false); // Close confirmation dialog after deleting
+  };
+
 
   /**
    * Deletes a workout by ID.
@@ -236,12 +294,22 @@ const fetchSplits = async () => {
     try {
       const workoutWithDate = {
         ...workout,
-        date: new Date(workout.date),
+        date: new Date(workout.date), // Ensure the date is a Date object
       };
-      
-      setWorkoutHistory([...workoutHistory, workoutWithDate]);
+
+      // Update state
+      const updatedWorkoutHistory = [...workoutHistory, workoutWithDate];
+      setWorkoutHistory(updatedWorkoutHistory);
       console.log("Saved Workout: ", workoutWithDate);
-  
+
+      // Update session storage with the new workout
+      const workoutsToStore = updatedWorkoutHistory.map(workout => ({
+        ...workout,
+        date: workout.date.toISOString(), // Store date as a string in ISO format
+      }));
+      setSessionData('workouts', workoutsToStore); // Save to session storage
+
+      // Upload the workout to the backend
       await uploadWorkout(workout);
       console.log("Workout uploaded Successfully");
 
@@ -259,17 +327,24 @@ const fetchSplits = async () => {
     }
   };
 
+
   /**
    * Saves a workout split to the backend and updates state.
    * 
    * @async
    * @param {Object} split - The split object to save.
-   */  
+   */
   const saveSplit = async (split) => {
     try {
-      setUserSplits([...userSplits, split]);
+      // Update state
+      const updatedUserSplits = [...userSplits, split];
+      setUserSplits(updatedUserSplits);
       console.log("Saved Workout Split: ", split);
-  
+
+      // Update session storage with the new split
+      setSessionData('splits', updatedUserSplits); // Save to session storage
+
+      // Upload the split to the backend
       await uploadSplit(split);
       console.log("Split uploaded successfully");
 
