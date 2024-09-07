@@ -21,6 +21,7 @@ import Navbar from '../components/Navbar';
 import Workout_Card from '../components/Workout_Card';
 import { getUser,getSessionData, setSessionData } from '../services/AuthService';
 import WorkoutCardPreview from '../components/WorkoutCardPreview';
+import ViewWorkouts from '../components/ViewWorkouts';
 import StrengthChart from '../components/StrengthChart';
 import FuturePrediction from '../components/FuturePrediction';
 import HeatMap from '../components/HeatMap';
@@ -29,7 +30,6 @@ import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts,
 
 
 // TODO: add logic to see avg growth for exercises, max, estimated time to reach goal...
-// TODO: add logic to store workouts in session
 
 /**
  * Main component to manage user workouts and splits.
@@ -493,110 +493,18 @@ const fetchWorkouts = async () => {
       ) : (
         <>
           {tabIndex === 0 && (
-            <Box>
-              {/* View Workouts */}
-              <Box
-                sx={{
-                  flexGrow: 1,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  textAlign: 'center',
-                }}
-              >
-                <Typography variant="h4" component="p" sx={{ mb: 4 }}>
-                  Your Workouts for {name}
-                </Typography>
-
-                {/* Sticky container for selectors and button */}
-                <Box
-                  sx={{
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 100,
-                    backgroundColor: 'white',
-                    padding: '10px 0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 2,
-                    mb: 4,
-                    width: '100%',
-                  }}
-                >
-                  <Select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                  >
-                    {monthNames.map((month, index) => (
-                      <MenuItem key={index} value={index + 1}>
-                        {month}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <Select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                  >
-                    {[2023, 2024, 2025].map((year) => (
-                      <MenuItem key={year} value={year}>
-                        {year}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </Box>
-
-                {/* Conditionally render workout cards */}
-                {filteredWorkouts.length > 0 ? (
-                  <Box
-                    sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}
-                  >
-                    {filteredWorkouts.map((workout, index) => (
-                      <WorkoutCardPreview
-                        key={workout.workoutId || index}
-                        workout={workout}
-                        onDelete={() => handleDeleteWorkout(workout.workoutId)}
-                      />
-                    ))}
-                  </Box>
-                ) : (
-                  <Typography variant="h6" sx={{ mb: 4 }}>
-                    No workouts for {monthNames[selectedMonth - 1]} {selectedYear}
-                  </Typography>
-                )}
-
-                {/* Workout creation buttons and edit icon */}
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 4, gap: 2 }}>
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    {/* Default Workout Button */}
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => toggleAddWorkoutCard([], 'createWorkout', "Default")}
-                      sx={{ padding: '10px 20px', fontSize: '16px' }}
-                    >
-                      Add Default Workout
-                    </Button>
-
-                    {/* Dynamically generate predefined workout buttons */}
-                    {userSplits.map((workout, index) => (
-                      <Button
-                        key={index}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => toggleAddWorkoutCard(workout.exercises, 'createWorkout', workout.name)}
-                        sx={{ padding: '10px 20px', fontSize: '16px' }}
-                      >
-                        Add {workout.name}
-                      </Button>
-                    ))}
-                  </Box>
-                  <IconButton onClick={handleOpenEditDialog}>
-                    <EditIcon />
-                  </IconButton>
-                </Box>
-              </Box>
-            </Box>
+            <ViewWorkouts
+              name={name}
+              filteredWorkouts={filteredWorkouts}
+              selectedMonth={selectedMonth}
+              setSelectedMonth={setSelectedMonth}
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
+              toggleAddWorkoutCard={toggleAddWorkoutCard}
+              userSplits={userSplits}
+              handleDeleteWorkout={handleDeleteWorkout}
+              handleOpenEditDialog={handleOpenEditDialog}
+            />
           )}
 
           {tabIndex === 1 && (
