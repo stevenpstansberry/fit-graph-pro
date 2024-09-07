@@ -31,12 +31,12 @@ const userTable = 'fit-graph-users';
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
 async function verifyPassword(user) {
-  const { email, username, password } = user;
+  const { username, password } = user;
   
   // Check if the user object and credentials are provided
-  if (!user || !email || !username || !password) {
+  if (!user ||  !username || !password) {
     return util.buildResponse(401, {
-      message: 'email, username, and password are required'
+      message: ' username, and password are required'
     });
   }
 
