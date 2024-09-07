@@ -83,5 +83,34 @@ module.exports = {
    */
   setProfileImageUrlToSession: function(url) {
     sessionStorage.setItem('profileImageUrl', url);
-  }
+  },
+
+  /**
+   * Retrieves data from session storage.
+   * 
+   * @function getSessionData
+   * @param {string} key - The key for the session storage item.
+   * @returns {Object|null} The parsed object from session storage if available, otherwise null.
+   */
+   getSessionData : function (key) {
+    const data = sessionStorage.getItem(key);
+    if (data === 'undefined' || !data) {
+      return null;
+    } else {
+      return JSON.parse(data);
+    }
+  },
+
+  /**
+   * Saves data to session storage.
+   * 
+   * @function setSessionData
+   * @param {string} key - The key for the session storage item.
+   * @param {Object} value - The value to be saved in session storage.
+   */
+   setSessionData : function (key, value) {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  }  
 };
+
+

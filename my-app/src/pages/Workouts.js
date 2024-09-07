@@ -26,10 +26,6 @@ import FuturePrediction from '../components/FuturePrediction';
 import HeatMap from '../components/HeatMap';
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
 
-// API URLs
-const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
-const getAllWorkoutsURL = fitGraphProd + "/workouts/all/";
-const getAllSplitsURL = fitGraphProd + "/splits/all/";
 
 // TODO: add logic to see avg growth for exercises, max, estimated time to reach goal...
 // TODO: add logic to store workouts in session
