@@ -124,16 +124,29 @@ const HeatMap = ({ workoutHistory }) => {
 
   return (
     <Box sx={{ display: 'flex', padding: 4 }}>
-      {/* Heat Map Model */}
+      {/* Heat Map Model Container */}
       <Box sx={{ flex: 1 }}>
         <Typography variant="h4" gutterBottom>
           Workout Heat Map
         </Typography>
-        <Model
-          data={data}
-          style={{ width: '20rem', padding: '5rem' }}
-          onClick={handleClick}
-        />
+        
+        {/* Front and Posterior Models Side by Side */}
+        <Box sx={{ display: 'flex', gap: 4 }}>
+          {/* Front View Model */}
+          <Model
+            data={data}
+            style={{ width: '20rem', padding: '2rem' }}
+            onClick={handleClick}
+          />
+
+          {/* Posterior View Model */}
+          <Model
+            type='posterior'
+            data={data}
+            style={{ width: '20rem', padding: '2rem' }}
+            onClick={handleClick}
+          />
+        </Box>
       </Box>
 
       {/* Workout Statistics */}
