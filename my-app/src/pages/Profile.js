@@ -157,38 +157,60 @@ function Profile() {
           <CircularProgress /> // Single loading spinner for both sections
         ) : (
           <>
-            {/* Workouts Per Week Chart */}
-            <Typography variant="h5" gutterBottom>
-              Workouts Per Week
-            </Typography>
-            <WorkoutsPerWeekChart recentWorkouts={workoutsPerWeek} /> {/* Chart component to display workouts per week */}
+            {workoutsPerWeek.length > 0 ? (
+              <>
+                {/* Workouts Per Week Chart */}
+                <Typography variant="h5" gutterBottom>
+                  Workouts Per Week
+                </Typography>
+                <WorkoutsPerWeekChart recentWorkouts={workoutsPerWeek} /> {/* Chart component to display workouts per week */}
 
-            {/* Divider */}
-            <Divider sx={{ width: '100%', my: 4 }} />
+                {/* Divider */}
+                <Divider sx={{ width: '100%', my: 4 }} />
+              </>
+            ) : (
+              <Box sx={{ textAlign: 'center', my: 4 }}>
+                <Typography variant="h6" color="textSecondary">
+                  No workouts found yet.
+                </Typography>
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  sx={{ mt: 2 }} 
+                  onClick={() => navigate('/workouts')}
+                >
+                  Start Your First Workout
+                </Button>
+              </Box>
+            )}
 
-            {/* Recent Workouts Section */}
-            <Typography variant="h5" gutterBottom>
-              Recent Workouts
-            </Typography>
-            <Grid container spacing={3}>
-              {recentWorkouts.map((workout) => (
-                <Grid item xs={12} md={6} key={workout.workoutId}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6">{workout.type}</Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        Date: {new Date(workout.date).toLocaleDateString()}
-                      </Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Button size="small" color="primary">
-                        View Details
-                      </Button>
-                    </CardActions>
-                  </Card>
+            {recentWorkouts.length > 0 ? (
+              <>
+                {/* Recent Workouts Section */}
+                <Typography variant="h5" gutterBottom>
+                  Recent Workouts
+                </Typography>
+                <Grid container spacing={3}>
+                  {recentWorkouts.map((workout) => (
+                    <Grid item xs={12} md={6} key={workout.workoutId}>
+                      <Card>
+                        <CardContent>
+                          <Typography variant="h6">{workout.type}</Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            Date: {new Date(workout.date).toLocaleDateString()}
+                          </Typography>
+                        </CardContent>
+                        <CardActions>
+                          <Button size="small" color="primary">
+                            View Details
+                          </Button>
+                        </CardActions>
+                      </Card>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
+              </>
+            ) : null}
           </>
         )}
 
