@@ -7,7 +7,7 @@
  * Allows users to add, update, and remove sets, and conditionally display fields based on mode and props.
  *
  * @version 1.0.0
- * @author [Your Name]
+ * @author Steven Stansberry
  */
 
 import React from "react";

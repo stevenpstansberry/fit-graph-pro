@@ -53,6 +53,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
   const [exercises, setExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false); 
+  const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises
 
   // Workout metadata
   const [workoutId, setWorkoutId] = useState(null);
@@ -64,6 +65,12 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       setExercises(preloadedExercises);
       setWorkoutId(uuidv4()); // Generate a unique ID for the workout
       setWorkoutDate(new Date().toLocaleDateString()); // Set today's date for the workout
+      
+      // Filter out preloaded exercises from the available exercises
+      const filteredExercises = strengthWorkouts.filter(
+        (exercise) => !preloadedExercises.some(preloaded => preloaded.label === exercise.label)
+      );
+      setAvailableExercises(filteredExercises);
     }
   }, [open, preloadedExercises]);
 
@@ -79,6 +86,12 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       };
 
       setExercises([...exercises, newExercise]);
+
+      // Remove the selected exercise from the dropdown options
+      setAvailableExercises((prevExercises) =>
+        prevExercises.filter((exercise) => exercise.label !== selectedExercise.label)
+      );
+      setSelectedExercise(null);  // Reset the selected exercise
     }
   };
 
@@ -88,8 +101,12 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
    * @param {number} index - Index of the exercise to remove.
    */
   const removeExercise = (index) => {
+    const exerciseToRemove = exercises[index]; // Exercise being removed
     const newExercises = exercises.filter((_, i) => i !== index);
     setExercises(newExercises);
+
+    // Add the removed exercise back to the available options
+    setAvailableExercises((prevExercises) => [...prevExercises, exerciseToRemove]);
   };
 
   /**
@@ -136,7 +153,6 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
         return;
       }
 
-      // TODO bandaid solution by incorporating both id and workoutID into object due to discrepancy
       let workout = {
         id,
         workoutId: id,
@@ -175,138 +191,138 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     onClose();
   };
 
-    // Handle closing the snackbar
-    const handleCloseSnackbar = () => {
-      setSnackbarOpen(false);
-    };
+  // Handle closing the snackbar
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
 
-    return (
-      <Modal
-        open={open}
-        onClose={onClose}
-        BackdropProps={{
-          style: { backgroundColor: 'rgba(0,0,0,0.5)' },
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      BackdropProps={{
+        style: { backgroundColor: 'rgba(0,0,0,0.5)' },
+      }}
+    >
+      <Card
+        sx={{
+          maxWidth: 1000,
+          minWidth: 1000,
+          maxHeight: 600,
+          minHeight: 600,
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          bgcolor: 'background.paper',
+          border: '2px solid #000',
+          boxShadow: 12,
+          p: 4,
+          overflowY: 'auto',
         }}
       >
-        <Card
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
           sx={{
-            maxWidth: 1000,
-            minWidth: 1000,
-            maxHeight: 600,
-            minHeight: 600,
             position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            border: '2px solid #000',
-            boxShadow: 12,
-            p: 4,
-            overflowY: 'auto',
+            left: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
           }}
         >
-          <IconButton
-            aria-label="close"
-            onClick={onClose}
+          <CloseIcon />
+        </IconButton>
+
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="div">
+            {mode === "addSplit" ? "Create a Workout Split" : "Add a Workout"}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {mode === "addSplit"
+              ? "Define your workout split by adding exercises and specifying the number of sets."
+              : "Add exercises to your workout and customize sets, weights, and reps."}
+          </Typography>
+
+          <Box
             sx={{
-              position: 'absolute',
-              left: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
+              display: 'flex',
+              alignItems: 'center',
+              mb: 2,
+              position: 'sticky',
+              top: 0,
+              zIndex: 10,
+              backgroundColor: 'white',
+              paddingBottom: 2,
+              borderBottom: '1px solid #ccc',
             }}
           >
-            <CloseIcon />
-          </IconButton>
-  
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              {mode === "addSplit" ? "Create a Workout Split" : "Add a Workout"}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              {mode === "addSplit"
-                ? "Define your workout split by adding exercises and specifying the number of sets."
-                : "Add exercises to your workout and customize sets, weights, and reps."}
-            </Typography>
-  
-            <Box
+            <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              options={availableExercises} // Dynamically updated available exercises
+              value={selectedExercise}
+              onChange={(event, newValue) => {
+                setSelectedExercise(newValue);
+              }}
+              inputValue={inputValue}
+              onInputChange={(event, newInputValue) => {
+                setInputValue(newInputValue);
+              }}
+              sx={{ width: 300, mr: 2 }}
+              renderInput={(params) => <TextField {...params} label="Exercise" />}
+            />
+            <Button onClick={addExercise} variant="contained" color="primary">
+              Add Exercise
+            </Button>
+          </Box>
+
+          {/* List of exercises */}
+          <Box>
+            {exercises.map((exercise, index) => (
+              <ExerciseSubcard
+                key={index}
+                exercise={exercise}
+                index={index}
+                removeExercise={removeExercise}
+                updateExerciseSets={updateExerciseSets}
+                allowWeightAndReps={mode === "createWorkout"} // Show weights/reps only in "createWorkout" mode
+              />
+            ))}
+          </Box>
+
+          {/* Create Workout button at the bottom */}
+          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
+            {/* Snackbar positioned to the left of the button */}
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={4000}
+              onClose={handleCloseSnackbar}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+              sx={{ position: 'absolute', right: 180, bottom: 20 }} // Position to the left of the button
+            >
+              <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+                {message}
+              </Alert>
+            </Snackbar>
+
+            <Button
+              size="large"
+              variant="contained"
+              onClick={createWorkout}
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                mb: 2,
-                position: 'sticky',
-                top: 0,
-                zIndex: 10,
-                backgroundColor: 'white',
-                paddingBottom: 2,
-                borderBottom: '1px solid #ccc',
+                boxShadow: 4,
+                marginLeft: 'auto',
               }}
             >
-              <Autocomplete
-                disablePortal
-                id="combo-box-demo"
-                options={strengthWorkouts}
-                value={selectedExercise}
-                onChange={(event, newValue) => {
-                  setSelectedExercise(newValue);
-                }}
-                inputValue={inputValue}
-                onInputChange={(event, newInputValue) => {
-                  setInputValue(newInputValue);
-                }}
-                sx={{ width: 300, mr: 2 }}
-                renderInput={(params) => <TextField {...params} label="Exercise" />}
-              />
-              <Button onClick={addExercise} variant="contained" color="primary">
-                Add Exercise
-              </Button>
-            </Box>
-  
-            {/* List of exercises */}
-            <Box>
-              {exercises.map((exercise, index) => (
-                <ExerciseSubcard
-                  key={index}
-                  exercise={exercise}
-                  index={index}
-                  removeExercise={removeExercise}
-                  updateExerciseSets={updateExerciseSets}
-                  allowWeightAndReps={mode === "createWorkout"} // Show weights/reps only in "createWorkout" mode
-                />
-              ))}
-            </Box>
-  
-            {/* Create Workout button at the bottom */}
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
-              {/* Snackbar positioned to the left of the button */}
-              <Snackbar
-                open={snackbarOpen}
-                autoHideDuration={4000}
-                onClose={handleCloseSnackbar}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                sx={{ position: 'absolute', right: 180, bottom: 20 }} // Position to the left of the button
-              >
-                <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
-                  {message}
-                </Alert>
-              </Snackbar>
-  
-              <Button
-                size="large"
-                variant="contained"
-                onClick={createWorkout}
-                sx={{
-                  boxShadow: 4,
-                  marginLeft: 'auto',
-                }}
-              >
-                {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
-      </Modal>
-    );
-  }
+              {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+    </Modal>
+  );
+}
 
 export default Workout_Card;
 
