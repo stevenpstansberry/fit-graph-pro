@@ -208,37 +208,67 @@ const fetchWorkouts = async () => {
     setNewWorkoutExercises([]); // Clear the exercise selection
   };
 
-    // Confirm and delete the selected item (workout or split)
-    const confirmDelete = async () => {
-      if (deleteType === 'workout') {
-        try {
-          await deleteWorkout(itemToDelete);
-          setWorkoutHistory(prevWorkouts => prevWorkouts.filter(workout => workout.workoutId !== itemToDelete));
-          setSnackbarMessage('Workout deleted successfully!');
-          setSnackbarSeverity('success');
-          setSnackbarOpen(true);
-        } catch (error) {
-          console.error("Failed to delete workout:", error);
-          setSnackbarMessage('Failed to delete workout.');
-          setSnackbarSeverity('error');
-          setSnackbarOpen(true);
-        }
-      } else if (deleteType === 'split') {
-        try {
-          await deleteSplit(itemToDelete);
-          setUserSplits(prevSplits => prevSplits.filter(split => split.splitId !== itemToDelete));
-          setSnackbarMessage('Split deleted successfully!');
-          setSnackbarSeverity('success');
-          setSnackbarOpen(true);
-        } catch (error) {
-          console.error("Failed to delete split:", error);
-          setSnackbarMessage('Failed to delete split.');
-          setSnackbarSeverity('error');
-          setSnackbarOpen(true);
-        }
+  /**
+   * Confirm and delete the selected item (workout or split)
+   */
+  const confirmDelete = async () => {
+    if (deleteType === 'workout') {
+      try {
+        // Delete the workout from the backend
+        await deleteWorkout(itemToDelete);
+        
+        // Update state
+        const updatedWorkouts = workoutHistory.filter(workout => workout.workoutId !== itemToDelete);
+        setWorkoutHistory(updatedWorkouts);
+
+        // Update session storage
+        const workoutsToStore = updatedWorkouts.map(workout => ({
+          ...workout,
+          date: workout.date.toISOString(), // Store date as a string in ISO format
+        }));
+        setSessionData('workouts', workoutsToStore); // Save to session storage
+
+        // Show success Snackbar
+        setSnackbarMessage('Workout deleted successfully!');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error("Failed to delete workout:", error);
+
+        // Show error Snackbar
+        setSnackbarMessage('Failed to delete workout.');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
       }
-      setConfirmDialogOpen(false); // Close confirmation dialog after deleting
-    };
+    } else if (deleteType === 'split') {
+      try {
+        // Delete the split from the backend
+        await deleteSplit(itemToDelete);
+        
+        // Update state
+        const updatedSplits = userSplits.filter(split => split.splitId !== itemToDelete);
+        setUserSplits(updatedSplits);
+
+        // Update session storage
+        setSessionData('splits', updatedSplits); // Save to session storage
+
+        // Show success Snackbar
+        setSnackbarMessage('Split deleted successfully!');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error("Failed to delete split:", error);
+
+        // Show error Snackbar
+        setSnackbarMessage('Failed to delete split.');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
+    }
+
+    setConfirmDialogOpen(false); // Close confirmation dialog after deleting
+  };
+
 
   /**
    * Deletes a workout by ID.
