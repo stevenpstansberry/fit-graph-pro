@@ -33,12 +33,6 @@ import WorkoutDetailsCard from './WorkoutDetailsCard'
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-/**
- * Converts a month number to a month name.
- * @param {number} monthNumber - The number of the month (1-12).
- * @returns {string} The name of the month.
- */
-const monthNumberToName = (monthNumber) => monthNames[monthNumber - 1];
 
 /**
  * Converts a month name to a month number.
@@ -328,68 +322,78 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
 
           </Box>
         )}
-        {/* Checkboxes to toggle weight and reps display */}
-        <Box sx={{ mt: 2 }}>
-          <FormControlLabel
-            control={<Checkbox checked={showWeight} onChange={() => setShowWeight(!showWeight)} />}
-            label="Show Weight"
-          />
-          <FormControlLabel
-            control={<Checkbox checked={showReps} onChange={() => setShowReps(!showReps)} />}
-            label="Show Reps"
-          />
-        </Box>
+         {/* Check if there are enough workouts to display a chart */}
+         {displayData.length <= 1 ? (
+        <Typography variant="h6" color="error" sx={{ mt: 4 }}>
+          You only have {displayData.length} workout(s) under the current filters. You need at least two under the selected filters.
+        </Typography>
+        ) : (
+          <>
 
-        <Container sx={{ mt: 2 }}>
-          {/* Button to toggle statistics visibility */}
-          <Button
-            variant="text"
-            onClick={() => setShowStats(!showStats)}
-            sx={{ mt: 2, mb: 2 }}
-          >
-            {showStats ? 'Hide Statistics' : 'Show Statistics'}
-          </Button>
 
-          {/* Collapsible Exercise Stats */}
-          <Collapse in={showStats}>
-            <Grid container spacing={2} sx={{ mt: 2 }}>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="body1"><strong>Max Weight:</strong> {stats.maxWeight} lbs</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="body1"><strong>Average Weight:</strong> {stats.averageWeight} lbs</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="body1"><strong>Max Reps:</strong> {stats.maxReps}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="body1"><strong>Total Volume:</strong> {stats.totalVolume} lbs</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="body1"><strong>Average Volume per Workout:</strong> {stats.averageVolumePerWorkout} lbs</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="body1"><strong>Workout Count:</strong> {stats.workoutCount}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography variant="body1"><strong>Predicted 1RM:</strong> {stats.maxPredicted1RM} lbs</Typography>
-              </Grid>
-            </Grid>
-          </Collapse>
-        </Container>
+            {/* Checkboxes to toggle weight and reps display */}
+            <Box sx={{ mt: 2 }}>
+              <FormControlLabel
+                control={<Checkbox checked={showWeight} onChange={() => setShowWeight(!showWeight)} />}
+                label="Show Weight"
+              />
+              <FormControlLabel
+                control={<Checkbox checked={showReps} onChange={() => setShowReps(!showReps)} />}
+                label="Show Reps"
+              />
+            </Box>
 
-        {/* Line Chart Display */}
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={displayData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip content={<CustomTooltip />} /> {/* Use custom tooltip for displaying workout details */}
-            <Legend />
-            {showWeight && <Line type="monotone" dataKey="weight" stroke="#8884d8" />}
-            {showReps && <Line type="monotone" dataKey="reps" stroke="#82ca9d" />}
-          </LineChart>
-        </ResponsiveContainer>
+            <Container sx={{ mt: 2 }}>
+              {/* Button to toggle statistics visibility */}
+              <Button
+                variant="text"
+                onClick={() => setShowStats(!showStats)}
+                sx={{ mt: 2, mb: 2 }}
+              >
+                {showStats ? 'Hide Statistics' : 'Show Statistics'}
+              </Button>
+
+              {/* Collapsible Exercise Stats */}
+              <Collapse in={showStats}>
+                <Grid container spacing={2} sx={{ mt: 2 }}>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography variant="body1"><strong>Max Weight:</strong> {stats.maxWeight} lbs</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography variant="body1"><strong>Average Weight:</strong> {stats.averageWeight} lbs</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography variant="body1"><strong>Max Reps:</strong> {stats.maxReps}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography variant="body1"><strong>Total Volume:</strong> {stats.totalVolume} lbs</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography variant="body1"><strong>Average Volume per Workout:</strong> {stats.averageVolumePerWorkout} lbs</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography variant="body1"><strong>Workout Count:</strong> {stats.workoutCount}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography variant="body1"><strong>Predicted 1RM:</strong> {stats.maxPredicted1RM} lbs</Typography>
+                  </Grid>
+                </Grid>
+              </Collapse>
+            </Container>
+              {/* Line Chart Display */}
+              <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={displayData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip content={<CustomTooltip />} /> {/* Use custom tooltip for displaying workout details */}
+                <Legend />
+                {showWeight && <Line type="monotone" dataKey="weight" stroke="#8884d8" />}
+                {showReps && <Line type="monotone" dataKey="reps" stroke="#82ca9d" />}
+              </LineChart>
+            </ResponsiveContainer>
+          </>
+        )}
       </Box>
     </Box>
   );
