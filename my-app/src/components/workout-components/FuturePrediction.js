@@ -3,29 +3,36 @@
  * 
  * @file src/components/workout-components/FuturePrediction.js
  * 
- * Provides a user interface to input target goals for weight and timeline and predict future workout performance.
+ * Provides a user interface to input target goals for weight and predict future workout performance.
  * 
  * @component
  * @returns {React.Element} - The rendered FuturePrediction component.
  * 
- * @version 1.0.0
  * @author Steven Stansberry
+ * @version 1.0.0
  */
 
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, TextField, Button, Grid, Container, Tooltip, IconButton, Tabs, Tab, Autocomplete, FormControl } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, Container, Tooltip, IconButton, Tabs, Tab, Autocomplete } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { calculateFuturePerformance } from '../../services/APIServices';
 
-
-
+/**
+ * FuturePrediction component
+ * 
+ * This component allows users to select an exercise, input a goal weight,
+ * and predict when they will achieve that goal based on their workout history.
+ * It also provides an option to estimate the user's 1-rep max for a given exercise.
+ * 
+ * @param {Array} workoutHistory - The user's workout history containing exercise data.
+ */
 const FuturePrediction = ({ workoutHistory = [] }) => {
     console.log("workout history: ", workoutHistory);
 
-    const [goalWeight, setGoalWeight] = useState('');
-    const [goalDate, setGoalDate] = useState('');
-    const [predictionResult, setPredictionResult] = useState(null);
-    const [selectedExercise, setSelectedExercise] = useState('');
+    // State variables
+    const [goalWeight, setGoalWeight] = useState(''); // Goal weight input by user
+    const [predictionResult, setPredictionResult] = useState(null); // Result of the prediction
+    const [selectedExercise, setSelectedExercise] = useState(''); // Currently selected exercise for prediction
     const [tabIndex, setTabIndex] = useState(0); // State for managing tabs
     const [oneRMResult, setOneRMResult] = useState(null); // State for 1RM estimation result
 
@@ -36,20 +43,23 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
 
     // Set the first exercise as the default selected if none is selected
     useEffect(() => {
-
       if (!selectedExercise && exerciseLabels.length > 0) {
         setSelectedExercise(exerciseLabels[0]);
       }
     }, [exerciseLabels, selectedExercise]);
 
+    /**
+     * Handles the change event for the goal weight input field.
+     * 
+     * @param {Object} event - The event object from the input field.
+     */
     const handleGoalWeightChange = (event) => {
       setGoalWeight(event.target.value);
     };
 
-    const handleGoalDateChange = (event) => {
-      setGoalDate(event.target.value);
-    };
-
+    /**
+     * Handles the prediction logic by calling the API service and setting the prediction result.
+     */
     const handlePredict = async () => {
         if (!selectedExercise || !goalWeight || !workoutHistory.length) {
             console.error("Please select an exercise, set a goal weight, and ensure workout history is available.");
@@ -63,11 +73,18 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
         };
 
         try {
-            // Call the API service function
+            // Call the API service function to calculate future performance
             const response = await calculateFuturePerformance(performanceData);
 
-            // Update state with the prediction result from the response
-            setPredictionResult(response.prediction); // Adjust this based on your actual API response structure
+            // Check if the predicted date is in the past
+            const today = new Date();
+            const predictedDate = new Date(response.predictedDate);
+            
+            if (predictedDate < today) {
+                setPredictionResult(`Predicted Date: ${response.predictedDate} (Note: This date is in the past. This may indicate a small or strange data distribution.)`);
+            } else {
+                setPredictionResult(`Predicted Achievement Date: ${response.predictedDate}`);
+            }
 
         } catch (error) {
             console.error("Error predicting future performance:", error);
@@ -75,15 +92,30 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
         }
     };
 
+    /**
+     * Handles the change event for the exercise selection autocomplete component.
+     * 
+     * @param {Object} event - The event object from the Autocomplete component.
+     * @param {string} newValue - The new exercise value selected by the user.
+     */
     const handleExerciseChange = (event, newValue) => {
       setSelectedExercise(newValue);
     };
 
+    /**
+     * Handles the change event for tab selection.
+     * 
+     * @param {Object} event - The event object from the Tab component.
+     * @param {number} newValue - The index of the selected tab.
+     */
     const handleTabChange = (event, newValue) => {
       setTabIndex(newValue);
-      
     };
 
+    /**
+     * Handles the 1 Rep Max (1RM) estimation for the selected exercise.
+     * Utilizes Epley's formula to estimate 1RM: 1RM = Weight x (1 + 0.0333 x Reps).
+     */
     const handleEstimate1RM = () => {
         if (!selectedExercise || !workoutHistory.length) {
             console.error("Please select an exercise and ensure workout history is available.");
@@ -116,7 +148,7 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
             display: 'flex',
             flexDirection: 'column',
             flexGrow: 1,
-            minHeight: '100vh', // Ensure the height covers the entire viewport
+            minHeight: '100vh', 
           }}
         >
             <Container sx={{ mt: 4, pb: 8, flexGrow: 1 }}>
@@ -147,7 +179,7 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
                                 componentsProps={{
                                     tooltip: {
                                         sx: {
-                                            bgcolor: 'rgba(2, 136, 209, 0.8)', // Semi-transparent blue background
+                                            bgcolor: 'rgba(2, 136, 209, 0.8)', 
                                         },
                                     },
                                 }}
@@ -181,27 +213,15 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
                                     onChange={handleGoalWeightChange}
                                 />
                             </Grid>
-
-                            {/* Input for goal date */}
-                            {/*<Grid item xs={12} md={4}>
-                                <TextField
-                                    label="Goal Date"
-                                    type="date"
-                                    fullWidth
-                                    InputLabelProps={{ shrink: true }}
-                                    value={goalDate}
-                                    onChange={handleGoalDateChange}
-                                />
-                            </Grid> */}
                         </Grid>
 
                         {/* Centered button */}
                         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 8 }}>
                             <Tooltip
-                                title={!goalWeight || !goalDate ? "Please complete all fields to enable prediction." : ""}
+                                title={!goalWeight ? "Please enter a goal weight to enable prediction." : ""}
                                 arrow
                                 placement="top"
-                                disableHoverListener={goalWeight && goalDate}
+                                disableHoverListener={goalWeight}
                             >
                                 <span>
                                     <Button
@@ -230,6 +250,7 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
                             </Tooltip>
                         </Box>
 
+                        {/* Display Prediction Result */}
                         {predictionResult && (
                             <Box sx={{ mt: 4 }}>
                                 <Typography variant="h6">{predictionResult}</Typography>
