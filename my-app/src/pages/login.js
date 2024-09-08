@@ -21,6 +21,7 @@ import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Box } from '@mui/material';
 import SignIn from '../components/auth-components/SignIn';
+import fitGraphLogo from '../assets/fit-graph-logo.png';
 
 /**
  * Login page component that renders the login form along with the navbar and footer.

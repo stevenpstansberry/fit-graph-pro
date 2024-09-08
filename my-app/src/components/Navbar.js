@@ -29,8 +29,8 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useNavigate } from 'react-router-dom';
 
-const pages = ['Workouts', 'About', 'Contact'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['Workouts', 'About', 'Contact', 'Attributions'];
+const settings = ['Profile', 'Account', 'Logout'];
 
 /**
  * Navbar component providing the main navigation for the Fit Graph application.

@@ -19,7 +19,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Container } from '@mui/material';
 import Model from 'react-body-highlighter';
 
 //TODO revise workout statisitcs
@@ -123,43 +123,54 @@ const HeatMap = ({ workoutHistory }) => {
   }, [data]);
 
   return (
-    <Box sx={{ display: 'flex', padding: 4 }}>
-      {/* Heat Map Model Container */}
-      <Box sx={{ flex: 1 }}>
-        <Typography variant="h4" gutterBottom>
-          Workout Heat Map
-        </Typography>
-        
-        {/* Front and Posterior Models Side by Side */}
-        <Box sx={{ display: 'flex', gap: 4 }}>
-          {/* Front View Model */}
-          <Model
-            data={data}
-            style={{ width: '20rem', padding: '2rem' }}
-            onClick={handleClick}
-          />
-
-          {/* Posterior View Model */}
-          <Model
-            type='posterior'
-            data={data}
-            style={{ width: '20rem', padding: '2rem' }}
-            onClick={handleClick}
-          />
-        </Box>
-      </Box>
-
-      {/* Workout Statistics */}
-      <Box sx={{ flex: 1, paddingLeft: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Workout Statistics (% by Muscle Group)
-        </Typography>
-        {Object.entries(musclePercentages).map(([muscle, percentage]) => (
-          <Typography key={muscle} variant="body1">
-            {muscle}: {percentage}%
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column', // Ensure vertical stacking
+        flexGrow: 1,
+        minHeight: '100vh', // Ensure the height covers the entire viewport
+        padding: 4,
+      }}
+    >
+      {/* Main Content Container */}
+      <Container sx={{ flexGrow: 1, display: 'flex' }}>
+        {/* Heat Map Model Container */}
+        <Box sx={{ flex: 1 }}>
+          <Typography variant="h4" gutterBottom>
+            Workout Heat Map
           </Typography>
-        ))}
-      </Box>
+          
+          {/* Front and Posterior Models Side by Side */}
+          <Box sx={{ display: 'flex', gap: 4 }}>
+            {/* Front View Model */}
+            <Model
+              data={data}
+              style={{ width: '20rem', padding: '2rem' }}
+              onClick={handleClick}
+            />
+  
+            {/* Posterior View Model */}
+            <Model
+              type='posterior'
+              data={data}
+              style={{ width: '20rem', padding: '2rem' }}
+              onClick={handleClick}
+            />
+          </Box>
+        </Box>
+  
+        {/* Workout Statistics */}
+        <Box sx={{ flex: 1, paddingLeft: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Workout Statistics (% by Muscle Group)
+          </Typography>
+          {Object.entries(musclePercentages).map(([muscle, percentage]) => (
+            <Typography key={muscle} variant="body1">
+              {muscle}: {percentage}%
+            </Typography>
+          ))}
+        </Box>
+      </Container>
     </Box>
   );
 };

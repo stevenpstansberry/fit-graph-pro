@@ -1,9 +1,26 @@
+/**
+ * @fileoverview Profile page component for displaying user information, managing profile-related actions, 
+ * and visualizing workout data such as recent workouts and workouts per week.
+ * 
+ * @file src/components/Profile.js
+ * 
+ * This component provides a user interface for managing the user's profile picture, 
+ * logging out, and displaying recent workouts and statistics in the user's profile.
+ * It integrates sub-components for charts and profile picture upload.
+ * 
+ * @component
+ * @returns {React.Element} - The rendered Profile page component.
+ * 
+ * @version 1.0.0
+ * @updated By Steven Stansberry
+ */
+
 import React, { useState, useEffect, useCallback } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { getUser, resetUserSession, getProfileImageUrlFromSession, setProfileImageUrlToSession } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, Box, Button, Avatar, Divider, CircularProgress, Collapse, IconButton } from '@mui/material';
+import { Container, Typography, Box, Button, Avatar, Divider, CircularProgress } from '@mui/material';
 import WorkoutsPerWeekChart from '../components/profile-components/WorkoutsPerWeekChart';
 import ProfilePictureUpload from '../components/profile-components/ProfilePictureUpload'; 
 import RecentWorkouts from '../components/profile-components/RecentWorkouts'; 
@@ -106,25 +123,39 @@ function Profile() {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column', // Ensure vertical stacking
+        minHeight: '100vh', // Ensure the height covers the entire viewport
+        justifyContent: 'space-between', // Space between the header and footer
+      }}
+    >
+      {/* Navbar */}
       <Navbar profileImageUrl={profileImageUrl} />
-      <Box sx={{ my: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Avatar
-          sx={{ width: 100, height: 100, mb: 2, cursor: 'pointer' }}
-          src={profileImageUrl ? profileImageUrl : undefined}
-          onClick={handleOpenUploadModal}
-        >
-          {!profileImageUrl && name.charAt(0).toUpperCase()}
-        </Avatar>
-        <Typography variant="h4" component="h1" gutterBottom>
-          {name}
-        </Typography>
-        <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-          {email}
-        </Typography>
 
-        <Divider sx={{ width: '100%', mb: 4 }} />
+      {/* Main Content Container */}
+      <Container maxWidth="lg" sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', my: 4 }}>
+        {/* Profile Picture and Info */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Avatar
+            sx={{ width: 100, height: 100, mb: 2, cursor: 'pointer' }}
+            src={profileImageUrl ? profileImageUrl : undefined}
+            onClick={handleOpenUploadModal}
+          >
+            {!profileImageUrl && name.charAt(0).toUpperCase()}
+          </Avatar>
+          <Typography variant="h4" component="h1" gutterBottom>
+            {name}
+          </Typography>
+          <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+            {email}
+          </Typography>
 
+          <Divider sx={{ width: '100%', mb: 4 }} />
+        </Box>
+
+        {/* Workouts and Stats */}
         {loadingWorkouts ? (
           <CircularProgress />
         ) : (
@@ -159,6 +190,7 @@ function Profile() {
 
         <Divider sx={{ width: '100%', my: 4 }} />
 
+        {/* Logout Button */}
         <Button
           variant="contained"
           color="secondary"
@@ -167,16 +199,18 @@ function Profile() {
         >
           Logout
         </Button>
-      </Box>
+      </Container>
 
+      {/* Profile Picture Upload Modal */}
       <ProfilePictureUpload 
         open={uploadModalOpen} 
         handleClose={handleCloseUploadModal} 
         onUploadSuccess={handleProfilePictureUpdate} 
       />
 
+      {/* Footer */}
       <Footer />
-    </Container>
+    </Box>
   );
 }
 
