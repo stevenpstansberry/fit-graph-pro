@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for creating and managing workouts and workout splits.
  * 
- * @file src/components/Workout_Card.js
+ * @file src/components/workout-components/WorkoutCard.js
  * 
  * Provides a user interface to add exercises to a workout or split, specify sets, reps, and weights, and save workouts to the backend.
  * Allows users to create custom workout splits and customize individual workouts by selecting exercises and adding details.
@@ -22,24 +22,12 @@
  * @author Steven Stansberry
  */
 
-// Import necessary components and hooks
 import React, { useState, useEffect } from "react";
-import {
-  Autocomplete,
-  TextField,
-  IconButton,
-  Box,
-  Modal,
-  Card,
-  CardActions,
-  CardContent,
-  Button,
-  Typography,
-} from "@mui/material";
+import { Autocomplete, TextField ,IconButton ,Box ,Modal ,Card ,CardContent ,Button ,Typography, Alert, Snackbar} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./Exercise_Sub_Card";
 import { v4 as uuidv4 } from 'uuid'; 
-import { getUser } from '../services/AuthService';
+import { getUser } from '../../services/AuthService';
 
 /**
  * Workout_Card component for managing and creating workouts or workout splits.
@@ -59,12 +47,13 @@ import { getUser } from '../services/AuthService';
  */
 function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type }) {
   const user = getUser();
-  const name = user !== 'undefined' && user ? user.name : '';
 
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState('');
   const [exercises, setExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); 
+  const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises
 
   // Workout metadata
   const [workoutId, setWorkoutId] = useState(null);
@@ -76,6 +65,12 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       setExercises(preloadedExercises);
       setWorkoutId(uuidv4()); // Generate a unique ID for the workout
       setWorkoutDate(new Date().toLocaleDateString()); // Set today's date for the workout
+      
+      // Filter out preloaded exercises from the available exercises
+      const filteredExercises = strengthWorkouts.filter(
+        (exercise) => !preloadedExercises.some(preloaded => preloaded.label === exercise.label)
+      );
+      setAvailableExercises(filteredExercises);
     }
   }, [open, preloadedExercises]);
 
@@ -91,6 +86,12 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       };
 
       setExercises([...exercises, newExercise]);
+
+      // Remove the selected exercise from the dropdown options
+      setAvailableExercises((prevExercises) =>
+        prevExercises.filter((exercise) => exercise.label !== selectedExercise.label)
+      );
+      setSelectedExercise(null);  // Reset the selected exercise
     }
   };
 
@@ -100,8 +101,12 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
    * @param {number} index - Index of the exercise to remove.
    */
   const removeExercise = (index) => {
+    const exerciseToRemove = exercises[index]; // Exercise being removed
     const newExercises = exercises.filter((_, i) => i !== index);
     setExercises(newExercises);
+
+    // Add the removed exercise back to the available options
+    setAvailableExercises((prevExercises) => [...prevExercises, exerciseToRemove]);
   };
 
   /**
@@ -132,12 +137,11 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     // Check to see if any exercises have been added
     if (exercises.length === 0) {
       setMessage("Workout is empty, add sets.");
-      console.log(message); 
+      setSnackbarOpen(true);
       return;
     }
 
     if (mode === "createWorkout") {
-
       // Check to see if any of the reps or weights are empty
       const isAnyExerciseEmpty = exercises.some(exercise => 
         exercise.sets.length === 0 || exercise.sets.some(set => set.weight === '' || set.reps === '')
@@ -145,11 +149,10 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
 
       if (isAnyExerciseEmpty) {
         setMessage("One or more exercises have empty sets, please fill them in.");
-        console.log(message);
+        setSnackbarOpen(true);
         return;
       }
 
-      // TODO bandaid solution by incorporating both id and workoutID into object due to discrepancy
       let workout = {
         id,
         workoutId: id,
@@ -168,7 +171,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
 
       if (isAnySetEmpty) {
         setMessage("One or more exercises have empty sets.");
-        console.log(message);
+        setSnackbarOpen(true);
         return;
       }
 
@@ -183,10 +186,14 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
           sets: exercise.sets.map(set => ({ setCount: set.setCount })) // Only include set count
         })),
       };
-      console.log(newSplitName);
       saveSplit(workoutSplit); 
     }
     onClose();
+  };
+
+  // Handle closing the snackbar
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -253,7 +260,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
             <Autocomplete
               disablePortal
               id="combo-box-demo"
-              options={strengthWorkouts}
+              options={availableExercises} // Dynamically updated available exercises
               value={selectedExercise}
               onChange={(event, newValue) => {
                 setSelectedExercise(newValue);
@@ -270,6 +277,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
             </Button>
           </Box>
 
+          {/* List of exercises */}
           <Box>
             {exercises.map((exercise, index) => (
               <ExerciseSubcard
@@ -282,21 +290,35 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
               />
             ))}
           </Box>
-        </CardContent>
 
-        <CardActions sx={{ position: 'sticky', bottom: 0, backgroundColor: 'white', zIndex: 10, p: 2 }}>
-          <Button
-            size="large"
-            variant="contained"
-            onClick={createWorkout}
-            sx={{
-              boxShadow: 4,
-              ml: 'auto',
-            }}
-          >
-            {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
-          </Button>
-        </CardActions>
+          {/* Create Workout button at the bottom */}
+          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
+            {/* Snackbar positioned to the left of the button */}
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={4000}
+              onClose={handleCloseSnackbar}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+              sx={{ position: 'absolute', right: 180, bottom: 20 }} // Position to the left of the button
+            >
+              <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+                {message}
+              </Alert>
+            </Snackbar>
+
+            <Button
+              size="large"
+              variant="contained"
+              onClick={createWorkout}
+              sx={{
+                boxShadow: 4,
+                marginLeft: 'auto',
+              }}
+            >
+              {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
+            </Button>
+          </Box>
+        </CardContent>
       </Card>
     </Modal>
   );

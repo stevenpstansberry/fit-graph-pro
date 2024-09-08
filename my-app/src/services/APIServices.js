@@ -16,6 +16,7 @@ import axios from 'axios';
 
 // Base URL for the FitGraph production environment API
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
+axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PROD_KEY;
 
 /**
  * Sends a GET request to a specified API endpoint.
@@ -314,3 +315,17 @@ export const verifyPassword = async (credentials) => {
   return postToAPI('/verify-password', credentials);  
 };
 
+/**
+ * Verifies the user token by sending a request to the API.
+ * 
+ * @async
+ * @function verifyToken
+ * @param {Object} user - The user object containing username and token.
+ * @param {string} user.username - The username of the user.
+ * @param {string} user.token - The token to be verified.
+ * @returns {Promise<Object>} Response data from the API containing the user and token.
+ * @throws Will throw an error if the request fails.
+ */
+export const verifyToken = async (user) => {
+  return postToAPI('/verify', user);
+};

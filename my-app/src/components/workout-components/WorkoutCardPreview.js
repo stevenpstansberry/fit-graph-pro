@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for displaying a preview of a workout in a collapsible card format.
  * 
- * @file src/components/WorkoutCardPreview.js
+ * @file src/components/workout-components/WorkoutCardPreview.js
  * 
  * Provides a user interface to display a brief overview of a workout, including the date and type. 
  * Users can expand the card to view detailed information about exercises, sets, and reps. 

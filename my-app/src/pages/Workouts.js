@@ -15,18 +15,16 @@ import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress, Snackbar, Alert, Tooltip, Tabs, Tab } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import Workout_Card from '../components/Workout_Card';
+import Workout_Card from '../components/workout-components/Workout_Card';
 import { getUser,getSessionData, setSessionData } from '../services/AuthService';
-import WorkoutCardPreview from '../components/WorkoutCardPreview';
-import ViewWorkouts from '../components/ViewWorkouts';
-import StrengthChart from '../components/StrengthChart';
-import FuturePrediction from '../components/FuturePrediction';
-import HeatMap from '../components/HeatMap';
+import ViewWorkouts from '../components/workout-components/ViewWorkouts';
+import StrengthChart from '../components/workout-components/StrengthChart';
+import FuturePrediction from '../components/workout-components/FuturePrediction';
+import HeatMap from '../components/workout-components/HeatMap';
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
-
+import { useSearchParams } from 'react-router-dom';
 
 
 // TODO: add logic to see avg growth for exercises, max, estimated time to reach goal...
@@ -40,6 +38,7 @@ import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts,
 function Workouts() {
   const user = getUser();
   const name = user !== 'undefined' && user ? user.name : '';
+
   console.log(user);
 
   // State declarations
@@ -67,7 +66,10 @@ function Workouts() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteType, setDeleteType] = useState(''); // 'workout' or 'split'
-  const [tabIndex, setTabIndex] = useState(0);
+  const [searchParams] = useSearchParams();  
+  const initialTabIndex = parseInt(searchParams.get('tabIndex')) || 0; // Get 'tabIndex' from URL or default to 0
+  const [tabIndex, setTabIndex] = useState(initialTabIndex);
+
 
   // Fetch from API using APIServices
   useEffect(() => {

@@ -1,19 +1,42 @@
-// src/components/Features.js
+/**
+ * @fileoverview Component that displays a grid of feature cards for the Fit Graph application.
+ * 
+ * @file src/components/Features.js
+ * 
+ * The `Features` component renders a set of cards that showcase the key features of the application.
+ * Each card contains an icon, title, and description, and links to the corresponding feature page.
+ * 
+ * @version 1.0.0
+ * 
+ * @author Steven Stansberry
+ */
+
 import React from 'react';
 import { Grid, Paper, Typography, ButtonBase } from '@mui/material';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import FlagIcon from '@mui/icons-material/Flag';
-import PeopleIcon from '@mui/icons-material/People';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'; 
 import { Link } from 'react-router-dom';
 
+/**
+ * Array of feature items to be displayed on the Features page.
+ * Each item contains the title, description, icon, and link for the feature.
+ */
 const featureItems = [
   { title: 'Track Activities', description: 'Log your workouts and activities to keep track of your progress.', icon: <FitnessCenterIcon sx={{ fontSize: 40 }} />, link: '/workouts' },
-  { title: 'Visualize Progress', description: 'Use dynamic graphs to visualize your fitness journey.', icon: <BarChartIcon sx={{ fontSize: 40 }} />, link: '#' },
-  { title: 'Set Goals', description: 'Define your fitness goals and track your progress towards achieving them.', icon: <FlagIcon sx={{ fontSize: 40 }} />, link: '#' },
-  { title: 'Social Features', description: 'Connect with friends and join challenges to stay motivated.', icon: <PeopleIcon sx={{ fontSize: 40 }} />, link: '#' },
+  { title: 'Visualize Progress', description: 'Use dynamic graphs to visualize your fitness journey.', icon: <BarChartIcon sx={{ fontSize: 40 }} />, link: '/workouts?tabIndex=1' },  
+  { title: 'Estimate Future Performance', description: 'Use your workout history to estimate when you will achieve your goals.', icon: <FlagIcon sx={{ fontSize: 40 }} />, link: '/workouts?tabIndex=2' },
+  { title: 'Heatmap', description: 'Understand how your workouts impact your body and refine your workouts.', icon: <LocalFireDepartmentIcon sx={{ fontSize: 40 }} />, link: '/workouts?tabIndex=3' },  
 ];
 
+/**
+ * Features component for displaying a grid of feature cards.
+ * Each card contains an icon, title, description, and a link to navigate to the corresponding feature page.
+ * 
+ * @component
+ * @returns {React.Element} - The rendered Features component.
+ */
 function Features() {
   return (
     <Grid container spacing={3} justifyContent="center">

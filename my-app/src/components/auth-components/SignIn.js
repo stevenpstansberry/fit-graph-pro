@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for user sign-in functionality.
  * 
- * @file src/components/SignIn.js
+ * @file src/components/auth-components/SignIn.js
  * 
  * Provides a user interface for logging into the application. Allows users to input their username and password, and handles authentication with the backend API.
  * Upon successful login, the user session is set, and the user is redirected to their profile page.
@@ -15,9 +15,9 @@
 
 import { Alert, Button, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, Snackbar } from "@mui/material";
 import React, { useState } from 'react';
-import { setUserSession } from "../services/AuthService";
+import { setUserSession } from "../../services/AuthService";
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from "../services/APIServices";  // Import the loginUser function from APIServices
+import { loginUser } from "../../services/APIServices";  // Import the loginUser function from APIServices
 
 function SignIn() {
   const navigate = useNavigate(); // React Router hook for navigation
@@ -113,10 +113,6 @@ function SignIn() {
             type="password"
             id="password"
             autoComplete="current-password"
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
           />
           <Button
             type="submit"

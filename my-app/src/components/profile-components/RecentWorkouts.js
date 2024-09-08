@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component to display recent workouts with expandable details.
  *
- * @file src/components/RecentWorkouts.js
+ * @file src/components/profile-components/RecentWorkouts.js
  *
  * Exposes the `RecentWorkouts` component, which handles displaying a list of recent workouts
  * and allows the user to expand each workout card to view detailed information.

@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for visualizing the user's workout history in a line chart format.
  * 
- * @file src/components/StrengthChart.js
+ * @file src/components/workout-components/StrengthChart.js
  * 
  * Provides a user interface to select different exercises and timeframes to display a 
  * graph of total weight lifted and reps performed over time.
@@ -29,7 +29,7 @@ import {
   Select, MenuItem, FormControl, InputLabel, Box, Container,
   Typography, Grid, FormControlLabel, Checkbox, Button, Collapse
 } from '@mui/material';
-import WorkoutDetailsCard from './WorkoutDetailsCard'; // Import the WorkoutDetailsCard component
+import WorkoutDetailsCard from './WorkoutDetailsCard'
 
 /**
  * Custom tooltip for displaying workout details on hover.
@@ -190,115 +190,138 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
   };
 
   return (
-    <Box sx={{ width: '100%', textAlign: 'center' }}>
-      {/* Chart Title */}
-      <Typography
-        variant="h5"
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',  // Make the Box container cover the entire viewport height
+      }}
+    >
+      {/* Main Content Box */}
+      <Box
         sx={{
-          color: '#4A4A4A', 
-          fontWeight: 'bold',
-          backgroundColor: '#e0e0e0', 
-          padding: '8px 16px',
-          borderRadius: '8px',
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-          marginBottom: 2, 
+          flexGrow: 1,  // Allow this container to grow and fill the available space
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          justifyContent: 'flex-start',  // Align content to the top
+          pt: 8,  // Add padding to the top
+          pb: 8,  // Add padding to the bottom
         }}
       >
-        {getTitle()}
-      </Typography>
-
-      {/* Exercise and Timeframe Selectors */}
-      <FormControl sx={{ m: 1, minWidth: 120 }}>
-        <InputLabel id="exercise-select-label">Exercise</InputLabel>
-        <Select
-          labelId="exercise-select-label"
-          id="exercise-select"
-          value={selectedExercise}
-          label="Exercise"
-          onChange={handleExerciseChange}
+        {/* Chart Title */}
+        <Typography
+          variant="h5"
+          sx={{
+            color: '#4A4A4A', 
+            fontWeight: 'bold',
+            backgroundColor: '#e0e0e0', 
+            padding: '8px 16px',
+            borderRadius: '8px',
+            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+            marginBottom: 2, 
+          }}
         >
-          {exerciseLabels.map((label) => (
-            <MenuItem key={label} value={label}>{label}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <FormControl sx={{ m: 1, minWidth: 120 }}>
-        <InputLabel id="timeframe-select-label">Timeframe</InputLabel>
-        <Select
-          labelId="timeframe-select-label"
-          id="timeframe-select"
-          value={timeframe}
-          label="Timeframe"
-          onChange={handleTimeframeChange}
-        >
-          <MenuItem value="currentMonth">Current Month</MenuItem>
-          <MenuItem value="ytd">Year to Date</MenuItem>
-          <MenuItem value="allTime">All Time</MenuItem>
-        </Select>
-      </FormControl>
+          {getTitle()}
+        </Typography>
 
-      {/* Checkboxes to toggle weight and reps display */}
-      <Box sx={{ mt: 2 }}>
-        <FormControlLabel
-          control={<Checkbox checked={showWeight} onChange={() => setShowWeight(!showWeight)} />}
-          label="Show Weight"
-        />
-        <FormControlLabel
-          control={<Checkbox checked={showReps} onChange={() => setShowReps(!showReps)} />}
-          label="Show Reps"
-        />
+        {/* Exercise and Timeframe Selectors */}
+        <FormControl sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id="exercise-select-label">Exercise</InputLabel>
+          <Select
+            labelId="exercise-select-label"
+            id="exercise-select"
+            value={selectedExercise}
+            label="Exercise"
+            onChange={handleExerciseChange}
+          >
+            {exerciseLabels.map((label) => (
+              <MenuItem key={label} value={label}>{label}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id="timeframe-select-label">Timeframe</InputLabel>
+          <Select
+            labelId="timeframe-select-label"
+            id="timeframe-select"
+            value={timeframe}
+            label="Timeframe"
+            onChange={handleTimeframeChange}
+          >
+            <MenuItem value="currentMonth">Current Month</MenuItem>
+            <MenuItem value="ytd">Year to Date</MenuItem>
+            <MenuItem value="allTime">All Time</MenuItem>
+          </Select>
+        </FormControl>
+
+        {/* Checkboxes to toggle weight and reps display */}
+        <Box sx={{ mt: 2 }}>
+          <FormControlLabel
+            control={<Checkbox checked={showWeight} onChange={() => setShowWeight(!showWeight)} />}
+            label="Show Weight"
+          />
+          <FormControlLabel
+            control={<Checkbox checked={showReps} onChange={() => setShowReps(!showReps)} />}
+            label="Show Reps"
+          />
+        </Box>
+
+        <Container sx={{ mt: 2 }}>
+          {/* Button to toggle statistics visibility */}
+          <Button
+            variant="text"
+            onClick={() => setShowStats(!showStats)}
+            sx={{ mt: 2, mb: 2 }}
+          >
+            {showStats ? 'Hide Statistics' : 'Show Statistics'}
+          </Button>
+
+          {/* Collapsible Exercise Stats */}
+          <Collapse in={showStats}>
+            <Grid container spacing={2} sx={{ mt: 2 }}>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography variant="body1"><strong>Max Weight:</strong> {stats.maxWeight} lbs</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography variant="body1"><strong>Average Weight:</strong> {stats.averageWeight} lbs</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography variant="body1"><strong>Max Reps:</strong> {stats.maxReps}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography variant="body1"><strong>Total Volume:</strong> {stats.totalVolume} lbs</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography variant="body1"><strong>Average Volume per Workout:</strong> {stats.averageVolumePerWorkout} lbs</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography variant="body1"><strong>Workout Count:</strong> {stats.workoutCount}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography variant="body1"><strong>Predicted 1RM:</strong> {stats.maxPredicted1RM} lbs</Typography>
+              </Grid>
+            </Grid>
+          </Collapse>
+        </Container>
+
+        {/* Line Chart Display */}
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart data={displayData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip content={<CustomTooltip />} /> {/* Use custom tooltip for displaying workout details */}
+            <Legend />
+            {showWeight && <Line type="monotone" dataKey="weight" stroke="#8884d8" />}
+            {showReps && <Line type="monotone" dataKey="reps" stroke="#82ca9d" />}
+          </LineChart>
+        </ResponsiveContainer>
       </Box>
-
-      <Container sx={{ mt: 2 }}>
-        {/* Button to toggle statistics visibility */}
-        <Button
-          variant="text"
-          onClick={() => setShowStats(!showStats)}
-          sx={{ mt: 2, mb: 2 }}
-        >
-          {showStats ? 'Hide Statistics' : 'Show Statistics'}
-        </Button>
-
-        {/* Collapsible Exercise Stats */}
-        <Collapse in={showStats}>
-          <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body1"><strong>Max Weight:</strong> {stats.maxWeight} lbs</Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body1"><strong>Average Weight:</strong> {stats.averageWeight} lbs</Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body1"><strong>Max Reps:</strong> {stats.maxReps}</Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body1"><strong>Total Volume:</strong> {stats.totalVolume} lbs</Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body1"><strong>Average Volume per Workout:</strong> {stats.averageVolumePerWorkout} lbs</Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body1"><strong>Workout Count:</strong> {stats.workoutCount}</Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body1"><strong>Predicted 1RM:</strong> {stats.maxPredicted1RM} lbs</Typography>
-            </Grid>
-          </Grid>
-        </Collapse>
-      </Container>
-
-      {/* Line Chart Display */}
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={displayData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip content={<CustomTooltip />} /> {/* Use custom tooltip for displaying workout details */}
-          <Legend />
-          {showWeight && <Line type="monotone" dataKey="weight" stroke="#8884d8" />}
-          {showReps && <Line type="monotone" dataKey="reps" stroke="#82ca9d" />}
-        </LineChart>
-      </ResponsiveContainer>
     </Box>
   );
 };

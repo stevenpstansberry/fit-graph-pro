@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for resetting the user's password through a dialog interface.
  * 
- * @file src/components/ManualPasswordReset.js
+ * @file src/components/auth-components/ManualPasswordReset.js
  * 
  * This component provides a dialog (modal) interface for users to reset their password. The process is divided into
  * two steps: confirming the current password by entering it twice, and then entering a new password. Validation is 
@@ -18,7 +18,7 @@
  */
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, Alert, Snackbar } from '@mui/material';
-import { verifyPassword, UserPasswordReset } from '../services/APIServices';
+import { verifyPassword, UserPasswordReset } from '../../services/APIServices';
 
 function ManualPasswordReset({ open, onClose, user }) {
   const [currentPassword, setCurrentPassword] = useState('');

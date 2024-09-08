@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component for requesting a password reset.
  * 
- * @file src/components/ForgotPassword.js
+ * @file src/components/auth-components/ForgotPassword.js
  * 
  * Provides a user interface for users to request a password reset link by entering their email address.
  * 
@@ -15,7 +15,7 @@
 
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Container, Snackbar, Alert } from '@mui/material';
-import { requestPasswordReset } from '../services/APIServices'; 
+import { requestPasswordReset } from '../../services/APIServices'; 
 
 /**
  * ForgotPassword component for requesting a password reset link.

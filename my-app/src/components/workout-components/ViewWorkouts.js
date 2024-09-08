@@ -1,7 +1,7 @@
 /**
  * @fileoverview Component to manage and display user workouts.
  *
- * @file src/components/ViewWorkouts.js
+ * @file src/components/workout-components/ViewWorkouts.js
  *
  * Exposes the `ViewWorkouts` component, which handles viewing workouts, filtering by date,
  * and adding new workouts for the authenticated user.
@@ -13,8 +13,8 @@
 import React from 'react';
 import { Typography, Box, Button, IconButton, Select, MenuItem, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import WorkoutCardPreview from '../components/WorkoutCardPreview';
-import fitnessImage from '../assets/fitnessImage.png';
+import WorkoutCardPreview from './WorkoutCardPreview';
+import fitnessImage from '../../assets/fitnessImage.png';
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 

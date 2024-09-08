@@ -18,8 +18,9 @@
 import React from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import SignUp from '../components/SignUp';
+import SignUp from '../components/auth-components/SignUp';
 import { Box } from '@mui/material';
+import fitGraphLogo from '../assets/fit-graph-logo.png';
 
 /**
  * Register page component that renders the registration form along with the navbar and footer.
@@ -33,6 +34,11 @@ function Register() {
       {/* Navbar Section */}
       <Box sx={{ width: '100%' }}>
         <Navbar />
+      </Box>
+
+      {/* Logo Section */}
+      <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: 3 }}>
+        <img src={fitGraphLogo} alt="Fit Graph Logo" style={{ width: '200px', height: 'auto' }} />
       </Box>
 
       {/* SignUp Form Section */}
