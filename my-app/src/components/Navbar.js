@@ -11,7 +11,6 @@
  * @author Steven Stansberry
  */
 
-import { Link } from 'react-router-dom';
 import { getUser, resetUserSession, getProfileImageUrlFromSession, setProfileImageUrlToSession } from '../services/AuthService';
 import { getProfilePicture } from '../services/APIServices';
 import * as React from 'react';

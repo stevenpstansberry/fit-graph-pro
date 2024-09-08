@@ -17,7 +17,7 @@ import React from 'react';
 import Features from '../components/Features';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import { Container, Typography, Box, Grid } from '@mui/material';
+import {Typography, Box, Grid } from '@mui/material';
 import backgroundImage from '../assets/backgroundImage.jpg';
 
 /**

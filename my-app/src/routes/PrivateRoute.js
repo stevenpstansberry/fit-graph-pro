@@ -1,21 +1,40 @@
-// src/pages/PrivateRoute.js
+/**
+ * @fileoverview Component for handling private routes in the application.
+ * 
+ * @file src/pages/PrivateRoute.js
+ * 
+ * This component ensures that only authenticated users can access certain routes.
+ * If a user is not authenticated (i.e., no token is present), they are redirected to the login page.
+ * Otherwise, it renders the child components.
+ * 
+ * @component
+ * @param {Object} props - Component props.
+ * @param {React.Element} props.children - The child components to be rendered if the user is authenticated.
+ * @returns {React.Element} - The rendered component for private routes or a redirect to the login page.
+ * 
+ * @version 1.0.0
+ * 
+ * @author Steven Stansberry
+ */
 
 import React from 'react';
-import { Route, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { getToken } from '../services/AuthService';
 
-// const PrivateRoute = ({ component: Component, ...rest }) => {
-//   return (
-//     <Route
-//       {...rest}
-//       element={getToken() ? <Component {...rest} /> : <Navigate to="/login" />}
-//     />
-//   );
-// };
-
+/**
+ * PrivateRoute component to protect routes from unauthorized access.
+ * 
+ * This component checks if the user is authenticated by verifying the presence of a token.
+ * If authenticated, it renders the child components; otherwise, it redirects to the login page.
+ * 
+ * @component
+ * @param {Object} props - Component props.
+ * @param {React.Element} props.children - The child components to be rendered if the user is authenticated.
+ * @returns {React.Element} - The rendered component for private routes or a redirect to the login page.
+ */
 function PrivateRoute({ children }) {
-    const auth = getToken();
-    return auth ? <>{children}</> : <Navigate to="/login" />;
-  }
+  const auth = getToken(); // Get the authentication token
+  return auth ? <>{children}</> : <Navigate to="/login" />; // Render children if authenticated, otherwise redirect
+}
 
 export default PrivateRoute;
