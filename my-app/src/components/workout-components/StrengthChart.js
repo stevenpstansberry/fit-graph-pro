@@ -269,13 +269,14 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
             label="Timeframe"
             onChange={handleTimeframeChange}
           >
-            <MenuItem value="currentMonth">Current Month</MenuItem>
+            <MenuItem value="currentMonth">Current Month & Year</MenuItem>
             <MenuItem value="ytd">Year to Date</MenuItem>
             <MenuItem value="allTime">All Time</MenuItem>
           </Select>
         </FormControl>
 
         {/* Calendar selectors for filtering by date */}
+        {timeframe === 'currentMonth' && (
         <Box
             sx={{
               position: 'sticky',
@@ -326,7 +327,7 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
 
 
           </Box>
-
+        )}
         {/* Checkboxes to toggle weight and reps display */}
         <Box sx={{ mt: 2 }}>
           <FormControlLabel
