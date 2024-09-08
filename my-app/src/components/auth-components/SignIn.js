@@ -13,7 +13,7 @@
  * @author Steven Stansberry
  */
 
-import { Alert, Button, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, Snackbar } from "@mui/material";
+import { Alert, Button, TextField, Link, Grid, Box, Typography, Container, Snackbar } from "@mui/material";
 import React, { useState } from 'react';
 import { setUserSession } from "../../services/AuthService";
 import { useNavigate } from 'react-router-dom';

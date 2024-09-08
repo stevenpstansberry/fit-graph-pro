@@ -56,7 +56,6 @@ const postToAPI = async (endpoint, data) => {
   console.log('Request Data:', data);
   console.log('Request Headers:', {
     'Content-Type': 'application/json', 
-    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, 
   });
 
   try {
@@ -328,4 +327,22 @@ export const verifyPassword = async (credentials) => {
  */
 export const verifyToken = async (user) => {
   return postToAPI('/verify', user);
+};
+
+
+/**
+ * Predicts future performance based on the user's workout history and goals.
+ * 
+ * @async
+ * @function calculateFuturePerformance
+ * @param {Object} performanceData - The data required for future performance calculation.
+ * @param {string} performanceData.username - The username of the user.
+ * @param {string} performanceData.exercise - The exercise for which to calculate future performance.
+ * @param {number} performanceData.goalWeight - The target weight the user wants to achieve.
+ * @param {Array} performanceData.workoutHistory - Array of workout objects containing the user's workout history.
+ * @returns {Promise<Object>} Response data from the API containing the predicted performance data.
+ * @throws Will throw an error if the request fails.
+ */
+export const calculateFuturePerformance = async (performanceData) => {
+  return postToAPI('/calculateFuturePerformance', performanceData);
 };

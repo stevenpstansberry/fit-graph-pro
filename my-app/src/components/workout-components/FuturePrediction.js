@@ -15,8 +15,13 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Button, Grid, Container, Tooltip, IconButton, Tabs, Tab, Autocomplete, FormControl } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { calculateFuturePerformance } from '../../services/APIServices';
+
+
 
 const FuturePrediction = ({ workoutHistory = [] }) => {
+    console.log("workout history: ", workoutHistory);
+
     const [goalWeight, setGoalWeight] = useState('');
     const [goalDate, setGoalDate] = useState('');
     const [predictionResult, setPredictionResult] = useState(null);
@@ -31,6 +36,7 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
 
     // Set the first exercise as the default selected if none is selected
     useEffect(() => {
+
       if (!selectedExercise && exerciseLabels.length > 0) {
         setSelectedExercise(exerciseLabels[0]);
       }
@@ -44,14 +50,29 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
       setGoalDate(event.target.value);
     };
 
-    const handlePredict = () => {
-      if (!workoutHistory.length) {
-        console.error("No workout history data available for prediction.");
-        return;
-      }
+    const handlePredict = async () => {
+        if (!selectedExercise || !goalWeight || !workoutHistory.length) {
+            console.error("Please select an exercise, set a goal weight, and ensure workout history is available.");
+            return;
+        }
 
-      const result = `Based on your current progress for ${selectedExercise}, you are predicted to reach ${goalWeight} lbs by ${goalDate}.`;
-      setPredictionResult(result);
+        const performanceData = {
+            exercise: selectedExercise,
+            goalWeight: parseFloat(goalWeight),
+            workoutHistory,
+        };
+
+        try {
+            // Call the API service function
+            const response = await calculateFuturePerformance(performanceData);
+
+            // Update state with the prediction result from the response
+            setPredictionResult(response.prediction); // Adjust this based on your actual API response structure
+
+        } catch (error) {
+            console.error("Error predicting future performance:", error);
+            setPredictionResult("An error occurred while predicting future performance.");
+        }
     };
 
     const handleExerciseChange = (event, newValue) => {
@@ -60,6 +81,7 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
 
     const handleTabChange = (event, newValue) => {
       setTabIndex(newValue);
+      
     };
 
     const handleEstimate1RM = () => {
@@ -113,7 +135,7 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
                     <Box sx={{ mt: 4 }}>
                         {/* Explanatory Text */}
                         <Typography variant="body1" sx={{ mb: 3 }}>
-                            Enter your goal weight, select an exercise, and choose a target date to predict when you will reach your goal based on your workout history. For accurate predictions, it's suggested to have at least 50 sets logged per exercise. This typically corresponds to 3 to 6 months of regular entries, at about 2-3 workouts per week.
+                            Enter your goal weight and select an exercise to predict when you will reach your goal based on your workout history. For accurate predictions, it's suggested to have at least 50 sets logged per exercise. This typically corresponds to 3 to 6 months of regular entries, at about 2-3 workouts per week.
                             
                             <Tooltip
                                 title={
@@ -161,7 +183,7 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
                             </Grid>
 
                             {/* Input for goal date */}
-                            <Grid item xs={12} md={4}>
+                            {/*<Grid item xs={12} md={4}>
                                 <TextField
                                     label="Goal Date"
                                     type="date"
@@ -170,7 +192,7 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
                                     value={goalDate}
                                     onChange={handleGoalDateChange}
                                 />
-                            </Grid>
+                            </Grid> */}
                         </Grid>
 
                         {/* Centered button */}
@@ -185,7 +207,7 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
                                     <Button
                                         variant="outlined"
                                         onClick={handlePredict}
-                                        disabled={!goalWeight || !goalDate}
+                                        disabled={!goalWeight}
                                         sx={{
                                             mt: 2,
                                             mb: 2,
