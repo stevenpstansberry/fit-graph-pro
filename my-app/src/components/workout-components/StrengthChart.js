@@ -18,7 +18,7 @@
  * @returns {React.Element} - The rendered StrengthChart component.
  * 
  * @version 1.0.0
- * @updated By Steven Stansberry
+ * @Author Steven Stansberry
  */
 
 import React, { useState, useEffect } from 'react';
@@ -30,6 +30,22 @@ import {
   Typography, Grid, FormControlLabel, Checkbox, Button, Collapse
 } from '@mui/material';
 import WorkoutDetailsCard from './WorkoutDetailsCard'
+
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+/**
+ * Converts a month number to a month name.
+ * @param {number} monthNumber - The number of the month (1-12).
+ * @returns {string} The name of the month.
+ */
+const monthNumberToName = (monthNumber) => monthNames[monthNumber - 1];
+
+/**
+ * Converts a month name to a month number.
+ * @param {string} monthName - The name of the month.
+ * @returns {number} The number of the month (1-12).
+ */
+const monthNameToNumber = (monthName) => monthNames.indexOf(monthName) + 1;
 
 /**
  * Custom tooltip for displaying workout details on hover.
@@ -57,7 +73,7 @@ const CustomTooltip = ({ active, payload }) => {
  * Allows users to select exercises and timeframes to filter and visualize workout data.
  * Displays additional statistics like max weight, average weight, max reps, total volume, and more.
  * Users can toggle between displaying weight and reps on the graph.
- * Predicts 1RM (one-repetition maximum) for selected exercises.
+ * Predicts 1RM  for selected exercises.
  * 
  * @component
  * @param {Object} props - Component props.
@@ -67,7 +83,7 @@ const CustomTooltip = ({ active, payload }) => {
  * @param {number} props.selectedYear - The currently selected year for filtering workouts.
  * @returns {React.Element} - The rendered StrengthChart component.
  */
-const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, selectedYear }) => {
+const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, selectedYear, setSelectedMonth, setSelectedYear }) => {
   const [selectedExercise, setSelectedExercise] = useState(''); // Selected exercise for filtering data
   const [timeframe, setTimeframe] = useState('currentMonth'); // Timeframe for filtering data (currentMonth, ytd, allTime)
   const [displayData, setDisplayData] = useState([]); // Data to display in the line chart
@@ -258,6 +274,58 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
             <MenuItem value="allTime">All Time</MenuItem>
           </Select>
         </FormControl>
+
+        {/* Calendar selectors for filtering by date */}
+        <Box
+            sx={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 100,
+              backgroundColor: 'white',
+              padding: '10px 0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
+              mb: 4,
+              width: '100%',
+            }}
+          >
+            <FormControl sx={{ minWidth: 120 }}>
+              <InputLabel id="month-select-label">Month</InputLabel>
+              <Select
+                labelId="month-select-label"
+                id="month-select"
+                value={selectedMonth}  
+                label="Month"
+                onChange={(e) => setSelectedMonth(monthNameToNumber(e.target.value))}  // Convert back to number
+              >
+                {monthNames.map((month) => (
+                  <MenuItem key={month} value={month}>
+                    {month}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 120 }}>
+              <InputLabel id="year-select-label">Year</InputLabel>
+              <Select
+                labelId="year-select-label"
+                id="year-select"
+                value={selectedYear}
+                label="Year"
+                onChange={(e) => setSelectedYear(e.target.value)}
+              >
+                {[2023, 2024, 2025].map((year) => (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+
+          </Box>
 
         {/* Checkboxes to toggle weight and reps display */}
         <Box sx={{ mt: 2 }}>

@@ -525,6 +525,9 @@ const fetchWorkouts = async () => {
                 filteredWorkouts={filteredWorkouts}
                 selectedMonth={monthNames[selectedMonth - 1]}
                 selectedYear={selectedYear}
+                setSelectedMonth={setSelectedMonth}
+                setSelectedYear={setSelectedYear}
+
               />
             </Box>
           )}
