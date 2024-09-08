@@ -19,14 +19,35 @@
 
 
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, Box, Button, Collapse, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Card, CardContent, Typography, Box, Button, Collapse, IconButton, Menu, MenuItem
+} from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-function WorkoutCardPreview({ workout, onDelete }) { // Accept onDelete as a prop
+function WorkoutCardPreview({ workout, onDelete, onEdit }) {
   const [expanded, setExpanded] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null); // State for menu anchor
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
+  };
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget); // Set the anchor element for the menu
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null); // Close the menu
+  };
+
+  const handleDeleteClick = () => {
+    onDelete(workout.id); // Trigger the onDelete callback
+    handleMenuClose(); // Close the menu after deleting
+  };
+
+  const handleEditClick = () => {
+    onEdit(workout); // Trigger the onEdit callback
+    handleMenuClose(); // Close the menu after editing
   };
 
   return (
@@ -39,13 +60,25 @@ function WorkoutCardPreview({ workout, onDelete }) { // Accept onDelete as a pro
         borderRadius: '8px',
         overflow: 'hidden',
         transition: 'transform 0.2s ease-in-out',
-        position: 'relative', // Ensure relative positioning for absolute positioning of delete icon
+        position: 'relative', // Ensure relative positioning for absolute positioning of menu button
         '&:hover': {
           transform: 'scale(1.02)'
         }
       }}
     >
       <CardContent>
+        {/* More Options Menu Button - Moved to Top Right */}
+        <IconButton
+          onClick={handleMenuClick} // Opens the menu
+          sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8, // Place in the top right
+          }}
+        >
+          <MoreVertIcon />
+        </IconButton>
+
         <Typography variant="h6" component="div">
           {workout.date.toDateString()}
         </Typography>
@@ -73,17 +106,15 @@ function WorkoutCardPreview({ workout, onDelete }) { // Accept onDelete as a pro
         </Button>
       </CardContent>
 
-      {/* Trashcan Icon for Deletion */}
-      <IconButton
-        onClick={() => onDelete(workout.id)} // Call the onDelete prop with the workout id
-        sx={{
-          position: 'absolute',
-          bottom: 8,
-          left: 8,
-        }}
+      {/* Menu for More Options */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
       >
-        <DeleteIcon />
-      </IconButton>
+        <MenuItem onClick={handleEditClick}>Edit Workout</MenuItem>
+        <MenuItem onClick={handleDeleteClick}>Delete Workout</MenuItem>
+      </Menu>
     </Card>
   );
 }
