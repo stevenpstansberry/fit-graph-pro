@@ -4,14 +4,14 @@ import { Grid, Paper, Typography, ButtonBase } from '@mui/material';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import FlagIcon from '@mui/icons-material/Flag';
-import PeopleIcon from '@mui/icons-material/People';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'; 
 import { Link } from 'react-router-dom';
 
 const featureItems = [
   { title: 'Track Activities', description: 'Log your workouts and activities to keep track of your progress.', icon: <FitnessCenterIcon sx={{ fontSize: 40 }} />, link: '/workouts' },
-  { title: 'Visualize Progress', description: 'Use dynamic graphs to visualize your fitness journey.', icon: <BarChartIcon sx={{ fontSize: 40 }} />, link: '#' },
-  { title: 'Set Goals', description: 'Define your fitness goals and track your progress towards achieving them.', icon: <FlagIcon sx={{ fontSize: 40 }} />, link: '#' },
-  { title: 'Social Features', description: 'Connect with friends and join challenges to stay motivated.', icon: <PeopleIcon sx={{ fontSize: 40 }} />, link: '#' },
+  { title: 'Visualize Progress', description: 'Use dynamic graphs to visualize your fitness journey.', icon: <BarChartIcon sx={{ fontSize: 40 }} />, link: '/workouts?tabIndex=1' },  
+  { title: 'Estimate Future Performance', description: 'Use your workout history to estimate when you will achieve your goals..', icon: <FlagIcon sx={{ fontSize: 40 }} />, link: '/workouts?tabIndex=2' },
+  { title: 'Heatmap', description: 'Understand how your workouts impact your body and refine your workouts.', icon: <LocalFireDepartmentIcon sx={{ fontSize: 40 }} />, link: '/workouts?tabIndex=3' },  
 ];
 
 function Features() {
