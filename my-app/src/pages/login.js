@@ -11,8 +11,6 @@
  * @returns {React.Element} - The rendered Login page component.
  * 
  * @version 1.0.0
-
- * 
  * @author Steven Stansberry
  */
 
@@ -37,8 +35,22 @@ function Login() {
         <Navbar />
       </Box>
 
-      {/* SignIn Form Section */}
-      <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: 3 }}>
+      {/* SignIn Form Section with Logo */}
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          textAlign: 'center',
+          padding: 3,
+        }}
+      >
+        {/* Logo Section */}
+        <img src={fitGraphLogo} alt="Fit Graph Logo" style={{ width: '200px', height: 'auto' }} />
+
+        {/* SignIn Component */}
         <SignIn />
       </Box>
 
