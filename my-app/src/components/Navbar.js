@@ -13,7 +13,7 @@
 
 import { Link } from 'react-router-dom';
 import { getUser, resetUserSession, getProfileImageUrlFromSession, setProfileImageUrlToSession } from '../services/AuthService';
-import { getProfilePicture } from '../services/APIServices'; // Import the API service to fetch the profile picture
+import { getProfilePicture } from '../services/APIServices';
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -26,8 +26,8 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import { useNavigate } from 'react-router-dom';
+import fitGraphLogo from '../assets/fit-graph-logo.png'; // Import the logo image
 
 const pages = ['Workouts', 'About', 'Contact', 'Attributions'];
 const settings = ['Profile', 'Account', 'Logout'];
@@ -158,27 +158,18 @@ function Navbar({ profileImageUrl }) {
     >
       <Container maxWidth={false} sx={{ px: 2 }}>
         <Toolbar disableGutters sx={{ justifyContent: 'flex-start' }}>
-          {/* Grouping the title and the navigation links */}
+          {/* Grouping the logo and the navigation links */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <AdbIcon sx={{ mr: 1 }} />
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              href="/home"
-              sx={{
-                fontFamily: 'monospace',
-                fontWeight: 700,
-                letterSpacing: '.3rem',
-                color: 'inherit',
-                textDecoration: 'none',
-                mr: 4, // Add spacing between the title and navigation links
-              }}
-            >
-              Fit Graph
-            </Typography>
+            {/* Logo Section */}
+            <Box component="a" href="/home" sx={{ mr: 4 }}>
+              <img
+                src={fitGraphLogo}
+                alt="Fit Graph Logo"
+                style={{ width: '100px', height: '75' }} // Adjust the size as needed
+              />
+            </Box>
 
-            {/* Navigation links placed immediately to the right of the title */}
+            {/* Navigation links placed immediately to the right of the logo */}
             <Box sx={{ display: 'flex' }}>
               {pages.map((page) => (
                 <Button
