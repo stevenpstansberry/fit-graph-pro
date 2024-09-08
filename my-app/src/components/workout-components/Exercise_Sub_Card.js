@@ -17,7 +17,8 @@ import AddIcon from "@mui/icons-material/Add";
 
 /**
  * Component for rendering and managing an exercise card within a workout.
- * 
+ * Represents one exercise within a workout. Contains one or more sets that each hold weight and reps.
+ *  
  * @component
  * @param {Object} props - The properties passed to the component.
  * @param {Object} props.exercise - The exercise object containing label, bodyPart, and sets.
@@ -30,7 +31,7 @@ import AddIcon from "@mui/icons-material/Add";
  */
 function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode }) {
   const [snackbarOpen, setSnackbarOpen] = useState(false); // State to control snackbar visibility
-
+  
   /**
    * Handles the change in input for weight or reps in a specific set.
    * Prevents negative and zero values.

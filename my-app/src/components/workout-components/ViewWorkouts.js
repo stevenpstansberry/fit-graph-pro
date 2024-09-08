@@ -121,6 +121,7 @@ const ViewWorkouts = ({
                   key={workout.workoutId || index}
                   workout={workout}
                   onDelete={() => handleDeleteWorkout(workout.workoutId)}
+                  onEdit={() => toggleAddWorkoutCard(workout, 'editWorkout', workout.name)}
                 />
               ))}
             </Box>

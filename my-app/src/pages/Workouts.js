@@ -184,7 +184,7 @@ const fetchWorkouts = async () => {
    * 
    * @param {Array} workout - The selected workout exercises.
    * @param {string} mode - The mode of the workout card ('createWorkout' or 'addSplit').
-   * @param {string} workoutType - The type of workout.
+   * @param {string} workoutType - The type of workout (Push, Pull, Legs, etc).
    */
   const toggleAddWorkoutCard = (workout, mode, workoutType) => {
     setWorkoutType(workoutType);

@@ -45,7 +45,7 @@ import { getUser } from '../../services/AuthService';
  * @param {string} props.type - Type of workout.
  * @returns {React.Element} - The rendered Workout_Card component.
  */
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type }) {
+function Workout_Card({ open, onClose, preloadedExercises = [], mode, saveSplit, saveWorkout, newSplitName, type, workout = null, editMode = false, }) {
   const user = getUser();
 
   const [inputValue, setInputValue] = useState('');
@@ -62,17 +62,25 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
   // Initialize workout metadata and preload exercises when the modal opens
   useEffect(() => {
     if (open) {
-      setExercises(preloadedExercises);
-      setWorkoutId(uuidv4()); // Generate a unique ID for the workout
-      setWorkoutDate(new Date().toLocaleDateString()); // Set today's date for the workout
-      
+      if (mode === 'editWorkout' && workout) {
+        // If editing, load the workout details
+        setExercises(workout.exercises);
+        setWorkoutId(workout.workoutId);
+        setWorkoutDate(workout.date);
+      } else {
+        // If creating, preload exercises and generate new workout ID
+        setExercises(preloadedExercises);
+        setWorkoutId(uuidv4());
+        setWorkoutDate(new Date().toLocaleDateString());
+      }
+
       // Filter out preloaded exercises from the available exercises
       const filteredExercises = strengthWorkouts.filter(
         (exercise) => !preloadedExercises.some(preloaded => preloaded.label === exercise.label)
       );
       setAvailableExercises(filteredExercises);
     }
-  }, [open, preloadedExercises]);
+  }, [open, preloadedExercises, editMode, workout]);
 
   /**
    * Adds a new exercise to the exercises list.
@@ -126,12 +134,12 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
   let id = uuidv4();
 
   /**
-   * Creates the workout or split and validates inputs.
+   * Creates or updates the workout or split and validates inputs.
    * Handles both 'createWorkout' and 'addSplit' modes.
    * 
    * @param {Object} event - Event object.
    */
-  const createWorkout = (event) => {
+  const createOrUpdateWorkout = (event) => {
     event.preventDefault();
 
     // Check to see if any exercises have been added
@@ -153,20 +161,25 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
         return;
       }
 
-      let workout = {
-        id,
-        workoutId: id,
+      let workoutData = {
+        id: workoutId,
+        workoutId,
         date: workoutDate,
         username: user.username,
         type: type,
         exercises: exercises,
       };
-      saveWorkout(workout);
+
+      // Save workout depending on edit mode
+      if (mode === "editWorkout") {
+        workoutData.id = workout.id; // Retain the existing workout ID for edits
+      }
+
+      saveWorkout(workoutData); // Save workout to backend
     }
 
     // Logic for "addSplit" mode
     if (mode === "addSplit") {
-      // Only check that exercises and set counts are provided (no weights/reps validation)
       const isAnySetEmpty = exercises.some(exercise => exercise.sets.length === 0);
 
       if (isAnySetEmpty) {
@@ -176,8 +189,8 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       }
 
       const workoutSplit = {
-        id,
-        splitId: id,
+        id: workoutId,
+        splitId: workoutId,
         name: newSplitName, 
         username: user.username,
         exercises: exercises.map(exercise => ({
@@ -309,7 +322,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
             <Button
               size="large"
               variant="contained"
-              onClick={createWorkout}
+              onClick={createOrUpdateWorkout}
               sx={{
                 boxShadow: 4,
                 marginLeft: 'auto',
