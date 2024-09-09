@@ -69,8 +69,25 @@ function SignUp() {
         throw new Error('Invalid response from server');
       }
     } catch (error) {
-      console.error('Registration error:', error); // Log the error
-      showSnackbar('Registration failed. Please check your inputs.', 'error'); // Show error message on registration failure
+      console.error('Registration error:', error.response.status); // Log the error
+      
+      let errorMSG;
+
+      switch(true) {
+        case error.response.status === 401:
+          errorMSG ='Username already exists, please select a different username';
+          break;
+
+        case error.response.status === 503:
+          errorMSG ='Server is offline, please try again later.';
+          break;
+
+        default:
+          errorMSG = 'Unknown error occured, please try again later.'
+          break;
+      }
+
+      showSnackbar(`Registration failed. ${errorMSG}`, 'error'); // Show error message on registration failure
     }
   };
 

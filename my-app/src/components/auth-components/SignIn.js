@@ -53,6 +53,7 @@ function SignIn() {
       navigate('/profile'); // Redirect to profile page
     } catch (error) {
       showSnackbar('Login failed. Please check your credentials.', 'error');  // Show error message on login failure
+      console.log(error.status);
     }
   };
 
