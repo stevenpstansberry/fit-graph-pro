@@ -5,7 +5,7 @@
  * 
  * Provides a user interface to display a brief overview of a workout, including the date and type. 
  * Users can expand the card to view detailed information about exercises, sets, and reps. 
- * It also provides a delete option to remove the workout.
+ * It also provides a delete option to remove the workout as well as an edit option
  * 
  * @component
  * @param {Object} props - Component props.
