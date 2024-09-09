@@ -13,12 +13,12 @@
  * @author Steven Stansberry
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Features from '../components/Features';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import {Typography, Box, Grid } from '@mui/material';
-import backgroundImage from '../assets/backgroundImage.jpg';
+import { Typography, Box, Grid } from '@mui/material';
+import backgroundImage from '../assets/backgroundImage.jpg'; // Import the image directly
 
 /**
  * Home page component that serves as the landing page for the Fit Graph Pro application.
@@ -29,24 +29,39 @@ import backgroundImage from '../assets/backgroundImage.jpg';
  * @returns {React.Element} - The rendered component for the home page.
  */
 function Home() {
+  const [imageLoaded, setImageLoaded] = useState(false); // State to manage image loading
+
+  // Preload the background image
+  useEffect(() => {
+    const img = new Image();
+    img.src = backgroundImage;
+    img.onload = () => setImageLoaded(true); // Set state to true when image loads
+  }, []);
+
   return (
     <Box
       sx={{
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        backgroundImage: `url(${backgroundImage})`,
+        position: 'relative', 
+        backgroundColor: '#000', 
+        backgroundImage: imageLoaded ? `url(${backgroundImage})` : 'none', 
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        transition: 'background-image 0.5s ease-in-out', 
       }}
     >
+      {/* Navbar Component */}
       <Navbar />
+
+      {/* Main Content */}
       <Box
         sx={{
           flex: 1,
           padding: 4,
           color: '#fff',
-          paddingTop: '250px', 
+          paddingTop: '250px',
         }}
       >
         <Grid container spacing={2} sx={{ height: '100%' }}>
@@ -58,9 +73,9 @@ function Home() {
               gutterBottom
               sx={{
                 fontStyle: 'italic',
-                color: '#ffdd57', 
+                color: '#ffdd57',
                 mb: 2,
-                animation: 'slideInFromLeft 1s ease-out', 
+                animation: 'slideInFromLeft 1s ease-out',
               }}
             >
               FitGraphPro
@@ -71,9 +86,9 @@ function Home() {
               gutterBottom
               sx={{
                 fontStyle: 'italic',
-                color: '#ffdd57', 
+                color: '#ffdd57',
                 mb: 4,
-                animation: 'slideInFromLeft 1s ease-out', 
+                animation: 'slideInFromLeft 1s ease-out',
                 animationDelay: '0.2s',
               }}
             >
@@ -89,21 +104,23 @@ function Home() {
           </Grid>
         </Grid>
 
-        {/* New motivational text, placed centrally below the other content */}
+        {/* Motivational text, placed centrally below the other content */}
         <Typography
           variant="h4"
           component="p"
-          className="fadeInFromCenter" 
+          className="fadeInFromCenter"
           sx={{
-            marginTop: 6, 
+            marginTop: 6,
             fontStyle: 'italic',
-            color: 'orange', 
+            color: 'orange',
             textAlign: 'center',
           }}
         >
           "Fitness is not about being better than someone else. It’s about being better than you used to be."
         </Typography>
       </Box>
+
+      {/* Footer Component */}
       <Footer />
     </Box>
   );

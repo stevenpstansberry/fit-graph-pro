@@ -86,6 +86,8 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
   const [showReps, setShowReps] = useState(true); // Toggle reps line on the chart
   const [showStats, setShowStats] = useState(false); // Toggle statistics visibility
 
+
+
   // Extract unique exercise labels from workouts
   const exerciseLabels = Array.from(new Set(workoutHistory.flatMap(workout => 
     workout.exercises.map(exercise => exercise.label)
@@ -116,6 +118,8 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
       return null;
     }).filter(Boolean); // Remove any null values
   };
+
+  
 
   // Function to calculate various statistics for the selected exercise
   const calculateStats = (workouts) => {
@@ -186,6 +190,25 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
     setTimeframe(event.target.value);
   };
 
+  if (workoutHistory.length === 0) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          textAlign: 'center',
+          flexDirection: 'column'
+        }}
+      >
+        <Typography variant="h6" >
+          No workouts found in history. Get started by adding one!
+        </Typography>
+      </Box>
+    );
+  }
+
   // Function to generate the title for the chart based on the selected timeframe and exercise
   const getTitle = () => {
     if (timeframe === 'currentMonth') {
@@ -198,6 +221,8 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
       return `Displaying Workout History for: ${selectedExercise}`;
     }
   };
+
+  
 
   return (
     <Box

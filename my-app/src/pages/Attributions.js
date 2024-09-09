@@ -45,7 +45,16 @@ const Attributions = () => {
             Image Credits
           </Typography>
           <Typography variant="body1" color="textSecondary">
-            Human clipart PNG designed by <strong>hublot90</strong> from 
+            Human clipart PNG designed by 
+            <Link
+              href="https://pngtree.com/hublot90_6148860?type=1"
+              target="_blank" 
+              rel="noopener noreferrer"
+              sx={{ ml: 0.5 }}
+            >
+              <strong>hublot90</strong> 
+            </Link> 
+            from 
             <Link 
               href="https://pngtree.com/freepng/physical-fitness-sport-gym-logo-bodybuilder-with-big-muscles-posing-isolated-vector-silhouette-front-view_5172932.html?sol=downref&id=bef" 
               target="_blank" 
@@ -54,6 +63,45 @@ const Attributions = () => {
             >
               PNGTree
             </Link>.
+          </Typography>
+
+          <Typography variant="body1" color="textSecondary">
+            Home Background sourced from 
+            <Link
+              href="https://www.kccompletefighter.com/weight-gain/"
+              target="_blank" 
+              rel="noopener noreferrer"
+              sx={{ ml: 0.5 }}
+            >
+              <strong>KC Complete Fitness</strong> 
+            </Link>.
+          </Typography>
+        </Box>
+
+        {/* Library Attribution Section */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" gutterBottom>
+            Library Credits
+          </Typography>
+          <Typography variant="body1" color="textSecondary">
+            This application utilizes the 
+            <Link
+              href="https://github.com/giavinh79/react-body-highlighter"
+              target="_blank" 
+              rel="noopener noreferrer"
+              sx={{ ml: 0.5 }}
+            >
+              react-body-highlighter
+            </Link> 
+            library, created by 
+            <Link
+              href="https://github.com/giavinh79"
+              target="_blank" 
+              rel="noopener noreferrer"
+              sx={{ ml: 0.5 }}
+            >
+              <strong>Giavinh</strong>
+            </Link>. This library is licensed under the MIT License and provides functionality to highlight muscle groups on body diagrams.
           </Typography>
         </Box>
 

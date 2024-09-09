@@ -97,7 +97,8 @@ const calculateMuscleGroupPercentages = (workoutHistory) => {
 
   const musclePercentages = {};
   Object.keys(muscleFrequency).forEach((muscle) => {
-    musclePercentages[muscle] = ((muscleFrequency[muscle] / totalExercises) * 100).toFixed(2);
+    // Handle the case when there are no workouts to avoid NaN
+    musclePercentages[muscle] = totalExercises > 0 ? ((muscleFrequency[muscle] / totalExercises) * 100).toFixed(2) : "0.00";
   });
 
   return musclePercentages;
@@ -126,9 +127,9 @@ const HeatMap = ({ workoutHistory }) => {
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'column', // Ensure vertical stacking
+        flexDirection: 'column', 
         flexGrow: 1,
-        minHeight: '100vh', // Ensure the height covers the entire viewport
+        minHeight: '100vh', 
         padding: 4,
       }}
     >
@@ -157,6 +158,13 @@ const HeatMap = ({ workoutHistory }) => {
               onClick={handleClick}
             />
           </Box>
+
+          {/* Message to prompt user to add workouts if none exist */}
+          {workoutHistory.length === 0 && (
+            <Typography variant="body1" sx={{ mt: 4 }}>
+              No workouts found. Get started by adding one!
+            </Typography>
+          )}
         </Box>
   
         {/* Workout Statistics */}
