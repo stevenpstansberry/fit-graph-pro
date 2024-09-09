@@ -53,6 +53,12 @@ const ViewWorkouts = ({
   const hasWorkoutsForSelectedDate = filteredWorkouts.length > 0;  // Check if there are workouts for the selected month/year
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  console.log("workout history:" , workoutHistory)
+
+  // Sort the workouts by date and time in ascending order
+  const sortedFilteredWorkouts = [...filteredWorkouts].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+
   useEffect(() => {
     const img = new Image();
     img.src = fitnessImage;
@@ -122,7 +128,7 @@ const ViewWorkouts = ({
           {/* Check if there are workouts for the selected date */}
           {hasWorkoutsForSelectedDate ? (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
-              {filteredWorkouts.map((workout, index) => (
+              {sortedFilteredWorkouts.map((workout, index) => (
                 <WorkoutCardPreview
                   key={workout.workoutId || index}
                   workout={workout}
