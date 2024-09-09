@@ -15,14 +15,23 @@
  */
 
 import React, { useState } from 'react';
-import { Container, Typography, Box, TextField, FormControlLabel, Checkbox, Link, Grid, Button, Snackbar, Alert } from '@mui/material';
+import { Container, Typography, Box, TextField, Grid, Button, Snackbar, Alert, Link } from '@mui/material';
 import { setUserSession } from "../../services/AuthService";
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from "../../services/APIServices"; 
 
+/**
+ * 
+ * Renders the sign-up form for new users to register. The form collects user details like first name,
+ * username, email, and password, and communicates with the backend API to create a new account. It includes
+ * validation for empty fields, spaces, and password matching.
+ * 
+ * @component
+ * @returns {React.Element} - The rendered SignUp component.
+ */
 function SignUp() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' }); // State to handle Snackbar
-  const navigate = useNavigate(); // React Router hook for navigation
+  const navigate = useNavigate(); 
 
   /**
    * Handles the form submission for registering a new user.
@@ -33,14 +42,27 @@ function SignUp() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const name = data.get("name");
+    const firstName = data.get("first-name");
     const username = data.get("username");
     const email = data.get("email");
     const password = data.get("password");
     const confirmPassword = data.get("confirm-password");
 
-    if (name.trim() === '' || username.trim() === '' || email.trim() === '' || password.trim() === '') {
-      showSnackbar('All fields are required', 'warning');
+    // Check if all fields are filled
+    if (!firstName.trim() || !username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+      showSnackbar('All fields must be filled', 'warning');
+      return;
+    }
+
+    // Check for valid email format
+    if (!isValidEmail(email)) {
+      showSnackbar('Please enter a valid email address', 'warning');
+      return;
+    }
+
+    // Check for spaces in fields
+    if (hasSpaces(firstName) || hasSpaces(username) || hasSpaces(email) || hasSpaces(password)) {
+      showSnackbar('No spaces allowed', 'warning');
       return;
     }
 
@@ -52,7 +74,7 @@ function SignUp() {
     const requestBody = {
       username,
       email,
-      name,
+      name: firstName,
       password
     };
 
@@ -75,20 +97,43 @@ function SignUp() {
 
       switch(true) {
         case error.response.status === 401:
-          errorMSG ='Username already exists, please select a different username';
+          errorMSG = 'Username already exists, please select a different username';
           break;
 
         case error.response.status === 503:
-          errorMSG ='Server is offline, please try again later.';
+          errorMSG = 'Server is offline, please try again later.';
           break;
 
         default:
-          errorMSG = 'Unknown error occured, please try again later.'
+          errorMSG = 'Unknown error occurred, please try again later.';
           break;
       }
 
       showSnackbar(`Registration failed. ${errorMSG}`, 'error'); // Show error message on registration failure
     }
+  };
+
+  /**
+   * Checks if a string contains spaces.
+   * 
+   * @function hasSpaces
+   * @param {string} value - The input value to check for spaces.
+   * @returns {boolean} - True if spaces are found, otherwise false.
+   */
+  const hasSpaces = (value) => {
+    return /\s/.test(value);
+  };
+
+  /**
+   * Validates if the provided email has a proper format.
+   * 
+   * @function isValidEmail
+   * @param {string} email - The email address to validate.
+   * @returns {boolean} - True if the email is valid, otherwise false.
+   */
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   /**
@@ -133,11 +178,17 @@ function SignUp() {
             margin="normal"
             required
             fullWidth
-            id="name"
-            label="Name"
-            name="name"
-            autoComplete="name"
+            id="first-name"
+            label="First Name"
+            name="first-name"
+            autoComplete="given-name"
             autoFocus
+            onInput={(e) => {
+              if (hasSpaces(e.target.value)) {
+                e.target.value = e.target.value.replace(/\s/g, ''); // Remove spaces immediately
+                showSnackbar('No spaces allowed', 'warning');
+              }
+            }}
           />
           <TextField
             margin="normal"
@@ -147,6 +198,12 @@ function SignUp() {
             label="Username"
             name="username"
             autoComplete="username"
+            onInput={(e) => {
+              if (hasSpaces(e.target.value)) {
+                e.target.value = e.target.value.replace(/\s/g, ''); // Remove spaces immediately
+                showSnackbar('No spaces allowed', 'warning');
+              }
+            }}
           />
           <TextField
             margin="normal"
@@ -156,6 +213,12 @@ function SignUp() {
             label="Email Address"
             name="email"
             autoComplete="email"
+            onInput={(e) => {
+              if (hasSpaces(e.target.value)) {
+                e.target.value = e.target.value.replace(/\s/g, ''); // Remove spaces immediately
+                showSnackbar('No spaces allowed', 'warning');
+              }
+            }}
           />
           <TextField
             margin="normal"
@@ -166,13 +229,19 @@ function SignUp() {
             type="password"
             id="password"
             autoComplete="current-password"
+            onInput={(e) => {
+              if (hasSpaces(e.target.value)) {
+                e.target.value = e.target.value.replace(/\s/g, ''); // Remove spaces immediately
+                showSnackbar('No spaces allowed', 'warning');
+              }
+            }}
           />
           <TextField
             margin="normal"
             required
             fullWidth
             name="confirm-password"
-            label="Confirm password"
+            label="Confirm Password"
             type="password"
             id="confirm-password"
             autoComplete="current-password"
@@ -186,9 +255,6 @@ function SignUp() {
             Sign Up
           </Button>
           <Grid container>
-            <Grid item xs>
-
-            </Grid>
             <Grid item>
               <Link href="/login" variant="body2">
                 {"Already have an account? Login"}
