@@ -37,7 +37,7 @@ import { useSearchParams } from 'react-router-dom';
  */
 function Workouts() {
   const user = getUser();
-  const name = user !== 'undefined' && user ? user.name : '';
+  const username = user !== 'undefined' && user ? user.username : '';
 
   console.log(user);
 
@@ -73,10 +73,10 @@ function Workouts() {
 
   // Fetch from API using APIServices
   useEffect(() => {
-    if (name) {
+    if (username) {
       fetchWorkoutsAndSplits();
     }
-  }, [name]);
+  }, [username]);
   
   /**
    * Fetches workouts and splits for the user and updates state.
@@ -116,7 +116,7 @@ function Workouts() {
  */
 const fetchWorkouts = async () => {
   try {
-    const data = await getAllWorkouts(name);
+    const data = await getAllWorkouts(username);
     console.log('Workouts API Response:', data);
 
     if (data && Array.isArray(data)) {
@@ -143,7 +143,7 @@ const fetchWorkouts = async () => {
    */
   const fetchSplits = async () => {
     try {
-      const data = await getAllSplits(name);
+      const data = await getAllSplits(username);
       console.log('Splits API Response:', data);
   
       if (data && Array.isArray(data)) {
@@ -497,7 +497,7 @@ const fetchWorkouts = async () => {
         <>
           {tabIndex === 0 && (
             <ViewWorkouts
-              name={name}
+              name={username}
               filteredWorkouts={filteredWorkouts}
               selectedMonth={selectedMonth}
               setSelectedMonth={setSelectedMonth}

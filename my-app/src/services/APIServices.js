@@ -24,15 +24,22 @@ axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PRO
  * @async
  * @function getFromAPI
  * @param {string} endpoint - The API endpoint to send the GET request to.
- * @returns {Promise<Object>} Response data from the API.
- * @throws Will throw an error if the request fails.
+ * @param {function} [errorHandler] - Optional callback function to handle errors.
+ * @returns {Promise<Object|null>} Response data from the API or handled value from the error handler.
+ * @throws Will throw an error if the request fails and no errorHandler is provided.
  */
-const getFromAPI = async (endpoint) => {
+const getFromAPI = async (endpoint, errorHandler) => {
   try {
     const url = `${fitGraphProd}${endpoint}`;
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
+    // If an error handler is provided, use it
+    if (errorHandler) {
+      return errorHandler(error);
+    }
+
+    // Default error handling
     console.error(`Error getting from ${endpoint}:`, error);
     throw error;
   }
@@ -235,12 +242,22 @@ export const uploadProfilePicture = async (base64ProfilePictureString) => {
  * @async
  * @function getProfilePicture
  * @param {string} username - The username to retrieve the profile picture for.
- * @returns {Promise<Object>} Response data containing the profile picture URL.
+ * @returns {Promise<Object|null>} Response data containing the profile picture URL, or null if not found.
  */
-export const getProfilePicture = async(username) => {
+export const getProfilePicture = async (username) => {
   let endpoint = `/profile/${username}`;
-  return getFromAPI(endpoint);
-}
+  
+  // Define custom error handling for profile picture retrieval
+  const handleProfilePictureError = (error) => {
+    if (error.response && error.response.status === 410) { // No Profile Picture found
+      console.log('No profile picture found'); 
+      return null; 
+    }
+    throw error; 
+  };
+
+  return getFromAPI(endpoint, handleProfilePictureError); 
+};
 
 /**
  * Logs in a user by sending their credentials to the API.
