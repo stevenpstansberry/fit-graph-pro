@@ -120,23 +120,32 @@ const fetchWorkouts = async () => {
     console.log('Workouts API Response:', data);
 
     if (data && Array.isArray(data)) {
+      // Convert date strings to Date objects and format workouts
       const formattedWorkouts = data.map(workout => ({
         ...workout,
         date: new Date(workout.date), // Convert date to Date object
       }));
-      setWorkoutHistory(formattedWorkouts);
+
+      // Sort workouts by date in ascending order (earliest to latest)
+      const sortedWorkouts = formattedWorkouts.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // Update the workout history state with sorted workouts
+      setWorkoutHistory(sortedWorkouts);
       
       // Convert Date objects to ISO strings for storage
-      const workoutsToStore = formattedWorkouts.map(workout => ({
+      const workoutsToStore = sortedWorkouts.map(workout => ({
         ...workout,
         date: workout.date.toISOString(),
       }));
+      
+      // Save sorted workouts to session storage
       setSessionData('workouts', workoutsToStore);
     }
   } catch (error) {
     console.error('Error fetching workouts:', error);
   }
 };
+
   
   /**
    * Fetches splits for the user and updates state.
