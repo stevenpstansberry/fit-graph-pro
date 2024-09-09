@@ -66,7 +66,9 @@ function Profile() {
         console.log('No profile picture found for user:', user.username);
       }
     } catch (error) {
-      console.error('Error fetching profile picture:', error);
+      setProfileImageUrl(null);
+      console.log('No profile picture found for user:', user.username);
+
     }
   }, [user.username]);
 
@@ -76,8 +78,8 @@ function Profile() {
     const fetchWorkouts = async () => {
       try {
         setLoadingWorkouts(true);
-        const recent4Workouts = await getAllWorkouts(user.name, { count: 4 });
-        const last5WeeksWorkouts = await getAllWorkouts(user.name, { days: 35 });
+        const recent4Workouts = await getAllWorkouts(user.username, { count: 4 });
+        const last5WeeksWorkouts = await getAllWorkouts(user.username, { days: 35 });
 
         setRecentWorkouts(recent4Workouts);
         setWorkoutsPerWeek(last5WeeksWorkouts);

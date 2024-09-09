@@ -77,7 +77,8 @@ function Navbar({ profileImageUrl }) {
         console.log('No profile picture found for user:', user.username); // Log absence of profile picture
       }
     } catch (error) {
-      console.error('Error fetching profile picture:', error);
+      console.log('No profile picture found for user:', user.username);
+      
     }
   };
 
