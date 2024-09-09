@@ -18,9 +18,10 @@ AWS.config.update({
 const util = require('../utils/util');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const ses = new AWS.SES({ apiVersion: '2010-12-01' });
+
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
-// const ses = new AWS.SES(); // Commented out since we are not sending emails right now
 const userTable = 'fit-graph-users';
 
 /**
@@ -61,11 +62,47 @@ async function resetPassword(event) {
     // Temporarily log the new password to the console for testing
     console.log(`Password reset successful. New password for user with email ${email}: ${newPassword}... ${encryptedPW}`);
   
-    // Commented out email sending for now until SES is set up
-    // await sendResetEmail(dynamoUser.email, newPassword);
+    await sendResetEmail(dynamoUser.email, newPassword);
   
-    return util.buildResponse(200, { message: `Password reset successful. The new password has been generated and logged to the console for testing: ${newPassword}` });
+    return util.buildResponse(200, { message: `Password reset successful.` });
   }
+
+/**
+ * Sends an email to the user with their new password using AWS SES.
+ * 
+ * @async
+ * @function sendResetEmail
+ * @param {string} recipientEmail - The recipient's email address.
+ * @param {string} newPassword - The new password to send to the user.
+ * @returns {Promise<void>}
+ */
+async function sendResetEmail(recipientEmail, newPassword) {
+  const params = {
+    Destination: {
+      ToAddresses: [recipientEmail],
+    },
+    Message: {
+      Body: {
+        Html: {
+          Charset: "UTF-8",
+          Data: `<p>Your password has been reset. Your new password is: <strong>${newPassword}</strong></p><p>Please login and change your password immediately.</p>`,
+        },
+        Text: {
+          Charset: "UTF-8",
+          Data: `Your password has been reset. Your new password is: ${newPassword}. Please login and change your password immediately.`,
+        },
+      },
+      Subject: {
+        Charset: "UTF-8",
+        Data: "Your Password Reset for FitGraphPro",
+      },
+    },
+    Source: process.env.SES_SOURCE_EMAIL, 
+    ReplyToAddresses: [process.env.SES_REPLY_TO_EMAIL], 
+  };
+
+  await ses.sendEmail(params).promise();
+}
   
 
 /**
