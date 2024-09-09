@@ -37,25 +37,39 @@ function SignUp() {
     const username = data.get("username");
     const email = data.get("email");
     const password = data.get("password");
+    const confirmPassword = data.get("confirm-password");
 
     if (name.trim() === '' || username.trim() === '' || email.trim() === '' || password.trim() === '') {
       showSnackbar('All fields are required', 'warning');
       return;
     }
 
+    if (password !== confirmPassword) {
+      showSnackbar('Passwords do not match', 'warning');
+      return;
+    }
+
     const requestBody = {
-      username: username,
-      email: email,
-      name: name,
-      password: password
+      username,
+      email,
+      name,
+      password
     };
 
     try {
       const response = await registerUser(requestBody);  // Use the registerUser function
-      setUserSession(response.user, response.token); // Set the user session
-      showSnackbar('Registration successful!', 'success'); // Show success message
-      navigate('/profile'); // Redirect to profile page
+      console.log('Registration response:', response); // Debugging line to check API response
+
+      // Ensure the response contains both user and token
+      if (response.user && response.token) {
+        setUserSession(response.user, response.token); // Set the user session
+        showSnackbar('Registration successful!', 'success'); // Show success message
+        navigate('/workouts'); // Redirect to workouts page
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (error) {
+      console.error('Registration error:', error); // Log the error
       showSnackbar('Registration failed. Please check your inputs.', 'error'); // Show error message on registration failure
     }
   };

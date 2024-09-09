@@ -68,9 +68,16 @@ async function register(userInfo) {
     if (!saveUserResponse) {
       return util.buildResponse(503, { message: 'Server Error. Please try again later.'});
     }
+
+    const token = auth.generateToken(userInfo)
+
   
-    // Return success response with the new username
-    return util.buildResponse(200, { username: username });
+    // Response object
+    const response = {
+      user: user,
+      token: token
+    }
+    return util.buildResponse(200, response);
   }
   
 /**
