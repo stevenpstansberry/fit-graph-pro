@@ -88,8 +88,8 @@ exports.handler = async (event) => {
 
         // Contact us route
         case event.httpMethod === 'POST' && event.path === contactPath:
-            const contactBody = JSON.parse(event.body);
-            response = contactService.sendContactEmail(contactBody);
+            //const contactBody = JSON.parse(event.body);
+            response = contactService.sendContactEmail(event);
             break;
 
         // Retrieve all workouts route
