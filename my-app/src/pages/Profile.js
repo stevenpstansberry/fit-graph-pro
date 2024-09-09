@@ -36,7 +36,6 @@ function Profile() {
   const navigate = useNavigate();
   const user = getUser();
   const name = user !== 'undefined' && user ? user.name : '';
-  const email = user !== 'undefined' && user ? user.email : '';
   const [recentWorkouts, setRecentWorkouts] = useState([]);
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState([]);
   const [uploadModalOpen, setUploadModalOpen] = useState(false); 
@@ -152,9 +151,7 @@ function Profile() {
           <Typography variant="h4" component="h1" gutterBottom>
             {name}
           </Typography>
-          <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-            {email}
-          </Typography>
+
 
           <Divider sx={{ width: '100%', mb: 4 }} />
         </Box>
