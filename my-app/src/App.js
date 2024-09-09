@@ -16,7 +16,6 @@
 
 import './App.css';
 import React, { useEffect } from 'react';
-import axios from 'axios';
 import Home from './pages/Home';
 import About from './pages/About';
 import Profile from './pages/Profile';
@@ -32,10 +31,9 @@ import Workouts from './pages/Workouts';
 import ResetPassword from './pages/ResetPassword';
 import Account from './pages/Account';
 import Attributions from './pages/Attributions';
-import { verifyToken } from './services/APIServices';  // Import the new verifyToken function
+import { verifyToken } from './services/APIServices';  
 
 function App() {
-  axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PROD_KEY;
 
   useEffect(() => {
     const token = getToken();
