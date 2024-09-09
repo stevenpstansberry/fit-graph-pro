@@ -10,7 +10,7 @@
  * @author Steven Stansberry
  */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Typography, Box, Button, IconButton, Select, MenuItem, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import WorkoutCardPreview from './WorkoutCardPreview';
@@ -51,7 +51,13 @@ const ViewWorkouts = ({
 }) => {
   const hasWorkoutsInHistory = workoutHistory.length > 0;  // Check if there are any workouts at all
   const hasWorkoutsForSelectedDate = filteredWorkouts.length > 0;  // Check if there are workouts for the selected month/year
+  const [imageLoaded, setImageLoaded] = useState(false);
 
+  useEffect(() => {
+    const img = new Image();
+    img.src = fitnessImage;
+    img.onload = () => setImageLoaded(true);
+  },[])
   return (
     <Box
       sx={{
@@ -178,11 +184,17 @@ const ViewWorkouts = ({
           }}
         >
           {/* Background Image */}
-          <img
-            src={fitnessImage}
-            alt="Fitness Background"
-            style={{ width: '100%', maxWidth: '400px', marginBottom: '16px' }}  
-          />
+          {imageLoaded ? ( // Only display the image if it is loaded
+            <img
+              src={fitnessImage}
+              alt="Fitness Background"
+              style={{ width: '100%', maxWidth: '400px', marginBottom: '16px' }}  
+            />
+          ) : (
+            <Typography variant="h6" color="textSecondary" sx={{ mb: 8 }}>
+
+            </Typography>
+          )}
 
           {/* Message encouraging the user to add their first workout */}
           <Typography variant="h6" color="textSecondary" sx={{ mb: 8 }}>
