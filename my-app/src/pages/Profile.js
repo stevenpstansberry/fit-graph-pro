@@ -63,10 +63,12 @@ function Profile() {
         console.log('Profile picture URL fetched and stored in session storage:', cacheBustedUrl);
       } else {
         setProfileImageUrl(null);
+        setProfileImageUrlToSession(null);
         console.log('No profile picture found for user:', user.username);
       }
     } catch (error) {
       setProfileImageUrl(null);
+      setProfileImageUrlToSession(null);
       console.log('No profile picture found for user:', user.username);
 
     }
