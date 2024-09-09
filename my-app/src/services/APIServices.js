@@ -175,7 +175,7 @@ export const deleteSplit = async (splitId) => {
  * @param {Object} [options] - Optional parameters for filtering.
  * @param {number} [options.days] - Number of days to look back to filter workouts.
  * @param {number} [options.count] - Number of recent workouts to retrieve.
- * @returns {Promise<Object>} Response data from the API.
+ * @returns {Promise<Object|string>} Response data from the API, or a message if no workouts are found.
  * @throws Will throw an error if the request fails.
  */
 export const getAllWorkouts = async (username, options = {}) => {
@@ -192,8 +192,18 @@ export const getAllWorkouts = async (username, options = {}) => {
     endpoint += `?${queryParams.toString()}`;
   }
 
-  return getFromAPI(endpoint);
+  // Define custom error handling for workout retrieval
+  const handleWorkoutError = (error) => {
+    if (error.response && error.response.status === 410) {
+      console.log(`${username} has no workouts`); 
+      return `${username} has no workouts`; 
+    }
+    throw error; // Rethrow other errors
+  };
+
+  return getFromAPI(endpoint, handleWorkoutError);
 };
+
 
 
 /**
@@ -202,10 +212,18 @@ export const getAllWorkouts = async (username, options = {}) => {
  * @async
  * @function getAllSplits
  * @param {string} username - The username to retrieve splits for.
- * @returns {Promise<Object>} Response data from the API.
+ * @returns {Promise<Object|string>} Response data from the API, or a message if no splits are found.
  */
 export const getAllSplits = async (username) => {
-  return getFromAPI(`/splits/all/${username}`);
+  const handleSplitError = (error) => {
+    if (error.response && error.response.status === 410) {
+      console.log(`${username} has no workout splits`); 
+      return `${username} has no workout splits`; 
+    }
+    throw error; 
+  };
+
+  return getFromAPI(`/splits/all/${username}`, handleSplitError);
 };
 
 /**

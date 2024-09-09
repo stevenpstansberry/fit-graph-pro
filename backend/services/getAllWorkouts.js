@@ -39,7 +39,7 @@ async function getAllWorkouts() {
       const result = await dynamodb.scan(params).promise();
   
       if (!result.Items || result.Items.length === 0) {
-        return util.buildResponse(404, { message: 'No workouts found' });
+        return util.buildResponse(410, { message: 'No workouts found' });
       }
   
       return util.buildResponse(200, result.Items);
