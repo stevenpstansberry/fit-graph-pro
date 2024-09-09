@@ -35,7 +35,7 @@ const getFromAPI = async (endpoint, errorHandler) => {
   console.log('Making GET request to:', url);
   console.log('Request Headers:', {
     'Content-Type': 'application/json',
-    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Add API key if needed
+    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
   });
 
   try {
@@ -148,7 +148,7 @@ const deleteToAPI = async (endpoint, errorHandler) => {
   console.log('Making DELETE request to:', url);
   console.log('Request Headers:', {
     'Content-Type': 'application/json',
-    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Add API key if needed
+    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, 
   });
 
   try {
