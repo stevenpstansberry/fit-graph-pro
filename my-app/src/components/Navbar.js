@@ -75,9 +75,13 @@ function Navbar({ profileImageUrl }) {
         console.log('Profile picture URL fetched and saved to session storage:', cacheBustedUrl); // Log fetched URL
       } else {
         console.log('No profile picture found for user:', user.username); // Log absence of profile picture
+        setProfileImageUrlToSession(null);
       }
     } catch (error) {
-      console.error('Error fetching profile picture:', error);
+      console.log('No profile picture found for user:', user.username);
+      setProfileImageUrlToSession(null);
+
+      
     }
   };
 

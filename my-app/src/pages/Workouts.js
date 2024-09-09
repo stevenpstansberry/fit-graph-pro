@@ -12,7 +12,7 @@
 
 // Imports
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Box, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress, Snackbar, Alert, Tooltip, Tabs, Tab } from '@mui/material';
+import { Typography, Button, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress, Snackbar, Alert, Tabs, Tab } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import Footer from '../components/Footer';
@@ -37,7 +37,7 @@ import { useSearchParams } from 'react-router-dom';
  */
 function Workouts() {
   const user = getUser();
-  const name = user !== 'undefined' && user ? user.name : '';
+  const username = user !== 'undefined' && user ? user.username : '';
 
   console.log(user);
 
@@ -73,10 +73,10 @@ function Workouts() {
 
   // Fetch from API using APIServices
   useEffect(() => {
-    if (name) {
+    if (username) {
       fetchWorkoutsAndSplits();
     }
-  }, [name]);
+  }, [username]);
   
   /**
    * Fetches workouts and splits for the user and updates state.
@@ -116,7 +116,7 @@ function Workouts() {
  */
 const fetchWorkouts = async () => {
   try {
-    const data = await getAllWorkouts(name);
+    const data = await getAllWorkouts(username);
     console.log('Workouts API Response:', data);
 
     if (data && Array.isArray(data)) {
@@ -143,7 +143,7 @@ const fetchWorkouts = async () => {
    */
   const fetchSplits = async () => {
     try {
-      const data = await getAllSplits(name);
+      const data = await getAllSplits(username);
       console.log('Splits API Response:', data);
   
       if (data && Array.isArray(data)) {
@@ -497,7 +497,7 @@ const fetchWorkouts = async () => {
         <>
           {tabIndex === 0 && (
             <ViewWorkouts
-              name={name}
+              name={username}
               filteredWorkouts={filteredWorkouts}
               selectedMonth={selectedMonth}
               setSelectedMonth={setSelectedMonth}
@@ -577,16 +577,27 @@ const fetchWorkouts = async () => {
             </Typography>
           )}
 
-          {/* Button to add a new custom split */}
-          <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon />}
-              onClick={() => setIsCustomSplitDialogOpen(true)}
-            >
-              Add Custom Split
-            </Button>
-          </Box>
+            {/* Button to add a new custom split */} 
+            <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
+              {console.log('Current number of splits:', userSplits.length)} {/* Log the length of userSplits */}
+              <Button
+                variant="outlined"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  if (userSplits.length >= 8) {
+                    // Show error Snackbar if there are already 9 splits
+                    setSnackbarMessage('You cannot have more than 9 splits.');
+                    setSnackbarSeverity('error');
+                    setSnackbarOpen(true);
+                  } else {
+                    // Open the dialog to add a new custom split
+                    setIsCustomSplitDialogOpen(true);
+                  }
+                }}
+              >
+                Add Custom Split
+              </Button>
+            </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEditDialog} color="primary">Done</Button>

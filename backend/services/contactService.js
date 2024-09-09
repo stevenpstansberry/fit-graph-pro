@@ -28,7 +28,28 @@ const sns = new AWS.SNS();
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
 async function sendContactEmail(event) {
-  const { name, email, message } = event;
+  let formData;
+  
+  // Ensure event.body is parsed correctly from JSON
+  try {
+    formData = JSON.parse(event.body); // Parse JSON string
+  } catch (error) {
+    console.error('Invalid JSON format in request body:', error);
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'Invalid request format' }),
+    };
+  }
+
+  const { name, email, message } = formData; // Destructure parsed formData
+
+  // Validate input fields
+  if (!name || !email || !message) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'All fields (name, email, message) are required.' }),
+    };
+  }
 
   // Construct email content to be sent via SNS
   const emailParams = {

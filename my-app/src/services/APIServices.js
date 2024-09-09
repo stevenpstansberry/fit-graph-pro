@@ -24,17 +24,51 @@ axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PRO
  * @async
  * @function getFromAPI
  * @param {string} endpoint - The API endpoint to send the GET request to.
- * @returns {Promise<Object>} Response data from the API.
- * @throws Will throw an error if the request fails.
+ * @param {function} [errorHandler] - Optional callback function to handle errors.
+ * @returns {Promise<Object|null>} Response data from the API or handled value from the error handler.
+ * @throws Will throw an error if the request fails and no errorHandler is provided.
  */
-const getFromAPI = async (endpoint) => {
+const getFromAPI = async (endpoint, errorHandler) => {
+  const url = `${fitGraphProd}${endpoint}`; // Construct the full URL
+
+  // Log the request details before making the request
+  console.log('Making GET request to:', url);
+  console.log('Request Headers:', {
+    'Content-Type': 'application/json',
+    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Add API key if needed
+  });
+
   try {
-    const url = `${fitGraphProd}${endpoint}`;
-    const response = await axios.get(url);
+    const response = await axios.get(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
+      },
+    });
+
+    // Log the response status and data
+    console.log('Response Status:', response.status);
+    console.log('Response Data:', response.data);
+
     return response.data;
   } catch (error) {
-    console.error(`Error getting from ${endpoint}:`, error);
-    throw error;
+    if (errorHandler) {
+      return errorHandler(error); // Use the provided error handler
+    }
+
+    if (error.response) {
+      // Request made and server responded
+      console.error('Response Error:', error.response.data);
+      console.error('Status:', error.response.status);
+      console.error('Headers:', error.response.headers);
+    } else if (error.request) {
+      // Request made but no response received
+      console.error('Request Error:', error.request);
+    } else {
+      // Something happened in setting up the request
+      console.error('Error', error.message);
+    }
+    throw error; // Re-throw the error after logging it
   }
 };
 
@@ -45,33 +79,39 @@ const getFromAPI = async (endpoint) => {
  * @function postToAPI
  * @param {string} endpoint - The API endpoint to send the POST request to.
  * @param {Object} data - The data to be sent in the body of the POST request.
- * @returns {Promise<Object>} Response data from the API.
- * @throws Will throw an error if the request fails.
+ * @param {function} [errorHandler] - Optional callback function to handle errors.
+ * @returns {Promise<Object|null>} Response data from the API or handled value from the error handler.
+ * @throws Will throw an error if the request fails and no errorHandler is provided.
  */
-const postToAPI = async (endpoint, data) => {
+const postToAPI = async (endpoint, data, errorHandler) => {
   const url = `${fitGraphProd}${endpoint}`; // Construct the full URL
-  
+
   // Log the request details before making the request
   console.log('Making POST request to:', url);
   console.log('Request Data:', data);
   console.log('Request Headers:', {
     'Content-Type': 'application/json', 
+    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
   });
 
   try {
     const response = await axios.post(url, data, {
       headers: {
-        'Content-Type': 'application/json', 
-        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, 
+        'Content-Type': 'application/json',
+        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
       },
     });
-    
+
     // Log the response status and data
     console.log('Response Status:', response.status);
     console.log('Response Data:', response.data);
-    
+
     return response.data;
   } catch (error) {
+    if (errorHandler) {
+      return errorHandler(error); // Use the provided error handler
+    }
+
     if (error.response) {
       // Request made and server responded
       console.error('Response Error:', error.response.data);
@@ -90,25 +130,61 @@ const postToAPI = async (endpoint, data) => {
 
 
 
+
 /**
  * Sends a DELETE request to a specified API endpoint.
  * 
  * @async
  * @function deleteToAPI
  * @param {string} endpoint - The API endpoint to send the DELETE request to.
- * @returns {Promise<Object>} Response data from the API.
- * @throws Will throw an error if the request fails.
+ * @param {function} [errorHandler] - Optional callback function to handle errors.
+ * @returns {Promise<Object|null>} Response data from the API or handled value from the error handler.
+ * @throws Will throw an error if the request fails and no errorHandler is provided.
  */
-const deleteToAPI = async (endpoint) => {
+const deleteToAPI = async (endpoint, errorHandler) => {
+  const url = `${fitGraphProd}${endpoint}`; // Construct the full URL
+
+  // Log the request details before making the request
+  console.log('Making DELETE request to:', url);
+  console.log('Request Headers:', {
+    'Content-Type': 'application/json',
+    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Add API key if needed
+  });
+
   try {
-    const url = `${fitGraphProd}${endpoint}`;
-    const response = await axios.delete(url);
+    const response = await axios.delete(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
+      },
+    });
+
+    // Log the response status and data
+    console.log('Response Status:', response.status);
+    console.log('Response Data:', response.data);
+
     return response.data;
   } catch (error) {
-    console.error(`Error deleting from ${endpoint}:`, error);
-    throw error;
+    if (errorHandler) {
+      return errorHandler(error); // Use the provided error handler
+    }
+
+    if (error.response) {
+      // Request made and server responded
+      console.error('Response Error:', error.response.data);
+      console.error('Status:', error.response.status);
+      console.error('Headers:', error.response.headers);
+    } else if (error.request) {
+      // Request made but no response received
+      console.error('Request Error:', error.request);
+    } else {
+      // Something happened in setting up the request
+      console.error('Error', error.message);
+    }
+    throw error; // Re-throw the error after logging it
   }
 };
+
 
 /**
  * Uploads a new workout to the API.
@@ -168,7 +244,7 @@ export const deleteSplit = async (splitId) => {
  * @param {Object} [options] - Optional parameters for filtering.
  * @param {number} [options.days] - Number of days to look back to filter workouts.
  * @param {number} [options.count] - Number of recent workouts to retrieve.
- * @returns {Promise<Object>} Response data from the API.
+ * @returns {Promise<Object|string>} Response data from the API, or a message if no workouts are found.
  * @throws Will throw an error if the request fails.
  */
 export const getAllWorkouts = async (username, options = {}) => {
@@ -185,8 +261,18 @@ export const getAllWorkouts = async (username, options = {}) => {
     endpoint += `?${queryParams.toString()}`;
   }
 
-  return getFromAPI(endpoint);
+  // Define custom error handling for workout retrieval
+  const handleWorkoutError = (error) => {
+    if (error.response && error.response.status === 410) {
+      console.log(`${username} has no workouts`); 
+      return `${username} has no workouts`; 
+    }
+    throw error; // Rethrow other errors
+  };
+
+  return getFromAPI(endpoint, handleWorkoutError);
 };
+
 
 
 /**
@@ -195,10 +281,18 @@ export const getAllWorkouts = async (username, options = {}) => {
  * @async
  * @function getAllSplits
  * @param {string} username - The username to retrieve splits for.
- * @returns {Promise<Object>} Response data from the API.
+ * @returns {Promise<Object|string>} Response data from the API, or a message if no splits are found.
  */
 export const getAllSplits = async (username) => {
-  return getFromAPI(`/splits/all/${username}`);
+  const handleSplitError = (error) => {
+    if (error.response && error.response.status === 410) {
+      console.log(`${username} has no workout splits`); 
+      return `${username} has no workout splits`; 
+    }
+    throw error; 
+  };
+
+  return getFromAPI(`/splits/all/${username}`, handleSplitError);
 };
 
 /**
@@ -235,12 +329,22 @@ export const uploadProfilePicture = async (base64ProfilePictureString) => {
  * @async
  * @function getProfilePicture
  * @param {string} username - The username to retrieve the profile picture for.
- * @returns {Promise<Object>} Response data containing the profile picture URL.
+ * @returns {Promise<Object|null>} Response data containing the profile picture URL, or null if not found.
  */
-export const getProfilePicture = async(username) => {
+export const getProfilePicture = async (username) => {
   let endpoint = `/profile/${username}`;
-  return getFromAPI(endpoint);
-}
+  
+  // Define custom error handling for profile picture retrieval
+  const handleProfilePictureError = (error) => {
+    if (error.response && error.response.status === 410) { // No Profile Picture found
+      console.log('No profile picture found'); 
+      return null; 
+    }
+    throw error; 
+  };
+
+  return getFromAPI(endpoint, handleProfilePictureError); 
+};
 
 /**
  * Logs in a user by sending their credentials to the API.

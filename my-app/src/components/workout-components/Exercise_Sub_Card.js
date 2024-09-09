@@ -29,11 +29,12 @@ import AddIcon from "@mui/icons-material/Add";
  * @returns {React.Element} - The rendered ExerciseSubcard component.
  */
 function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode }) {
-  const [snackbarOpen, setSnackbarOpen] = useState(false); // State to control snackbar visibility
+  const [snackbarOpen, setSnackbarOpen] = useState(false); 
+  const [snackbarMessage, setSnackbarMessage] = useState(''); 
 
   /**
    * Handles the change in input for weight or reps in a specific set.
-   * Prevents negative and zero values.
+   * Prevents negative and zero values and limits input to 4 digits.
    * 
    * @function handleSetChange
    * @param {number} setIndex - The index of the set being modified.
@@ -41,17 +42,24 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, 
    * @param {string} value - The new value for the specified key.
    */
   const handleSetChange = (setIndex, key, value) => {
-    // Validate to ensure only positive numbers are accepted
-    if (value === '' || (Number(value) > 0 && !value.startsWith('0'))) {
+    // Validate to ensure only positive numbers up to 4 digits are accepted
+    if (value === '' || (Number(value) > 0 && !value.startsWith('0') && value.length <= 4)) {
       const newSets = exercise.sets.map((set, i) =>
         i === setIndex ? { ...set, [key]: value } : set
       );
       updateExerciseSets(index, newSets); // Update sets in the parent component
     } else {
-      // Show snackbar notification if invalid value is entered
+      // Set specific error messages based on the validation failure
+      if (value.length > 4) {
+        setSnackbarMessage('No more than 4 digits allowed.');
+      } else {
+        setSnackbarMessage('Only positive values greater than 0 are accepted.');
+      }
+      // Show snackbar notification
       setSnackbarOpen(true);
     }
   };
+
 
   /**
    * Adds a new set to the exercise.
@@ -118,7 +126,7 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, 
                 value={set.weight}
                 onChange={(e) => handleSetChange(setIndex, "weight", e.target.value)}
                 type='number'
-                inputProps={{ min: 1 }} // Ensure minimum value of 1 for type 'number'
+                inputProps={{ min: 1, maxLength: 4 }} // Ensure minimum value of 1 and maximum of 4 digits
                 sx={{ flex: 1 }}
               />
             )}
@@ -132,7 +140,7 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, 
                 value={set.reps}
                 onChange={(e) => handleSetChange(setIndex, "reps", e.target.value)}
                 type='number'
-                inputProps={{ min: 1 }} // Ensure minimum value of 1 for type 'number'
+                inputProps={{ min: 1, maxLength: 4 }} // Ensure minimum value of 1 and maximum of 4 digits
                 sx={{ flex: 1 }}
               />
             )}
@@ -157,7 +165,7 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, 
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
           <Alert onClose={handleCloseSnackbar} severity="warning" sx={{ width: '100%' }}>
-            Only positive values greater than 0 are accepted.
+            {snackbarMessage}
           </Alert>
         </Snackbar>
       </CardContent>

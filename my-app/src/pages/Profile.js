@@ -36,7 +36,6 @@ function Profile() {
   const navigate = useNavigate();
   const user = getUser();
   const name = user !== 'undefined' && user ? user.name : '';
-  const email = user !== 'undefined' && user ? user.email : '';
   const [recentWorkouts, setRecentWorkouts] = useState([]);
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState([]);
   const [uploadModalOpen, setUploadModalOpen] = useState(false); 
@@ -63,10 +62,14 @@ function Profile() {
         console.log('Profile picture URL fetched and stored in session storage:', cacheBustedUrl);
       } else {
         setProfileImageUrl(null);
+        setProfileImageUrlToSession(null);
         console.log('No profile picture found for user:', user.username);
       }
     } catch (error) {
-      console.error('Error fetching profile picture:', error);
+      setProfileImageUrl(null);
+      setProfileImageUrlToSession(null);
+      console.log('No profile picture found for user:', user.username);
+
     }
   }, [user.username]);
 
@@ -76,8 +79,8 @@ function Profile() {
     const fetchWorkouts = async () => {
       try {
         setLoadingWorkouts(true);
-        const recent4Workouts = await getAllWorkouts(user.name, { count: 4 });
-        const last5WeeksWorkouts = await getAllWorkouts(user.name, { days: 35 });
+        const recent4Workouts = await getAllWorkouts(user.username, { count: 4 });
+        const last5WeeksWorkouts = await getAllWorkouts(user.username, { days: 35 });
 
         setRecentWorkouts(recent4Workouts);
         setWorkoutsPerWeek(last5WeeksWorkouts);
@@ -148,9 +151,7 @@ function Profile() {
           <Typography variant="h4" component="h1" gutterBottom>
             {name}
           </Typography>
-          <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-            {email}
-          </Typography>
+
 
           <Divider sx={{ width: '100%', mb: 4 }} />
         </Box>

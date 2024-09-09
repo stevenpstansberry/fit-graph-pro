@@ -19,6 +19,14 @@ import { setUserSession } from "../../services/AuthService";
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from "../../services/APIServices";  // Import the loginUser function from APIServices
 
+/**
+ * 
+ * Renders the sign-in form for existing users to log in. The form collects the user's username and password,
+ * and communicates with the backend API to authenticate the user.
+ * 
+ * @component
+ * @returns {React.Element} - The rendered SignIn component.
+ */
 function SignIn() {
   const navigate = useNavigate(); // React Router hook for navigation
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' }); // State to handle Snackbar
@@ -58,8 +66,12 @@ function SignIn() {
 
       switch(true) {
         case error.response.status === 403:
-          errorMSG ='User does not exist';
+          errorMSG = "Incorrect Password";
           break;
+
+        case error.response.status === 405:
+          errorMSG = "Incorrect Password";
+          break;  
 
         case error.response.status === 503:
           errorMSG ='Server is offline, please try again later.';

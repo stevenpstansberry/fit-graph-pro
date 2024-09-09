@@ -55,7 +55,6 @@ function Contact() {
       [e.target.name]: e.target.value,
     });
   };
-  // TODO: fix CORS error due to e.preventDefault()
   /**
    * Handles form submission.
    * 
@@ -67,19 +66,32 @@ function Contact() {
    * @param {Object} e - The event object from the form submission.
    */
   const handleSubmit = async (e) => {
-    // e.preventDefault();  // Prevent the default form submission behavior (disabled due to CORS ERROR)
+    //e.preventDefault(); // Prevent the default form submission behavior
     setSuccessMessage(''); // Clear previous messages
     setErrorMessage(''); // Clear previous messages
     console.log('Form Data:', formData); // Debugging: Log the form data
-    
+  
     try {
       // Make the asynchronous request to submit form data
-      await submitContactForm(formData);
-      console.log("Successfully submitted contact form!"); 
-      setSuccessMessage('Your message has been successfully submitted!'); // Set success message
+      const response = await submitContactForm(formData);
+  
+      // Check for HTTP 2xx response status to determine success
+      if (response.status >= 200 && response.status < 300) {
+        console.log("Successfully submitted contact form!"); 
+        setSuccessMessage('Your message has been successfully submitted!'); // Set success message
+      } else {
+        // Handle non-2xx responses (e.g., 4xx, 5xx)
+        setErrorMessage('Failed to submit your message. Please check your input and try again.'); // Set error message
+      }
     } catch (error) {
-      console.error("Failed to submit contact form", error); 
-      setErrorMessage('Failed to submit your message. Please try again later.'); // Set error message
+      console.error("Error in submitting contact form:", error); 
+  
+      // Check if there is a specific response error
+      if (error.response) {
+        setErrorMessage(`Error: ${error.response.data.message || 'An error occurred while submitting your message. Please try again later.'}`);
+      } else {
+        setErrorMessage('Network error. Please check your internet connection or try again later.');
+      }
     }
   };
 
@@ -95,7 +107,6 @@ function Contact() {
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       if (formData.name || formData.email || formData.message) {
-        event.preventDefault(); // Standard in most browsers
         event.returnValue = ''; // For older browsers
       }
     };

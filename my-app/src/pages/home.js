@@ -18,7 +18,7 @@ import Features from '../components/Features';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Typography, Box, Grid } from '@mui/material';
-import backgroundImage from '../assets/backgroundImage.jpg'; // Import the image directly
+import backgroundImage from '../assets/backgroundImage.jpg';
 
 /**
  * Home page component that serves as the landing page for the Fit Graph Pro application.

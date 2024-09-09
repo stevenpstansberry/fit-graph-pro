@@ -64,7 +64,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     if (open) {
       setExercises(preloadedExercises);
       setWorkoutId(uuidv4()); // Generate a unique ID for the workout
-      setWorkoutDate(new Date().toLocaleDateString()); // Set today's date for the workout
+      setWorkoutDate(new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })); // Set today's date with time for the workout
       
       // Filter out preloaded exercises from the available exercises
       const filteredExercises = strengthWorkouts.filter(

@@ -38,7 +38,7 @@ async function getProfilePicture(username) {
         const result = await dynamodb.get(params).promise();
 
         if (!result.Item || !result.Item.profilePictureUrl) {
-            return util.buildResponse(404, { message: `No profile picture found for user ${username}` });
+            return util.buildResponse(410, { message: `No profile picture found for user ${username}` });
         }
 
         return util.buildResponse(200, { profilePictureUrl: result.Item.profilePictureUrl });

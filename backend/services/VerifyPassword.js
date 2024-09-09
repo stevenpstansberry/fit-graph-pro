@@ -53,7 +53,7 @@ async function verifyPassword(user) {
 
   // Verify the provided password against the stored hashed password
   if (!bcrypt.compareSync(password, dynamoUser.password)) {
-    return util.buildResponse(403, { message: 'password is incorrect' });
+    return util.buildResponse(405, { message: 'password is incorrect' });
   }
 
   return util.buildResponse(200, { message: 'Password verified successfully' });

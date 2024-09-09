@@ -76,6 +76,27 @@ const Attributions = () => {
               <strong>KC Complete Fitness</strong> 
             </Link>.
           </Typography>
+
+          <Typography variant="body1" color="textSecondary">
+            About page photo by 
+            <Link
+              href="https://www.pexels.com/photo/woman-holding-exercise-equipment-416809/"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ ml: 0.5 }}
+            >
+              <strong>Pixabay</strong>
+            </Link> 
+            from 
+            <Link
+              href="https://www.pexels.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ ml: 0.5 }}
+            >
+              Pexels
+            </Link>.
+          </Typography>
         </Box>
 
         {/* Library Attribution Section */}

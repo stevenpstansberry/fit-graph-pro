@@ -13,7 +13,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, TextField, Button, Grid, Container, Tooltip, IconButton, Tabs, Tab, Autocomplete } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, Container, Tooltip, IconButton, Tabs, Tab, Autocomplete, Snackbar, Alert } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { calculateFuturePerformance } from '../../services/APIServices';
 
@@ -35,6 +35,8 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
     const [selectedExercise, setSelectedExercise] = useState(''); // Currently selected exercise for prediction
     const [tabIndex, setTabIndex] = useState(0); // State for managing tabs
     const [oneRMResult, setOneRMResult] = useState(null); // State for 1RM estimation result
+    const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar visibility
+    const [snackbarMessage, setSnackbarMessage] = useState(''); // Message for the Snackbar
 
     // Extract unique exercise labels from workouts
     const exerciseLabels = Array.from(new Set(workoutHistory.flatMap(workout => 
@@ -66,11 +68,23 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
             return;
         }
 
+        // Check if there are more than one entry for the selected exercise in workout history
+        const exerciseCount = workoutHistory.flatMap(workout =>
+            workout.exercises.filter(exercise => exercise.label === selectedExercise)
+        ).length;
+
+        if (exerciseCount <= 1) {
+            setSnackbarMessage('You need at least two workout entries of the selected exercise to predict future performance.');
+            setSnackbarOpen(true);
+            return;
+        }
+
         const performanceData = {
             exercise: selectedExercise,
             goalWeight: parseFloat(goalWeight),
             workoutHistory,
         };
+
 
         try {
             // Call the API service function to calculate future performance
@@ -140,6 +154,13 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
         } else {
             setOneRMResult(`No data available for estimating 1RM for ${selectedExercise}.`);
         }
+    };
+
+    /**
+     * Closes the snackbar notification.
+     */
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
     };
 
     return (
@@ -234,9 +255,6 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
                                             border: '2px solid #757575',
                                             backgroundColor: '#f5f5f5',
                                             color: '#424242',
-                                            '&:hover': {
-                                                backgroundColor: '#e0e0e0',
-                                            },
                                             '&:disabled': {
                                                 backgroundColor: '#f5f5f5',
                                                 color: '#bdbdbd',  
@@ -323,6 +341,13 @@ const FuturePrediction = ({ workoutHistory = [] }) => {
                         )}
                     </Box>
                 )}
+
+                    {/* Snackbar Notification */}
+                    <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+                    <Alert onClose={handleCloseSnackbar} severity="warning" sx={{ width: '100%' }}>
+                        {snackbarMessage}
+                    </Alert>
+                </Snackbar>
             </Container>
         </Box>
     );
