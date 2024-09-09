@@ -577,16 +577,27 @@ const fetchWorkouts = async () => {
             </Typography>
           )}
 
-          {/* Button to add a new custom split */}
-          <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon />}
-              onClick={() => setIsCustomSplitDialogOpen(true)}
-            >
-              Add Custom Split
-            </Button>
-          </Box>
+            {/* Button to add a new custom split */} 
+            <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
+              {console.log('Current number of splits:', userSplits.length)} {/* Log the length of userSplits */}
+              <Button
+                variant="outlined"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  if (userSplits.length >= 8) {
+                    // Show error Snackbar if there are already 9 splits
+                    setSnackbarMessage('You cannot have more than 9 splits.');
+                    setSnackbarSeverity('error');
+                    setSnackbarOpen(true);
+                  } else {
+                    // Open the dialog to add a new custom split
+                    setIsCustomSplitDialogOpen(true);
+                  }
+                }}
+              >
+                Add Custom Split
+              </Button>
+            </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
