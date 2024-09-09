@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import { Container, Typography, Box, TextField, FormControlLabel, Checkbox, Link, Grid, Button, Snackbar, Alert } from '@mui/material';
 import { setUserSession } from "../../services/AuthService";
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from "../../services/APIServices"; // Import the registerUser function from APIServices
+import { registerUser } from "../../services/APIServices"; 
 
 function SignUp() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' }); // State to handle Snackbar

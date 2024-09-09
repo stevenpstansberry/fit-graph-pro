@@ -58,8 +58,12 @@ function SignIn() {
 
       switch(true) {
         case error.response.status === 403:
-          errorMSG ='User does not exist';
+          errorMSG = "Incorrect Password";
           break;
+
+        case error.response.status === 405:
+          errorMSG = "Incorrect Password";
+          break;  
 
         case error.response.status === 503:
           errorMSG ='Server is offline, please try again later.';
