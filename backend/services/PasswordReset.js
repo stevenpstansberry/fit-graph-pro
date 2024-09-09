@@ -9,7 +9,6 @@
  * @version 1.0.0
  */
 
-// TODO: once SES is set up, add email verification
 
 const AWS = require('aws-sdk');
 AWS.config.update({
