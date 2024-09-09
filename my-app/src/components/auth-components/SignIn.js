@@ -52,8 +52,25 @@ function SignIn() {
       showSnackbar('Login successful!', 'success');  // Show success message
       navigate('/profile'); // Redirect to profile page
     } catch (error) {
-      showSnackbar('Login failed. Please check your credentials.', 'error');  // Show error message on login failure
-      console.log(error.status);
+      console.log(error.response.status);
+
+      let errorMSG;
+
+      switch(true) {
+        case error.response.status === 403:
+          errorMSG ='User does not exist';
+          break;
+
+        case error.response.status === 503:
+          errorMSG ='Server is offline, please try again later.';
+          break;
+
+        default:
+          errorMSG = 'Unknown error occured, please try again later.'
+          break;
+      }
+
+      showSnackbar(`Login failed. ${errorMSG}`, 'error');  // Show error message on login failure
     }
   };
 
