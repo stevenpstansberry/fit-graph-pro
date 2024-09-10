@@ -58,7 +58,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false); 
   const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises
-  const [isEditMode, setIsEditMode] = useState(editMode || false);
+  const [isEditMode, setIsEditMode] = useState(edit || false);
 
   // Workout metadata
   const [workoutId, setWorkoutId] = useState(null);
