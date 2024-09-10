@@ -70,6 +70,7 @@ function Workouts() {
   const initialTabIndex = parseInt(searchParams.get('tabIndex')) || 0; // Get 'tabIndex' from URL or default to 0
   const [tabIndex, setTabIndex] = useState(initialTabIndex);
   const [editWorkout, setEditWorkout] = useState(false);
+  const [workoutToEditId, setWorkoutToEditId] = useState('');
 
 
   // Fetch from API using APIServices
@@ -316,6 +317,7 @@ const fetchWorkouts = async () => {
    * @param {object} workout - The workout to be edited
    */ 
   const handleEditWorkout = (workout) => {
+    setWorkoutToEditId(workout.workoutId);
     toggleEditWorkoutCard(workout.exercises, 'createWorkout', workout.type)
   }
 
@@ -682,6 +684,7 @@ const fetchWorkouts = async () => {
         newSplitName={newSplitName}
         type={workoutType}
         {...(editWorkout && { editMode: editWorkout })}
+        workoutToEditId={workoutToEditId}
       />
     </Box>
   );

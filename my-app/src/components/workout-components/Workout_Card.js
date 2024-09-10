@@ -43,9 +43,11 @@ import { getUser } from '../../services/AuthService';
  * @param {function} props.saveWorkout - Function to save a workout to the backend.
  * @param {string} props.newSplitName - Name of the new workout split.
  * @param {string} props.type - Type of workout.
+ * @param {string} props.editMode - Determines if in edit mode
+ * @param {string} props.workoutToEditId - The id of the workout being edited
  * @returns {React.Element} - The rendered Workout_Card component.
  */
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode }) {
+function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, workoutToEditId }) {
   const user = getUser();
 
   // Initialize state variables
@@ -58,7 +60,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
   const [isEditMode, setIsEditMode] = useState(editMode || false); // Initialize based on editMode prop
 
   // Workout metadata
-  const [workoutId, setWorkoutId] = useState(null);
+  const [workoutId, setWorkoutId] = useState('');
   const [workoutDate, setWorkoutDate] = useState(null);
 
   // Initialize workout metadata and preload exercises when the modal opens
@@ -77,7 +79,8 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       // Set edit mode if passed in
       if (editMode) {
         setIsEditMode(true);
-        console.log('!!!!!!in edit mode');
+        setWorkoutId(workoutToEditId)
+        console.log('!!!!!!in edit mode for: ', workoutId);
         // Additional initialization for edit mode if needed
       }
     }
