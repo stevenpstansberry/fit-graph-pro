@@ -217,6 +217,7 @@ const fetchWorkouts = async () => {
    */
   const handleClose = () => {
     setIsCardVisible(false);
+    setEditWorkout(false); // Set edit workout mode back to false.
   };
 
 
@@ -309,6 +310,11 @@ const fetchWorkouts = async () => {
     setConfirmDialogOpen(true);
   };
 
+    /**
+   * Edits a workout
+   * 
+   * @param {object} workout - The workout to be edited
+   */ 
   const handleEditWorkout = (workout) => {
     toggleEditWorkoutCard(workout.exercises, 'createWorkout', workout.type)
   }
