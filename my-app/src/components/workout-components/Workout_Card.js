@@ -45,8 +45,12 @@ import { getUser } from '../../services/AuthService';
  * @param {string} props.type - Type of workout.
  * @returns {React.Element} - The rendered Workout_Card component.
  */
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type }) {
+function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, edit }) {
   const user = getUser();
+
+  if (edit){
+    console.log('!!!!!!in edit mode')
+  }
 
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState('');
@@ -54,6 +58,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false); 
   const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises
+  const [isEditMode, setIsEditMode] = useState(editMode || false);
 
   // Workout metadata
   const [workoutId, setWorkoutId] = useState(null);

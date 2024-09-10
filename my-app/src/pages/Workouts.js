@@ -69,6 +69,7 @@ function Workouts() {
   const [searchParams] = useSearchParams();  
   const initialTabIndex = parseInt(searchParams.get('tabIndex')) || 0; // Get 'tabIndex' from URL or default to 0
   const [tabIndex, setTabIndex] = useState(initialTabIndex);
+  const [editWorkout, setEditWorkout] = useState(false);
 
 
   // Fetch from API using APIServices
@@ -197,6 +198,21 @@ const fetchWorkouts = async () => {
   };
 
   /**
+   * Toggles the visibility of the workout card and sets its mode to edit.
+   * 
+   * @param {Array} workout - The selected workout exercises.
+   * @param {string} mode - The mode of the workout card ('createWorkout' or 'addSplit').
+   * @param {string} workoutType - The type of workout.
+   */
+  const toggleEditWorkoutCard = (workout, mode, workoutType) => {
+    setEditWorkout(true)
+    setWorkoutType(workoutType);
+    setSelectedWorkout(workout);
+    setCardMode(mode); 
+    setIsCardVisible(!isCardVisible);
+  };
+
+  /**
    * Closes the workout card modal.
    */
   const handleClose = () => {
@@ -292,6 +308,10 @@ const fetchWorkouts = async () => {
     setDeleteType('workout');
     setConfirmDialogOpen(true);
   };
+
+  const handleEditWorkout = (workout) => {
+    toggleEditWorkoutCard(workout.exercises, 'createWorkout', workout.type)
+  }
 
 
   
@@ -437,6 +457,8 @@ const fetchWorkouts = async () => {
     handleCloseEditDialog();
   };
 
+
+
   /**
    * Deletes a workout split by ID.
    * 
@@ -517,6 +539,7 @@ const fetchWorkouts = async () => {
               handleDeleteWorkout={handleDeleteWorkout}
               handleOpenEditDialog={handleOpenEditDialog}
               workoutHistory={workoutHistory}
+              handleEditWorkout={handleEditWorkout}
             />
           )}
 
@@ -652,6 +675,7 @@ const fetchWorkouts = async () => {
         saveSplit={saveSplit}
         newSplitName={newSplitName}
         type={workoutType}
+        {...(editWorkout && { editMode: editWorkout })}
       />
     </Box>
   );
