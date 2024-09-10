@@ -259,7 +259,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
 
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {mode === "addSplit" ? "Create a Workout Split" : "Add a Workout"}
+            {mode === "addSplit" ? "Create a Workout Split" : (isEditMode ? "Edit Workout" : "Add a Workout")}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {mode === "addSplit"
@@ -338,7 +338,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
                 marginLeft: 'auto',
               }}
             >
-              {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
+              {mode === "addSplit" ? "Save Workout Split" : (isEditMode ? "Edit Workout" : "Create Workout")}
             </Button>
           </Box>
         </CardContent>
