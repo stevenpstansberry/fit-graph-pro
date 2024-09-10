@@ -48,7 +48,7 @@ import { getUser } from '../../services/AuthService';
  * @param {function} props.putWorkout - Function to put (edit) a workout to the backend.
  * @returns {React.Element} - The rendered Workout_Card component.
  */
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, ToEditId, putWorkout }) {
+function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, ToEditId, putWorkout, putSplit }) {
   const user = getUser();
 
   // Initialize state variables
@@ -202,7 +202,11 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
           sets: exercise.sets.map(set => ({ setCount: set.setCount })) // Only include set count
         })),
       };
-      saveSplit(workoutSplit); 
+      if (!editMode){
+        saveSplit(workoutSplit);
+      } else {
+        putSplit(workoutSplit);
+      }
     }
     onClose();
   };

@@ -24,7 +24,7 @@ import ViewWorkouts from '../components/workout-components/ViewWorkouts';
 import StrengthChart from '../components/workout-components/StrengthChart';
 import FuturePrediction from '../components/workout-components/FuturePrediction';
 import HeatMap from '../components/workout-components/HeatMap';
-import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout } from '../services/APIServices';
+import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout, updateSplit } from '../services/APIServices';
 import { useSearchParams } from 'react-router-dom';
 
 
@@ -432,6 +432,48 @@ const putWorkout = async (workout) => {
   }
 };
 
+/**
+ * Updates an existing workout split in the backend and updates state.
+ * 
+ * @async
+ * @param {Object} split - The split object to update.
+ */
+const putSplit = async (split) => {
+  try {
+    // Find the index of the split to be updated
+    const splitIndex = userSplits.findIndex(s => s.splitId === split.splitId);
+    
+    // If the split exists, update it in the state
+    if (splitIndex !== -1) {
+      const updatedSplits = [...userSplits];
+      updatedSplits[splitIndex] = split; // Update the split with the new data
+      setUserSplits(updatedSplits);
+      console.log("Updated Split: ", split);
+
+      // Update session storage with the updated split
+      setSessionData('splits', updatedSplits); // Save to session storage
+
+      // Update the split in the backend
+      await updateSplit(split.splitId, split);
+      console.log("Split updated Successfully");
+
+      // Show success Snackbar
+      setSnackbarMessage('Split updated successfully!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } else {
+      console.error("Split not found for update.");
+    }
+  } catch (error) {
+    console.error("Failed to update split: ", error);
+
+    // Show error Snackbar
+    setSnackbarMessage('Failed to update split.');
+    setSnackbarSeverity('error');
+    setSnackbarOpen(true);
+  }
+};
+
 
   /**
    * Saves a workout split to the backend and updates state.
@@ -760,6 +802,7 @@ const putWorkout = async (workout) => {
         {...(editMode && { editMode: editMode })}
         ToEditId={toEditId}
         putWorkout={putWorkout}
+        putSplit={putSplit}
       />
     </Box>
   );
