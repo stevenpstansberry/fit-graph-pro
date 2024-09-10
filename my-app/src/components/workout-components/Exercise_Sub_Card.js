@@ -63,10 +63,14 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, 
 
   /**
    * Adds a new set to the exercise.
-   * 
-   * @function addSet
+   * Ensures that no more than 9 sets can be added.
    */
   const addSet = () => {
+    if (exercise.sets.length >= 9) {
+      setSnackbarMessage('You cannot add more than 9 sets.');
+      setSnackbarOpen(true);
+      return;
+    }
     const newSets = [...exercise.sets, { weight: "", reps: "" }];
     updateExerciseSets(index, newSets); // Add new set to the sets array
   };

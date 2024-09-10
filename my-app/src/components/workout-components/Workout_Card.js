@@ -43,20 +43,25 @@ import { getUser } from '../../services/AuthService';
  * @param {function} props.saveWorkout - Function to save a workout to the backend.
  * @param {string} props.newSplitName - Name of the new workout split.
  * @param {string} props.type - Type of workout.
+ * @param {string} props.editMode - Determines if in edit mode
+ * @param {string} props.workoutToEditId - The id of the workout being edited
+ * @param {function} props.putWorkout - Function to put (edit) a workout to the backend.
  * @returns {React.Element} - The rendered Workout_Card component.
  */
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type }) {
+function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, workoutToEditId, putWorkout }) {
   const user = getUser();
 
+  // Initialize state variables
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState('');
   const [exercises, setExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false); 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises
+  const [isEditMode, setIsEditMode] = useState(editMode || false); // Initialize based on editMode prop
 
   // Workout metadata
-  const [workoutId, setWorkoutId] = useState(null);
+  const [workoutId, setWorkoutId] = useState('');
   const [workoutDate, setWorkoutDate] = useState(null);
 
   // Initialize workout metadata and preload exercises when the modal opens
@@ -65,14 +70,22 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       setExercises(preloadedExercises);
       setWorkoutId(uuidv4()); // Generate a unique ID for the workout
       setWorkoutDate(new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })); // Set today's date with time for the workout
-      
+
       // Filter out preloaded exercises from the available exercises
       const filteredExercises = strengthWorkouts.filter(
         (exercise) => !preloadedExercises.some(preloaded => preloaded.label === exercise.label)
       );
       setAvailableExercises(filteredExercises);
+
+      // Set edit mode if passed in
+      if (editMode) {
+        setIsEditMode(true);
+        setWorkoutId(workoutToEditId)
+        console.log('!!!!!!in edit mode for: ', workoutId);
+        // Additional initialization for edit mode if needed
+      }
     }
-  }, [open, preloadedExercises]);
+  }, [open, preloadedExercises, editMode]);
 
   /**
    * Adds a new exercise to the exercises list.
@@ -122,8 +135,14 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     setExercises(updatedExercises);
   };
 
-  // Generate a unique ID for the workout or split
-  let id = uuidv4();
+  // Generate a unique ID for the workout or split or use existing one if editing
+  let id;
+
+  if (!editMode){
+    id = uuidv4();
+  } else {
+    id = workoutToEditId;
+  }
 
   /**
    * Creates the workout or split and validates inputs.
@@ -161,7 +180,11 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
         type: type,
         exercises: exercises,
       };
-      saveWorkout(workout);
+      if (!editMode){
+        saveWorkout(workout);
+      } else {
+        console.log("edited!")
+      }
     }
 
     // Logic for "addSplit" mode
@@ -236,7 +259,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
 
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {mode === "addSplit" ? "Create a Workout Split" : "Add a Workout"}
+            {mode === "addSplit" ? "Create a Workout Split" : (isEditMode ? "Edit Workout" : "Add a Workout")}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {mode === "addSplit"
@@ -315,7 +338,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
                 marginLeft: 'auto',
               }}
             >
-              {mode === "addSplit" ? "Save Workout Split" : "Create Workout"}
+              {mode === "addSplit" ? "Save Workout Split" : (isEditMode ? "Edit Workout" : "Create Workout")}
             </Button>
           </Box>
         </CardContent>

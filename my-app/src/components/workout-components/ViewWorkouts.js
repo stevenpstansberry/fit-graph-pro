@@ -47,7 +47,8 @@ const ViewWorkouts = ({
   userSplits, 
   handleDeleteWorkout, 
   handleOpenEditDialog,
-  workoutHistory  
+  workoutHistory,
+  handleEditWorkout  
 }) => {
   const hasWorkoutsInHistory = workoutHistory.length > 0;  // Check if there are any workouts at all
   const hasWorkoutsForSelectedDate = filteredWorkouts.length > 0;  // Check if there are workouts for the selected month/year
@@ -133,6 +134,7 @@ const ViewWorkouts = ({
                   key={workout.workoutId || index}
                   workout={workout}
                   onDelete={() => handleDeleteWorkout(workout.workoutId)}
+                  onEdit={() => handleEditWorkout(workout)}
                 />
               ))}
             </Box>

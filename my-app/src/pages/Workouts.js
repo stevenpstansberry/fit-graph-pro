@@ -23,7 +23,7 @@ import ViewWorkouts from '../components/workout-components/ViewWorkouts';
 import StrengthChart from '../components/workout-components/StrengthChart';
 import FuturePrediction from '../components/workout-components/FuturePrediction';
 import HeatMap from '../components/workout-components/HeatMap';
-import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
+import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout } from '../services/APIServices';
 import { useSearchParams } from 'react-router-dom';
 
 
@@ -69,6 +69,8 @@ function Workouts() {
   const [searchParams] = useSearchParams();  
   const initialTabIndex = parseInt(searchParams.get('tabIndex')) || 0; // Get 'tabIndex' from URL or default to 0
   const [tabIndex, setTabIndex] = useState(initialTabIndex);
+  const [editWorkout, setEditWorkout] = useState(false);
+  const [workoutToEditId, setWorkoutToEditId] = useState('');
 
 
   // Fetch from API using APIServices
@@ -120,23 +122,32 @@ const fetchWorkouts = async () => {
     console.log('Workouts API Response:', data);
 
     if (data && Array.isArray(data)) {
+      // Convert date strings to Date objects and format workouts
       const formattedWorkouts = data.map(workout => ({
         ...workout,
         date: new Date(workout.date), // Convert date to Date object
       }));
-      setWorkoutHistory(formattedWorkouts);
+
+      // Sort workouts by date in ascending order (earliest to latest)
+      const sortedWorkouts = formattedWorkouts.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // Update the workout history state with sorted workouts
+      setWorkoutHistory(sortedWorkouts);
       
       // Convert Date objects to ISO strings for storage
-      const workoutsToStore = formattedWorkouts.map(workout => ({
+      const workoutsToStore = sortedWorkouts.map(workout => ({
         ...workout,
         date: workout.date.toISOString(),
       }));
+      
+      // Save sorted workouts to session storage
       setSessionData('workouts', workoutsToStore);
     }
   } catch (error) {
     console.error('Error fetching workouts:', error);
   }
 };
+
   
   /**
    * Fetches splits for the user and updates state.
@@ -188,10 +199,26 @@ const fetchWorkouts = async () => {
   };
 
   /**
+   * Toggles the visibility of the workout card and sets its mode to edit.
+   * 
+   * @param {Array} workout - The selected workout exercises.
+   * @param {string} mode - The mode of the workout card ('createWorkout' or 'addSplit').
+   * @param {string} workoutType - The type of workout.
+   */
+  const toggleEditWorkoutCard = (workout, mode, workoutType) => {
+    setEditWorkout(true)
+    setWorkoutType(workoutType);
+    setSelectedWorkout(workout);
+    setCardMode(mode); 
+    setIsCardVisible(!isCardVisible);
+  };
+
+  /**
    * Closes the workout card modal.
    */
   const handleClose = () => {
     setIsCardVisible(false);
+    setEditWorkout(false); // Set edit workout mode back to false.
   };
 
 
@@ -284,6 +311,16 @@ const fetchWorkouts = async () => {
     setConfirmDialogOpen(true);
   };
 
+    /**
+   * Edits a workout
+   * 
+   * @param {object} workout - The workout to be edited
+   */ 
+  const handleEditWorkout = (workout) => {
+    setWorkoutToEditId(workout.workoutId);
+    toggleEditWorkoutCard(workout.exercises, 'createWorkout', workout.type)
+  }
+
 
   
 
@@ -329,6 +366,57 @@ const fetchWorkouts = async () => {
       setSnackbarOpen(true);
     }
   };
+
+/**
+ * Updates an existing workout in the backend and updates state.
+ * 
+ * @async
+ * @param {Object} workout - The workout object to update.
+ */
+const putWorkout = async (workout) => {
+  try {
+    const workoutWithDate = {
+      ...workout,
+      date: new Date(workout.date), // Ensure the date is a Date object
+    };
+
+    // Find the index of the workout to be updated
+    const workoutIndex = workoutHistory.findIndex(w => w.workoutId === workout.workoutId);
+    
+    // If workout exists, update it in the state
+    if (workoutIndex !== -1) {
+      const updatedWorkoutHistory = [...workoutHistory];
+      updatedWorkoutHistory[workoutIndex] = workoutWithDate;
+      setWorkoutHistory(updatedWorkoutHistory);
+      console.log("Updated Workout: ", workoutWithDate);
+
+      // Update session storage with the updated workout
+      const workoutsToStore = updatedWorkoutHistory.map(workout => ({
+        ...workout,
+        date: workout.date.toISOString(), // Store date as a string in ISO format
+      }));
+      setSessionData('workouts', workoutsToStore); // Save to session storage
+
+      // Update the workout in the backend
+      await updateWorkout(`/workouts/${workout.workoutId}`, workoutWithDate);
+      console.log("Workout updated Successfully");
+
+      // Show success Snackbar
+      setSnackbarMessage('Workout updated successfully!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } else {
+      console.error("Workout not found for update.");
+    }
+  } catch (error) {
+    console.error("Failed to update workout: ", error);
+
+    // Show error Snackbar
+    setSnackbarMessage('Failed to update workout.');
+    setSnackbarSeverity('error');
+    setSnackbarOpen(true);
+  }
+};
 
 
   /**
@@ -428,6 +516,8 @@ const fetchWorkouts = async () => {
     handleCloseEditDialog();
   };
 
+
+
   /**
    * Deletes a workout split by ID.
    * 
@@ -508,6 +598,7 @@ const fetchWorkouts = async () => {
               handleDeleteWorkout={handleDeleteWorkout}
               handleOpenEditDialog={handleOpenEditDialog}
               workoutHistory={workoutHistory}
+              handleEditWorkout={handleEditWorkout}
             />
           )}
 
@@ -643,6 +734,9 @@ const fetchWorkouts = async () => {
         saveSplit={saveSplit}
         newSplitName={newSplitName}
         type={workoutType}
+        {...(editWorkout && { editMode: editWorkout })}
+        workoutToEditId={workoutToEditId}
+        putWorkout={putWorkout}
       />
     </Box>
   );

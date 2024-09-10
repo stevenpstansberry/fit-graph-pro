@@ -185,6 +185,62 @@ const deleteToAPI = async (endpoint, errorHandler) => {
   }
 };
 
+/**
+ * Sends a PUT request to a specified API endpoint with data.
+ * 
+ * @async
+ * @function putToAPI
+ * @param {string} endpoint - The API endpoint to send the PUT request to.
+ * @param {Object} data - The data to be sent in the body of the PUT request.
+ * @param {function} [errorHandler] - Optional callback function to handle errors.
+ * @returns {Promise<Object|null>} Response data from the API or handled value from the error handler.
+ * @throws Will throw an error if the request fails and no errorHandler is provided.
+ */
+const putToAPI = async (endpoint, data, errorHandler) => {
+  const url = `${fitGraphProd}${endpoint}`; // Construct the full URL
+
+  // Log the request details before making the request
+  console.log('Making PUT request to:', url);
+  console.log('Request Data:', data);
+  console.log('Request Headers:', {
+    'Content-Type': 'application/json', 
+    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
+  });
+
+  try {
+    const response = await axios.put(url, data, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
+      },
+    });
+
+    // Log the response status and data
+    console.log('Response Status:', response.status);
+    console.log('Response Data:', response.data);
+
+    return response.data;
+  } catch (error) {
+    if (errorHandler) {
+      return errorHandler(error); // Use the provided error handler
+    }
+
+    if (error.response) {
+      // Request made and server responded
+      console.error('Response Error:', error.response.data);
+      console.error('Status:', error.response.status);
+      console.error('Headers:', error.response.headers);
+    } else if (error.request) {
+      // Request made but no response received
+      console.error('Request Error:', error.request);
+    } else {
+      // Something happened in setting up the request
+      console.error('Error', error.message);
+    }
+    throw error; // Re-throw the error after logging it
+  }
+};
+
 
 /**
  * Uploads a new workout to the API.
@@ -449,4 +505,19 @@ export const verifyToken = async (user) => {
  */
 export const calculateFuturePerformance = async (performanceData) => {
   return postToAPI('/calculateFuturePerformance', performanceData);
+};
+
+/**
+ * Updates a workout by sending a PUT request to the API.
+ * 
+ * @async
+ * @function updateWorkout
+ * @param {string} workoutToEditId - The ID of the workout to update.
+ * @param {Object} workoutData - The updated workout data to send.
+ * @param {function} [errorHandler] - Optional callback function to handle errors.
+ * @returns {Promise<Object|null>} Response data from the API or handled value from the error handler.
+ */
+export const updateWorkout = async (workoutToEditId, workoutData, errorHandler) => {
+  const endpoint = `/workouts/${workoutToEditId}`; 
+  return await putToAPI(endpoint, workoutData, errorHandler);
 };
