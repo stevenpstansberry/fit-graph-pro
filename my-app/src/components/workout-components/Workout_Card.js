@@ -45,20 +45,17 @@ import { getUser } from '../../services/AuthService';
  * @param {string} props.type - Type of workout.
  * @returns {React.Element} - The rendered Workout_Card component.
  */
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, edit }) {
+function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode }) {
   const user = getUser();
 
-  if (edit){
-    console.log('!!!!!!in edit mode')
-  }
-
+  // Initialize state variables
   const [inputValue, setInputValue] = useState('');
   const [message, setMessage] = useState('');
   const [exercises, setExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false); 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises
-  const [isEditMode, setIsEditMode] = useState(edit || false);
+  const [isEditMode, setIsEditMode] = useState(editMode || false); // Initialize based on editMode prop
 
   // Workout metadata
   const [workoutId, setWorkoutId] = useState(null);
@@ -70,14 +67,21 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       setExercises(preloadedExercises);
       setWorkoutId(uuidv4()); // Generate a unique ID for the workout
       setWorkoutDate(new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })); // Set today's date with time for the workout
-      
+
       // Filter out preloaded exercises from the available exercises
       const filteredExercises = strengthWorkouts.filter(
         (exercise) => !preloadedExercises.some(preloaded => preloaded.label === exercise.label)
       );
       setAvailableExercises(filteredExercises);
+
+      // Set edit mode if passed in
+      if (editMode) {
+        setIsEditMode(true);
+        console.log('!!!!!!in edit mode');
+        // Additional initialization for edit mode if needed
+      }
     }
-  }, [open, preloadedExercises]);
+  }, [open, preloadedExercises, editMode]);
 
   /**
    * Adds a new exercise to the exercises list.
