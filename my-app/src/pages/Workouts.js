@@ -72,6 +72,7 @@ function Workouts() {
   const [tabIndex, setTabIndex] = useState(initialTabIndex);
   const [editMode, setEditMode] = useState(false);
   const [toEditId, setToEditId] = useState('');
+  const [tempSplitName, setTempSplitName] = useState({});
 
 
   // Fetch from API using APIServices
@@ -703,15 +704,23 @@ const putSplit = async (split) => {
         {userSplits.length > 0 ? (
           userSplits.map((split, index) => (
             <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-              <TextField
-                value={split.name}
-                onChange={(e) => {
+            <TextField
+              value={tempSplitName[index] !== undefined ? tempSplitName[index] : split.name} 
+              onChange={(e) => {
+                const updatedTempSplitName = { ...tempSplitName, [index]: e.target.value }; // Update temp name on change
+                setTempSplitName(updatedTempSplitName);
+              }}
+              onBlur={() => {
+                // Only update if the name has changed
+                if (tempSplitName[index] !== undefined && tempSplitName[index] !== split.name) {
                   const updatedSplits = [...userSplits];
-                  updatedSplits[index].name = e.target.value;
+                  updatedSplits[index].name = tempSplitName[index]; // Save temp value to actual state
                   setUserSplits(updatedSplits);
-                }}
-                sx={{ mr: 2 }}
-              />
+                  putSplit(updatedSplits[index]); // Save to DB
+                }
+              }}
+              sx={{ mr: 2 }}
+            />
               {/* Edit Button */}
               <IconButton
                 color="primary"
