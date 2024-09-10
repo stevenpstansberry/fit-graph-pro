@@ -83,6 +83,9 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
         setUniqueId(workoutToEditId)
         console.log('!!!!!!in edit mode for: ', uniqueId);
         // Additional initialization for edit mode if needed
+      } else {
+        setIsEditMode(false);
+        console.log("returned back to normal mode");
       }
     }
   }, [open, preloadedExercises, editMode]);
