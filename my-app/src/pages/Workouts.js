@@ -14,6 +14,7 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Button, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress, Snackbar, Alert, Tabs, Tab } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
@@ -69,8 +70,8 @@ function Workouts() {
   const [searchParams] = useSearchParams();  
   const initialTabIndex = parseInt(searchParams.get('tabIndex')) || 0; // Get 'tabIndex' from URL or default to 0
   const [tabIndex, setTabIndex] = useState(initialTabIndex);
-  const [editWorkout, setEditWorkout] = useState(false);
-  const [workoutToEditId, setWorkoutToEditId] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [toEditId, setToEditId] = useState('');
 
 
   // Fetch from API using APIServices
@@ -172,6 +173,8 @@ const fetchWorkouts = async () => {
       console.error('Error fetching splits:', error);
     }
   };
+  console.log(userSplits);
+
 
   /**
    * Handles tab change.
@@ -206,7 +209,7 @@ const fetchWorkouts = async () => {
    * @param {string} workoutType - The type of workout.
    */
   const toggleEditWorkoutCard = (workout, mode, workoutType) => {
-    setEditWorkout(true)
+    setEditMode(true)
     setWorkoutType(workoutType);
     setSelectedWorkout(workout);
     setCardMode(mode); 
@@ -218,7 +221,7 @@ const fetchWorkouts = async () => {
    */
   const handleClose = () => {
     setIsCardVisible(false);
-    setEditWorkout(false); // Set edit workout mode back to false.
+    setEditMode(false); // Set edit workout mode back to false.
   };
 
 
@@ -317,8 +320,19 @@ const fetchWorkouts = async () => {
    * @param {object} workout - The workout to be edited
    */ 
   const handleEditWorkout = (workout) => {
-    setWorkoutToEditId(workout.workoutId);
+    setToEditId(workout.workoutId);
     toggleEditWorkoutCard(workout.exercises, 'createWorkout', workout.type)
+  }
+
+  const handleEditSplit = (split) => {
+    console.log("split id being edited: ", split.splitId);
+    setEditMode(true);
+    setToEditId(split.splitId);
+    setSelectedWorkout(split.exercises);
+    setNewSplitName(customSplitName);
+    setIsCardVisible(true);
+    setCardMode("addSplit");
+    setIsCustomSplitDialogOpen(false);
   }
 
 
@@ -639,61 +653,70 @@ const putWorkout = async (workout) => {
 
       {/* Add/Edit Dialogs */}
       <Dialog open={isEditDialogOpen} onClose={handleCloseEditDialog}>
-        <DialogTitle>Edit Workout Splits</DialogTitle>
-        <DialogContent>
-          <Typography variant="h6">Available Workout Splits</Typography>
-          
-          {/* Check if there are any user splits */}
-          {userSplits.length > 0 ? (
-            userSplits.map((split, index) => (
-              <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-                <TextField
-                  value={split.name}
-                  onChange={(e) => {
-                    const updatedSplits = [...userSplits];
-                    updatedSplits[index].name = e.target.value;
-                    setUserSplits(updatedSplits);
-                  }}
-                  sx={{ mr: 2 }}
-                />
-                <IconButton color="error" onClick={() => handleDeleteSplit(split.splitId)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-            ))
-          ) : (
-            // Display message when there are no splits
-            <Typography variant="body1" color="textSecondary" sx={{ mt: 2 }}>
-              Add your first split!
-            </Typography>
-          )}
-
-            {/* Button to add a new custom split */} 
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
-              {console.log('Current number of splits:', userSplits.length)} {/* Log the length of userSplits */}
-              <Button
-                variant="outlined"
-                startIcon={<AddIcon />}
-                onClick={() => {
-                  if (userSplits.length >= 8) {
-                    // Show error Snackbar if there are already 9 splits
-                    setSnackbarMessage('You cannot have more than 9 splits.');
-                    setSnackbarSeverity('error');
-                    setSnackbarOpen(true);
-                  } else {
-                    // Open the dialog to add a new custom split
-                    setIsCustomSplitDialogOpen(true);
-                  }
+      <DialogTitle>Edit Workout Splits</DialogTitle>
+      <DialogContent>
+        <Typography variant="h6">Available Workout Splits</Typography>
+        
+        {/* Check if there are any user splits */}
+        {userSplits.length > 0 ? (
+          userSplits.map((split, index) => (
+            <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+              <TextField
+                value={split.name}
+                onChange={(e) => {
+                  const updatedSplits = [...userSplits];
+                  updatedSplits[index].name = e.target.value;
+                  setUserSplits(updatedSplits);
                 }}
+                sx={{ mr: 2 }}
+              />
+              {/* Edit Button */}
+              <IconButton
+                color="primary"
+                onClick={() => handleEditSplit(split)}
+                sx={{ mr: 1 }}  
               >
-                Add Custom Split
-              </Button>
+                <EditIcon />
+              </IconButton>
+              {/* Delete Button */}
+              <IconButton color="error" onClick={() => handleDeleteSplit(split.splitId)}>
+                <DeleteIcon />
+              </IconButton>
             </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
-        </DialogActions>
-      </Dialog>
+          ))
+        ) : (
+          // Display message when there are no splits
+          <Typography variant="body1" color="textSecondary" sx={{ mt: 2 }}>
+            Add your first split!
+          </Typography>
+        )}
+
+        {/* Button to add a new custom split */}
+        <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
+          {console.log('Current number of splits:', userSplits.length)} {/* Log the length of userSplits */}
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              if (userSplits.length >= 8) {
+                // Show error Snackbar if there are already 9 splits
+                setSnackbarMessage('You cannot have more than 9 splits.');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
+              } else {
+                // Open the dialog to add a new custom split
+                setIsCustomSplitDialogOpen(true);
+              }
+            }}
+          >
+            Add Custom Split
+          </Button>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
+      </DialogActions>
+    </Dialog>
 
 
       <Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
@@ -734,8 +757,8 @@ const putWorkout = async (workout) => {
         saveSplit={saveSplit}
         newSplitName={newSplitName}
         type={workoutType}
-        {...(editWorkout && { editMode: editWorkout })}
-        workoutToEditId={workoutToEditId}
+        {...(editMode && { editMode: editMode })}
+        ToEditId={toEditId}
         putWorkout={putWorkout}
       />
     </Box>
