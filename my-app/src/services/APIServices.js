@@ -521,3 +521,18 @@ export const updateWorkout = async (workoutToEditId, workoutData, errorHandler) 
   const endpoint = `/workouts/edit/${workoutToEditId}`; 
   return await putToAPI(endpoint, workoutData, errorHandler);
 };
+
+/**
+ * Updates a workout split by sending a PUT request to the API.
+ * 
+ * @async
+ * @function updateSplit
+ * @param {string} splitToEditId - The ID of the split to update.
+ * @param {Object} splitData - The updated split data to send.
+ * @param {function} [errorHandler] - Optional callback function to handle errors.
+ * @returns {Promise<Object|null>} Response data from the API or handled value from the error handler.
+ */
+export const updateSplit = async (splitToEditId, splitData, errorHandler) => {
+  const endpoint = `/splits/edit/${splitToEditId}`; 
+  return await putToAPI(endpoint, splitData, errorHandler);
+};

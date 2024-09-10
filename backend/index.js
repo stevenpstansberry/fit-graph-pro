@@ -29,6 +29,7 @@ const PasswordResetService = require ('./services/PasswordReset');
 const ManualPasswordResetService = require ('./services/ManualPasswordReset');
 const VerifyPasswordService = require ('./services/VerifyPassword');
 const EditWorkoutService = require ('./services/editWorkout');
+// const EditSplitService = require ('./services/editSplit');
 const util = require('./utils/util');
 
 // Define API paths
@@ -47,8 +48,10 @@ const uploadProfilePicturePath = '/profile/upload-picture';
 const getProfilePicturePath = '/profile'
 const PasswordResetPath = '/password-reset'
 const ManualPasswordResetPath = '/password-reset/manual';
-const VerifyPasswordPath = '/verify-password'
-const editWorkoutPath = '/workouts/edit'
+const VerifyPasswordPath = '/verify-password';
+const editWorkoutPath = '/workouts/edit';
+const editSplitsPath = '/splits/edit'
+
 
 
 let username;
@@ -189,14 +192,21 @@ exports.handler = async (event) => {
             response = await VerifyPasswordService.verifyPassword(verifyPasswordBody);
             break;      
 
-        // Edit a workout by workout ID route
+        // Edit a workout route
         case event.httpMethod === 'PUT' && event.path.startsWith(editWorkoutPath + '/'):
             const editWorkoutBody = JSON.parse(event.body)
             response = await EditWorkoutService.editWorkout(editWorkoutBody);
             response = util.buildResponse(200, {message : editWorkoutBody});
             break;    
 
-
+        // Edit a split route
+        case event.httpMethod === 'PUT' && event.path.startsWith(editSplitBody + '/'):
+            const editSplitBody = JSON.parse(event.body)
+            // response = await EditWorkoutService.editWorkout(editSplitBody);
+            response = util.buildResponse(200, {message : editSplitBody});
+            break;    
+            
+            
         // Default - All other routes
         default:
             response = util.buildResponse(404, '404 Not Found');
