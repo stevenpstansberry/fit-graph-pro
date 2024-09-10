@@ -134,8 +134,14 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     setExercises(updatedExercises);
   };
 
-  // Generate a unique ID for the workout or split
-  let id = uuidv4();
+  // Generate a unique ID for the workout or split or use existing one if editing
+  let id;
+
+  if (!editMode){
+    id = uuidv4();
+  } else {
+    id = workoutToEditId;
+  }
 
   /**
    * Creates the workout or split and validates inputs.
