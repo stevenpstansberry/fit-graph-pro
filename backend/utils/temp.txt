@@ -1,0 +1,5 @@
+[ { "M" : { "sets" : { "L" : [ { "M" : { "weight" : { "S" : "2" }, "reps" : { "S" : "2" } } } ] }, "label" : { "S" : "Bench Press" }, "bodyPart" : { "S" : "Chest" } } }, { "M" : { "sets" : { "L" : [ { "M" : { "weight" : { "S" : "2" }, "reps" : { "S" : "2" } } } ] }, "label" : { "S" : "Overhead Press" }, "bodyPart" : { "S" : "Shoulders" } } }, { "M" : { "sets" : { "L" : [ { "M" : { "weight" : { "S" : "2" }, "reps" : { "S" : "2" } } } ] }, "label" : { "S" : "Tricep Extension" }, "bodyPart" : { "S" : "Arms" } } } ]
+
+
+
+

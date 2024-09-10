@@ -518,6 +518,6 @@ export const calculateFuturePerformance = async (performanceData) => {
  * @returns {Promise<Object|null>} Response data from the API or handled value from the error handler.
  */
 export const updateWorkout = async (workoutToEditId, workoutData, errorHandler) => {
-  const endpoint = `/workouts/${workoutToEditId}`; 
+  const endpoint = `/workouts/edit/${workoutToEditId}`; 
   return await putToAPI(endpoint, workoutData, errorHandler);
 };

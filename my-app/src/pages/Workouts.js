@@ -387,7 +387,7 @@ const putWorkout = async (workout) => {
     if (workoutIndex !== -1) {
       const updatedWorkoutHistory = [...workoutHistory];
       updatedWorkoutHistory[workoutIndex] = workoutWithDate;
-      //setWorkoutHistory(updatedWorkoutHistory);
+      setWorkoutHistory(updatedWorkoutHistory);
       console.log("Updated Workout: ", workoutWithDate);
 
       // Update session storage with the updated workout
@@ -395,10 +395,10 @@ const putWorkout = async (workout) => {
         ...workout,
         date: workout.date.toISOString(), // Store date as a string in ISO format
       }));
-      //setSessionData('workouts', workoutsToStore); // Save to session storage
+      setSessionData('workouts', workoutsToStore); // Save to session storage
 
       // Update the workout in the backend
-      //await updateWorkout(`/workouts/${workout.workoutId}`, workoutWithDate);
+      await updateWorkout(workout.workoutId, workoutWithDate);
       console.log("Workout updated Successfully");
 
       // Show success Snackbar

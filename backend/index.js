@@ -28,7 +28,7 @@ const getProfilePictureService = require ('./services/getProfilePicture');
 const PasswordResetService = require ('./services/PasswordReset');
 const ManualPasswordResetService = require ('./services/ManualPasswordReset');
 const VerifyPasswordService = require ('./services/VerifyPassword');
-//const EditWorkoutSerivce = require ('./services/editWorkout');
+const EditWorkoutService = require ('./services/editWorkout');
 const util = require('./utils/util');
 
 // Define API paths
@@ -191,9 +191,9 @@ exports.handler = async (event) => {
 
         // Edit a workout by workout ID route
         case event.httpMethod === 'PUT' && event.path.startsWith(editWorkoutPath + '/'):
-            const workoutIdToEdit = event.path.split('/').pop(); 
-            //response = await editWorkoutService.editWorkout(workoutIdToEdit);
-            response = util.buildResponse(200, {message : event.body});
+            const editWorkoutBody = JSON.parse(event.body)
+            response = await EditWorkoutService.editWorkout(editWorkoutBody);
+            response = util.buildResponse(200, {message : editWorkoutBody});
             break;    
 
 
