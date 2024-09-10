@@ -44,7 +44,7 @@ import { getUser } from '../../services/AuthService';
  * @param {string} props.newSplitName - Name of the new workout split.
  * @param {string} props.type - Type of workout.
  * @param {string} props.editMode - Determines if in edit mode
- * @param {string} props.idToEdit - The id of the workout / split being edited
+ * @param {string} props.ToEditId - The id of the workout / split being edited
  * @param {function} props.putWorkout - Function to put (edit) a workout to the backend.
  * @returns {React.Element} - The rendered Workout_Card component.
  */
