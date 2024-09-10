@@ -29,7 +29,7 @@ const PasswordResetService = require ('./services/PasswordReset');
 const ManualPasswordResetService = require ('./services/ManualPasswordReset');
 const VerifyPasswordService = require ('./services/VerifyPassword');
 const EditWorkoutService = require ('./services/editWorkout');
-// const EditSplitService = require ('./services/editSplit');
+const EditSplitService = require ('./services/editSplit');
 const util = require('./utils/util');
 
 // Define API paths
@@ -200,10 +200,9 @@ exports.handler = async (event) => {
             break;    
 
         // Edit a split route
-        case event.httpMethod === 'PUT' && event.path.startsWith(editSplitBody + '/'):
+        case event.httpMethod === 'PUT' && event.path.startsWith(editSplitsPath + '/'):
             const editSplitBody = JSON.parse(event.body)
-            // response = await EditWorkoutService.editWorkout(editSplitBody);
-            response = util.buildResponse(200, {message : editSplitBody});
+            response = await EditSplitService.editSplit(editSplitBody);
             break;    
             
             

@@ -437,7 +437,7 @@ const putWorkout = async (workout) => {
 
       // Upload the split to the backend
       await uploadSplit(split);
-      console.log("Split uploaded successfully");
+      console.log("Split uploaded successfully: ", split)
 
       // Show success Snackbar
       setSnackbarMessage('Split added successfully!');
