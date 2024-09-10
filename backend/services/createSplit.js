@@ -26,14 +26,14 @@ const util = require('../utils/util');
  * @async
  * @function uploadSplit
  * @param {Object} splitData - The split data to upload.
- * @param {string} splitData.id - The unique ID for the split.
+ * @param {string} splitData.splitId - The unique ID for the split.
  * @param {string} splitData.username - The username associated with the split.
  * @param {string} splitData.name - The name of the split.
  * @param {Array} splitData.exercises - The list of exercises in the split.
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
 async function uploadSplit(splitData) {
-  const { id: splitId, exercises, name, username} = splitData;
+  const {splitId, exercises, name, username} = splitData;
 
   const splitName = name;
 

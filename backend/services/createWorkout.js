@@ -26,7 +26,7 @@ const util = require('../utils/util');
  * @async
  * @function uploadWorkout
  * @param {Object} workoutData - The workout data to upload.
- * @param {string} workoutData.id - The unique ID for the workout.
+ * @param {string} workoutData.workoutId - The unique ID for the workout.
  * @param {string} workoutData.username - The username associated with the workout.
  * @param {string} workoutData.date - The name of the workout.
  * @param {string} workoutData.type - The type of workout (the split).
@@ -34,7 +34,7 @@ const util = require('../utils/util');
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
 async function uploadWorkout(workoutData) {
-  const { id: workoutId, username, date, type, exercises } = workoutData;
+  const { workoutId, username, date, type, exercises } = workoutData;
 
   const params = {
     TableName: workoutTable,
