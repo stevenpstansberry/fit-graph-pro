@@ -45,9 +45,10 @@ import { getUser } from '../../services/AuthService';
  * @param {string} props.type - Type of workout.
  * @param {string} props.editMode - Determines if in edit mode
  * @param {string} props.workoutToEditId - The id of the workout being edited
+ * @param {function} props.putWorkout - Function to put (edit) a workout to the backend.
  * @returns {React.Element} - The rendered Workout_Card component.
  */
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, workoutToEditId }) {
+function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, workoutToEditId, putWorkout }) {
   const user = getUser();
 
   // Initialize state variables
@@ -179,7 +180,11 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
         type: type,
         exercises: exercises,
       };
-      saveWorkout(workout);
+      if (!editMode){
+        saveWorkout(workout);
+      } else {
+        console.log("edited!")
+      }
     }
 
     // Logic for "addSplit" mode

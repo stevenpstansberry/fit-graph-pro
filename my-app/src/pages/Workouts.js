@@ -23,7 +23,7 @@ import ViewWorkouts from '../components/workout-components/ViewWorkouts';
 import StrengthChart from '../components/workout-components/StrengthChart';
 import FuturePrediction from '../components/workout-components/FuturePrediction';
 import HeatMap from '../components/workout-components/HeatMap';
-import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits } from '../services/APIServices';
+import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout } from '../services/APIServices';
 import { useSearchParams } from 'react-router-dom';
 
 
@@ -367,6 +367,57 @@ const fetchWorkouts = async () => {
     }
   };
 
+/**
+ * Updates an existing workout in the backend and updates state.
+ * 
+ * @async
+ * @param {Object} workout - The workout object to update.
+ */
+const putWorkout = async (workout) => {
+  try {
+    const workoutWithDate = {
+      ...workout,
+      date: new Date(workout.date), // Ensure the date is a Date object
+    };
+
+    // Find the index of the workout to be updated
+    const workoutIndex = workoutHistory.findIndex(w => w.workoutId === workout.workoutId);
+    
+    // If workout exists, update it in the state
+    if (workoutIndex !== -1) {
+      const updatedWorkoutHistory = [...workoutHistory];
+      updatedWorkoutHistory[workoutIndex] = workoutWithDate;
+      setWorkoutHistory(updatedWorkoutHistory);
+      console.log("Updated Workout: ", workoutWithDate);
+
+      // Update session storage with the updated workout
+      const workoutsToStore = updatedWorkoutHistory.map(workout => ({
+        ...workout,
+        date: workout.date.toISOString(), // Store date as a string in ISO format
+      }));
+      setSessionData('workouts', workoutsToStore); // Save to session storage
+
+      // Update the workout in the backend
+      await updateWorkout(`/workouts/${workout.workoutId}`, workoutWithDate);
+      console.log("Workout updated Successfully");
+
+      // Show success Snackbar
+      setSnackbarMessage('Workout updated successfully!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } else {
+      console.error("Workout not found for update.");
+    }
+  } catch (error) {
+    console.error("Failed to update workout: ", error);
+
+    // Show error Snackbar
+    setSnackbarMessage('Failed to update workout.');
+    setSnackbarSeverity('error');
+    setSnackbarOpen(true);
+  }
+};
+
 
   /**
    * Saves a workout split to the backend and updates state.
@@ -685,6 +736,7 @@ const fetchWorkouts = async () => {
         type={workoutType}
         {...(editWorkout && { editMode: editWorkout })}
         workoutToEditId={workoutToEditId}
+        putWorkout={putWorkout}
       />
     </Box>
   );
