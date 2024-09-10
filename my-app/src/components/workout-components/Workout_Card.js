@@ -44,11 +44,11 @@ import { getUser } from '../../services/AuthService';
  * @param {string} props.newSplitName - Name of the new workout split.
  * @param {string} props.type - Type of workout.
  * @param {string} props.editMode - Determines if in edit mode
- * @param {string} props.workoutToEditId - The id of the workout being edited
+ * @param {string} props.ToEditId - The id of the workout / split being edited
  * @param {function} props.putWorkout - Function to put (edit) a workout to the backend.
  * @returns {React.Element} - The rendered Workout_Card component.
  */
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, workoutToEditId, putWorkout }) {
+function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, ToEditId, putWorkout, putSplit }) {
   const user = getUser();
 
   // Initialize state variables
@@ -61,14 +61,14 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
   const [isEditMode, setIsEditMode] = useState(editMode || false); // Initialize based on editMode prop
 
   // Workout metadata
-  const [workoutId, setWorkoutId] = useState('');
+  const [uniqueId, setUniqueId] = useState('');
   const [workoutDate, setWorkoutDate] = useState(null);
 
   // Initialize workout metadata and preload exercises when the modal opens
   useEffect(() => {
     if (open) {
       setExercises(preloadedExercises);
-      setWorkoutId(uuidv4()); // Generate a unique ID for the workout
+      setUniqueId(uuidv4()); // Generate a unique ID for the workout
       setWorkoutDate(new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })); // Set today's date with time for the workout
 
       // Filter out preloaded exercises from the available exercises
@@ -80,9 +80,12 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       // Set edit mode if passed in
       if (editMode) {
         setIsEditMode(true);
-        setWorkoutId(workoutToEditId)
-        console.log('!!!!!!in edit mode for: ', workoutId);
+        setUniqueId(ToEditId)
+        console.log('!!!!!!in edit mode for: ', uniqueId);
         // Additional initialization for edit mode if needed
+      } else {
+        setIsEditMode(false);
+        console.log("returned back to normal mode");
       }
     }
   }, [open, preloadedExercises, editMode]);
@@ -135,14 +138,6 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     setExercises(updatedExercises);
   };
 
-  // Generate a unique ID for the workout or split or use existing one if editing
-  let id;
-
-  if (!editMode){
-    id = uuidv4();
-  } else {
-    id = workoutToEditId;
-  }
 
   /**
    * Creates the workout or split and validates inputs.
@@ -173,8 +168,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       }
 
       let workout = {
-        id,
-        workoutId: id,
+        workoutId: uniqueId,
         date: workoutDate,
         username: user.username,
         type: type,
@@ -183,7 +177,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       if (!editMode){
         saveWorkout(workout);
       } else {
-        console.log("edited!")
+        putWorkout(workout);
       }
     }
 
@@ -199,8 +193,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       }
 
       const workoutSplit = {
-        id,
-        splitId: id,
+        splitId: uniqueId,
         name: newSplitName, 
         username: user.username,
         exercises: exercises.map(exercise => ({
@@ -209,7 +202,11 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
           sets: exercise.sets.map(set => ({ setCount: set.setCount })) // Only include set count
         })),
       };
-      saveSplit(workoutSplit); 
+      if (!editMode){
+        saveSplit(workoutSplit);
+      } else {
+        putSplit(workoutSplit);
+      }
     }
     onClose();
   };

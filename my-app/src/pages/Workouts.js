@@ -14,6 +14,7 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Button, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, CircularProgress, Snackbar, Alert, Tabs, Tab } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
@@ -23,11 +24,9 @@ import ViewWorkouts from '../components/workout-components/ViewWorkouts';
 import StrengthChart from '../components/workout-components/StrengthChart';
 import FuturePrediction from '../components/workout-components/FuturePrediction';
 import HeatMap from '../components/workout-components/HeatMap';
-import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout } from '../services/APIServices';
+import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout, updateSplit } from '../services/APIServices';
 import { useSearchParams } from 'react-router-dom';
 
-
-// TODO: add logic to see avg growth for exercises, max, estimated time to reach goal...
 
 /**
  * Main component to manage user workouts and splits.
@@ -41,36 +40,50 @@ function Workouts() {
 
   console.log(user);
 
-  // State declarations
-  const [isCardVisible, setIsCardVisible] = useState(false);
-  const [workoutHistory, setWorkoutHistory] = useState([]);
-  const [cardMode, setCardMode] = useState('createWorkout');
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedWorkout, setSelectedWorkout] = useState([]);
-  const [showGraph, setShowGraph] = useState(false);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newSplitName, setNewSplitName] = useState("");
-  const [newWorkoutExercises, setNewWorkoutExercises] = useState([]);
-  const [userSplits, setUserSplits] = useState([]);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedSplitForEditing, setSelectedSplitForEditing] = useState({});
-  const [editedName, setEditedName] = useState('');
-  const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false);
-  const [customSplitName, setCustomSplitName] = useState("");
-  const [workoutType, setWorkoutType] = useState("Default");
-  const [isLoading, setIsLoading] = useState(true); // Loading state
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); 
-  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState(null);
-  const [deleteType, setDeleteType] = useState(''); // 'workout' or 'split'
-  const [searchParams] = useSearchParams();  
-  const initialTabIndex = parseInt(searchParams.get('tabIndex')) || 0; // Get 'tabIndex' from URL or default to 0
-  const [tabIndex, setTabIndex] = useState(initialTabIndex);
-  const [editWorkout, setEditWorkout] = useState(false);
-  const [workoutToEditId, setWorkoutToEditId] = useState('');
+// State declarations
+
+// ======== Modal and Dialog States ========
+const [isCardVisible, setIsCardVisible] = useState(false); // Controls visibility of workout card modal
+const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Controls visibility of edit dialog for workout splits
+const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false); // Controls visibility of custom split dialog
+const [confirmDialogOpen, setConfirmDialogOpen] = useState(false); // Controls visibility of confirmation dialog
+
+// ======== Workout Management States ========
+const [workoutHistory, setWorkoutHistory] = useState([]); // Stores the history of workouts
+const [selectedWorkout, setSelectedWorkout] = useState([]); // Stores the currently selected workout for editing or viewing
+const [workoutType, setWorkoutType] = useState("Default"); // Stores the type of workout (e.g., Default, Push, Pull, etc.)
+const [cardMode, setCardMode] = useState('createWorkout'); // Determines the mode for the workout card (create or edit)
+const [editMode, setEditMode] = useState(false); // Determines if the workout is in edit mode
+const [toEditId, setToEditId] = useState(''); // Stores the ID of the workout being edited
+
+// ======== Split Management States ========
+const [userSplits, setUserSplits] = useState([]); // Stores the user's workout splits
+const [newSplitName, setNewSplitName] = useState(""); // Stores the name of a new workout split
+const [customSplitName, setCustomSplitName] = useState(""); // Temporary storage for custom split name input
+const [tempSplitName, setTempSplitName] = useState({}); // Temporary storage for editing split names
+
+
+// ======== Snackbar and Notification States ========
+const [snackbarOpen, setSnackbarOpen] = useState(false); // Controls visibility of snackbar notifications
+const [snackbarMessage, setSnackbarMessage] = useState(''); // Stores the message to be displayed in the snackbar
+const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // Stores the severity level of the snackbar (success, error, etc.)
+
+// ======== Deletion States ========
+const [itemToDelete, setItemToDelete] = useState(null); // Stores the ID of the item to be deleted (workout or split)
+const [deleteType, setDeleteType] = useState(''); // Stores the type of item to be deleted ('workout' or 'split')
+
+// ======== Loading and UI States ========
+const [isLoading, setIsLoading] = useState(true); // Controls the loading state for data fetching or processing
+
+// ======== Date and Time Management States ========
+const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Stores the selected month for filtering workouts
+const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Stores the selected year for filtering workouts
+
+// ======== Tab and Search Management States ========
+const [searchParams] = useSearchParams(); // Handles URL search parameters
+const initialTabIndex = parseInt(searchParams.get('tabIndex')) || 0; // Gets 'tabIndex' from URL or defaults to 0
+const [tabIndex, setTabIndex] = useState(initialTabIndex); // Controls the active tab index
+
 
 
   // Fetch from API using APIServices
@@ -172,6 +185,8 @@ const fetchWorkouts = async () => {
       console.error('Error fetching splits:', error);
     }
   };
+  console.log(userSplits);
+
 
   /**
    * Handles tab change.
@@ -206,7 +221,7 @@ const fetchWorkouts = async () => {
    * @param {string} workoutType - The type of workout.
    */
   const toggleEditWorkoutCard = (workout, mode, workoutType) => {
-    setEditWorkout(true)
+    setEditMode(true)
     setWorkoutType(workoutType);
     setSelectedWorkout(workout);
     setCardMode(mode); 
@@ -218,25 +233,10 @@ const fetchWorkouts = async () => {
    */
   const handleClose = () => {
     setIsCardVisible(false);
-    setEditWorkout(false); // Set edit workout mode back to false.
+    setEditMode(false); // Set edit workout mode back to false.
+    setSelectedWorkout([]);
   };
 
-
-  /**
-   * Opens the add workout dialog.
-   */
-  const handleAddDialogOpen = () => {
-    setIsAddDialogOpen(true);
-  };
-
-  /**
-   * Closes the add workout dialog.
-   */  
-  const handleAddDialogClose = () => {
-    setIsAddDialogOpen(false);
-    setNewSplitName(""); // Clear the input field
-    setNewWorkoutExercises([]); // Clear the exercise selection
-  };
 
   /**
    * Confirm and delete the selected item (workout or split)
@@ -317,8 +317,19 @@ const fetchWorkouts = async () => {
    * @param {object} workout - The workout to be edited
    */ 
   const handleEditWorkout = (workout) => {
-    setWorkoutToEditId(workout.workoutId);
+    setToEditId(workout.workoutId);
     toggleEditWorkoutCard(workout.exercises, 'createWorkout', workout.type)
+  }
+
+  const handleEditSplit = (split) => {
+    console.log("split id being edited: ", split.splitId);
+    setEditMode(true);
+    setToEditId(split.splitId);
+    setSelectedWorkout(split.exercises);
+    setNewSplitName(customSplitName);
+    setIsCardVisible(true);
+    setCardMode("addSplit");
+    setIsCustomSplitDialogOpen(false);
   }
 
 
@@ -398,7 +409,7 @@ const putWorkout = async (workout) => {
       setSessionData('workouts', workoutsToStore); // Save to session storage
 
       // Update the workout in the backend
-      await updateWorkout(`/workouts/${workout.workoutId}`, workoutWithDate);
+      await updateWorkout(workout.workoutId, workoutWithDate);
       console.log("Workout updated Successfully");
 
       // Show success Snackbar
@@ -413,6 +424,48 @@ const putWorkout = async (workout) => {
 
     // Show error Snackbar
     setSnackbarMessage('Failed to update workout.');
+    setSnackbarSeverity('error');
+    setSnackbarOpen(true);
+  }
+};
+
+/**
+ * Updates an existing workout split in the backend and updates state.
+ * 
+ * @async
+ * @param {Object} split - The split object to update.
+ */
+const putSplit = async (split) => {
+  try {
+    // Find the index of the split to be updated
+    const splitIndex = userSplits.findIndex(s => s.splitId === split.splitId);
+    
+    // If the split exists, update it in the state
+    if (splitIndex !== -1) {
+      const updatedSplits = [...userSplits];
+      updatedSplits[splitIndex] = split; // Update the split with the new data
+      setUserSplits(updatedSplits);
+      console.log("Updated Split: ", split);
+
+      // Update session storage with the updated split
+      setSessionData('splits', updatedSplits); // Save to session storage
+
+      // Update the split in the backend
+      await updateSplit(split.splitId, split);
+      console.log("Split updated Successfully");
+
+      // Show success Snackbar
+      setSnackbarMessage('Split updated successfully!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } else {
+      console.error("Split not found for update.");
+    }
+  } catch (error) {
+    console.error("Failed to update split: ", error);
+
+    // Show error Snackbar
+    setSnackbarMessage('Failed to update split.');
     setSnackbarSeverity('error');
     setSnackbarOpen(true);
   }
@@ -437,7 +490,7 @@ const putWorkout = async (workout) => {
 
       // Upload the split to the backend
       await uploadSplit(split);
-      console.log("Split uploaded successfully");
+      console.log("Split uploaded successfully: ", split)
 
       // Show success Snackbar
       setSnackbarMessage('Split added successfully!');
@@ -480,13 +533,6 @@ const putWorkout = async (workout) => {
 
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-  /**
-   * Toggles between graph view and workout history view.
-   */  
-  const handleGraphButtonClick = () => {
-    setShowGraph(!showGraph); // Toggle between graph view and workout history view
-  };
-
 
   /**
    * Opens the edit dialog for workout splits.
@@ -500,20 +546,6 @@ const putWorkout = async (workout) => {
    */
   const handleCloseEditDialog = () => {
     setIsEditDialogOpen(false);
-    setSelectedSplitForEditing({});
-    setEditedName('');
-  };
-
-  /**
-   * Renames a workout split.
-   */
-  const handleRenameSplit = () => {
-    setUserSplits(prevWorkouts =>
-      prevWorkouts.map(workout =>
-        workout.name === selectedSplitForEditing.name ? { ...workout, name: editedName } : workout
-      )
-    );
-    handleCloseEditDialog();
   };
 
 
@@ -639,61 +671,78 @@ const putWorkout = async (workout) => {
 
       {/* Add/Edit Dialogs */}
       <Dialog open={isEditDialogOpen} onClose={handleCloseEditDialog}>
-        <DialogTitle>Edit Workout Splits</DialogTitle>
-        <DialogContent>
-          <Typography variant="h6">Available Workout Splits</Typography>
-          
-          {/* Check if there are any user splits */}
-          {userSplits.length > 0 ? (
-            userSplits.map((split, index) => (
-              <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-                <TextField
-                  value={split.name}
-                  onChange={(e) => {
-                    const updatedSplits = [...userSplits];
-                    updatedSplits[index].name = e.target.value;
-                    setUserSplits(updatedSplits);
-                  }}
-                  sx={{ mr: 2 }}
-                />
-                <IconButton color="error" onClick={() => handleDeleteSplit(split.splitId)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-            ))
-          ) : (
-            // Display message when there are no splits
-            <Typography variant="body1" color="textSecondary" sx={{ mt: 2 }}>
-              Add your first split!
-            </Typography>
-          )}
-
-            {/* Button to add a new custom split */} 
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
-              {console.log('Current number of splits:', userSplits.length)} {/* Log the length of userSplits */}
-              <Button
-                variant="outlined"
-                startIcon={<AddIcon />}
-                onClick={() => {
-                  if (userSplits.length >= 8) {
-                    // Show error Snackbar if there are already 9 splits
-                    setSnackbarMessage('You cannot have more than 9 splits.');
-                    setSnackbarSeverity('error');
-                    setSnackbarOpen(true);
-                  } else {
-                    // Open the dialog to add a new custom split
-                    setIsCustomSplitDialogOpen(true);
-                  }
-                }}
+      <DialogTitle>Edit Workout Splits</DialogTitle>
+      <DialogContent>
+        <Typography variant="h6">Available Workout Splits</Typography>
+        
+        {/* Check if there are any user splits */}
+        {userSplits.length > 0 ? (
+          userSplits.map((split, index) => (
+            <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+            <TextField
+              value={tempSplitName[index] !== undefined ? tempSplitName[index] : split.name} 
+              onChange={(e) => {
+                const updatedTempSplitName = { ...tempSplitName, [index]: e.target.value }; // Update temp name on change
+                setTempSplitName(updatedTempSplitName);
+              }}
+              onBlur={() => {
+                // Only update if the name has changed
+                if (tempSplitName[index] !== undefined && tempSplitName[index] !== split.name) {
+                  const updatedSplits = [...userSplits];
+                  updatedSplits[index].name = tempSplitName[index]; // Save temp value to actual state
+                  setUserSplits(updatedSplits);
+                  putSplit(updatedSplits[index]); // Save to DB
+                }
+              }}
+              sx={{ mr: 2 }}
+            />
+              {/* Edit Button */}
+              <IconButton
+                color="primary"
+                onClick={() => handleEditSplit(split)}
+                sx={{ mr: 1 }}  
               >
-                Add Custom Split
-              </Button>
+                <EditIcon />
+              </IconButton>
+              {/* Delete Button */}
+              <IconButton color="error" onClick={() => handleDeleteSplit(split.splitId)}>
+                <DeleteIcon />
+              </IconButton>
             </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
-        </DialogActions>
-      </Dialog>
+          ))
+        ) : (
+          // Display message when there are no splits
+          <Typography variant="body1" color="textSecondary" sx={{ mt: 2 }}>
+            Add your first split!
+          </Typography>
+        )}
+
+        {/* Button to add a new custom split */}
+        <Box sx={{ display: 'flex', alignItems: 'center', mt: 4 }}>
+          {console.log('Current number of splits:', userSplits.length)} {/* Log the length of userSplits */}
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              if (userSplits.length >= 8) {
+                // Show error Snackbar if there are already 9 splits
+                setSnackbarMessage('You cannot have more than 9 splits.');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
+              } else {
+                // Open the dialog to add a new custom split
+                setIsCustomSplitDialogOpen(true);
+              }
+            }}
+          >
+            Add Custom Split
+          </Button>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseEditDialog} color="primary">Done</Button>
+      </DialogActions>
+    </Dialog>
 
 
       <Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
@@ -734,9 +783,10 @@ const putWorkout = async (workout) => {
         saveSplit={saveSplit}
         newSplitName={newSplitName}
         type={workoutType}
-        {...(editWorkout && { editMode: editWorkout })}
-        workoutToEditId={workoutToEditId}
+        {...(editMode && { editMode: editMode })}
+        ToEditId={toEditId}
         putWorkout={putWorkout}
+        putSplit={putSplit}
       />
     </Box>
   );
