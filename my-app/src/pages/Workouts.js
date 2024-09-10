@@ -28,8 +28,6 @@ import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts,
 import { useSearchParams } from 'react-router-dom';
 
 
-// TODO: add logic to see avg growth for exercises, max, estimated time to reach goal...
-
 /**
  * Main component to manage user workouts and splits.
  * 
@@ -42,37 +40,50 @@ function Workouts() {
 
   console.log(user);
 
-  // State declarations
-  const [isCardVisible, setIsCardVisible] = useState(false);
-  const [workoutHistory, setWorkoutHistory] = useState([]);
-  const [cardMode, setCardMode] = useState('createWorkout');
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedWorkout, setSelectedWorkout] = useState([]);
-  const [showGraph, setShowGraph] = useState(false);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newSplitName, setNewSplitName] = useState("");
-  const [newWorkoutExercises, setNewWorkoutExercises] = useState([]);
-  const [userSplits, setUserSplits] = useState([]);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedSplitForEditing, setSelectedSplitForEditing] = useState({});
-  const [editedName, setEditedName] = useState('');
-  const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false);
-  const [customSplitName, setCustomSplitName] = useState("");
-  const [workoutType, setWorkoutType] = useState("Default");
-  const [isLoading, setIsLoading] = useState(true); // Loading state
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); 
-  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState(null);
-  const [deleteType, setDeleteType] = useState(''); // 'workout' or 'split'
-  const [searchParams] = useSearchParams();  
-  const initialTabIndex = parseInt(searchParams.get('tabIndex')) || 0; // Get 'tabIndex' from URL or default to 0
-  const [tabIndex, setTabIndex] = useState(initialTabIndex);
-  const [editMode, setEditMode] = useState(false);
-  const [toEditId, setToEditId] = useState('');
-  const [tempSplitName, setTempSplitName] = useState({});
+// State declarations
+
+// ======== Modal and Dialog States ========
+const [isCardVisible, setIsCardVisible] = useState(false); // Controls visibility of workout card modal
+const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Controls visibility of edit dialog for workout splits
+const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false); // Controls visibility of custom split dialog
+const [confirmDialogOpen, setConfirmDialogOpen] = useState(false); // Controls visibility of confirmation dialog
+
+// ======== Workout Management States ========
+const [workoutHistory, setWorkoutHistory] = useState([]); // Stores the history of workouts
+const [selectedWorkout, setSelectedWorkout] = useState([]); // Stores the currently selected workout for editing or viewing
+const [workoutType, setWorkoutType] = useState("Default"); // Stores the type of workout (e.g., Default, Push, Pull, etc.)
+const [cardMode, setCardMode] = useState('createWorkout'); // Determines the mode for the workout card (create or edit)
+const [editMode, setEditMode] = useState(false); // Determines if the workout is in edit mode
+const [toEditId, setToEditId] = useState(''); // Stores the ID of the workout being edited
+
+// ======== Split Management States ========
+const [userSplits, setUserSplits] = useState([]); // Stores the user's workout splits
+const [newSplitName, setNewSplitName] = useState(""); // Stores the name of a new workout split
+const [customSplitName, setCustomSplitName] = useState(""); // Temporary storage for custom split name input
+const [tempSplitName, setTempSplitName] = useState({}); // Temporary storage for editing split names
+
+
+// ======== Snackbar and Notification States ========
+const [snackbarOpen, setSnackbarOpen] = useState(false); // Controls visibility of snackbar notifications
+const [snackbarMessage, setSnackbarMessage] = useState(''); // Stores the message to be displayed in the snackbar
+const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // Stores the severity level of the snackbar (success, error, etc.)
+
+// ======== Deletion States ========
+const [itemToDelete, setItemToDelete] = useState(null); // Stores the ID of the item to be deleted (workout or split)
+const [deleteType, setDeleteType] = useState(''); // Stores the type of item to be deleted ('workout' or 'split')
+
+// ======== Loading and UI States ========
+const [isLoading, setIsLoading] = useState(true); // Controls the loading state for data fetching or processing
+
+// ======== Date and Time Management States ========
+const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Stores the selected month for filtering workouts
+const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Stores the selected year for filtering workouts
+
+// ======== Tab and Search Management States ========
+const [searchParams] = useSearchParams(); // Handles URL search parameters
+const initialTabIndex = parseInt(searchParams.get('tabIndex')) || 0; // Gets 'tabIndex' from URL or defaults to 0
+const [tabIndex, setTabIndex] = useState(initialTabIndex); // Controls the active tab index
+
 
 
   // Fetch from API using APIServices
@@ -223,24 +234,9 @@ const fetchWorkouts = async () => {
   const handleClose = () => {
     setIsCardVisible(false);
     setEditMode(false); // Set edit workout mode back to false.
+    setSelectedWorkout([]);
   };
 
-
-  /**
-   * Opens the add workout dialog.
-   */
-  const handleAddDialogOpen = () => {
-    setIsAddDialogOpen(true);
-  };
-
-  /**
-   * Closes the add workout dialog.
-   */  
-  const handleAddDialogClose = () => {
-    setIsAddDialogOpen(false);
-    setNewSplitName(""); // Clear the input field
-    setNewWorkoutExercises([]); // Clear the exercise selection
-  };
 
   /**
    * Confirm and delete the selected item (workout or split)
@@ -537,13 +533,6 @@ const putSplit = async (split) => {
 
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-  /**
-   * Toggles between graph view and workout history view.
-   */  
-  const handleGraphButtonClick = () => {
-    setShowGraph(!showGraph); // Toggle between graph view and workout history view
-  };
-
 
   /**
    * Opens the edit dialog for workout splits.
@@ -557,20 +546,6 @@ const putSplit = async (split) => {
    */
   const handleCloseEditDialog = () => {
     setIsEditDialogOpen(false);
-    setSelectedSplitForEditing({});
-    setEditedName('');
-  };
-
-  /**
-   * Renames a workout split.
-   */
-  const handleRenameSplit = () => {
-    setUserSplits(prevWorkouts =>
-      prevWorkouts.map(workout =>
-        workout.name === selectedSplitForEditing.name ? { ...workout, name: editedName } : workout
-      )
-    );
-    handleCloseEditDialog();
   };
 
 
