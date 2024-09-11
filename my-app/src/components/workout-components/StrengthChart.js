@@ -31,6 +31,8 @@ import {
 } from '@mui/material';
 import WorkoutDetailsCard from './WorkoutDetailsCard'
 import DateSelector from './DateSelector';
+import TimeframeSelector from './TimeframeSelector';  
+
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -279,20 +281,12 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
             ))}
           </Select>
         </FormControl>
-        <FormControl sx={{ m: 1, minWidth: 120 }}>
-          <InputLabel id="timeframe-select-label">Timeframe</InputLabel>
-          <Select
-            labelId="timeframe-select-label"
-            id="timeframe-select"
-            value={timeframe}
-            label="Timeframe"
-            onChange={handleTimeframeChange}
-          >
-            <MenuItem value="currentMonth">Current Month & Year</MenuItem>
-            <MenuItem value="ytd">Year to Date</MenuItem>
-            <MenuItem value="allTime">All Time</MenuItem>
-          </Select>
-        </FormControl>
+
+        {/* Timeframe selector */}
+        <TimeframeSelector
+          timeframe={timeframe}
+          onChange={(event) => setTimeframe(event.target.value)}
+        />
 
 
         {/* Use DateSelector component if timeframe is 'currentMonth' */}
