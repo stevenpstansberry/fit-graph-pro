@@ -49,7 +49,6 @@ const monthNameToNumber = (monthName) => monthNames.indexOf(monthName) + 1;
  */
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
-    const workoutId = payload[0].payload.workoutId; // Get the workoutId from the data point
     const workout = payload[0].payload.workout; // Get the full workout object from the data point
 
     return (
@@ -343,15 +342,9 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
                 ))}
               </Select>
             </FormControl>
-
-
           </Box>
         )}
-
-
           <>
-
-
             {/* Checkboxes to toggle weight and reps display */}
             <Box sx={{ mt: 2 }}>
               <FormControlLabel
