@@ -171,6 +171,8 @@ const HeatMap = ({ workoutHistory }) => {
     },
     []
   );
+
+
   
 
   // Handle closing the snackbar
@@ -228,7 +230,7 @@ const HeatMap = ({ workoutHistory }) => {
 
       {/* Timeframe and Date Selectors */}
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 2 }}>
-        <TimeframeSelector timeframe={timeframe} onChange={setTimeframe} />
+        <TimeframeSelector timeframe={timeframe} onChange={(event) => setTimeframe(event.target.value)} />
         {timeframe === 'currentMonth' && (
           <DateSelector
             selectedMonth={selectedMonth}
