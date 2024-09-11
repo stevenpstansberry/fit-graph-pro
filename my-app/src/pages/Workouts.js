@@ -55,6 +55,8 @@ const [workoutType, setWorkoutType] = useState("Default"); // Stores the type of
 const [cardMode, setCardMode] = useState('createWorkout'); // Determines the mode for the workout card (create or edit)
 const [editMode, setEditMode] = useState(false); // Determines if the workout is in edit mode
 const [toEditId, setToEditId] = useState(''); // Stores the ID of the workout being edited
+const [toEditDate, setToEditDate] = useState(''); // Stores the Date of the workout being edited
+
 
 // ======== Split Management States ========
 const [userSplits, setUserSplits] = useState([]); // Stores the user's workout splits
@@ -311,15 +313,19 @@ const fetchWorkouts = async () => {
     setConfirmDialogOpen(true);
   };
 
+
     /**
    * Edits a workout
    * 
    * @param {object} workout - The workout to be edited
    */ 
-  const handleEditWorkout = (workout) => {
-    setToEditId(workout.workoutId);
-    toggleEditWorkoutCard(workout.exercises, 'createWorkout', workout.type)
-  }
+    const handleEditWorkout = (workout) => {
+      setToEditId(workout.workoutId);
+      setToEditDate(workout.date);
+      console.log(workout.date);
+      toggleEditWorkoutCard(workout.exercises, 'createWorkout', workout.type)
+      
+    }
 
   const handleEditSplit = (split) => {
     console.log("split id being edited: ", split.splitId);
@@ -518,6 +524,9 @@ const putSplit = async (split) => {
   const handleCloseConfirmDialog = () => {
     setConfirmDialogOpen(false);
   };
+
+
+
 
 
   /**
@@ -787,6 +796,7 @@ const putSplit = async (split) => {
         ToEditId={toEditId}
         putWorkout={putWorkout}
         putSplit={putSplit}
+        ToEditDate={toEditDate}
       />
     </Box>
   );
