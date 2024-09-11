@@ -19,7 +19,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { Box, Typography, Container } from '@mui/material';
+import { Box, Typography, Container, Stack  } from '@mui/material';
 import Model from 'react-body-highlighter';
 
 //TODO revise workout statisitcs
@@ -105,6 +105,48 @@ const calculateMuscleGroupPercentages = (workoutHistory) => {
 };
 
 /**
+ * Component to render the gradient legend for the workout heat map.
+ *
+ * @component
+ * @returns {React.Element} - The rendered GradientLegend component.
+ */
+const GradientLegend = () => {
+  return (
+    <Box sx={{ mt: 4, width: '100%' }}>
+      <Typography variant="h6" gutterBottom>
+        Workout Intensity Legend
+      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          mt: 1,
+          position: 'relative',
+        }}
+      >
+        {/* Gradient Slider */}
+        <Box
+          sx={{
+            height: 20,
+            width: '100%',
+            background: `linear-gradient(to right, #b3e5fc, #81d4fa, #4fc3f7, #29b6f6, #03a9f4, #039be5, #0288d1, #0277bd, #e57373, #ef5350, #f44336, #e53935, #d32f2f, #c62828, #b71c1c, #e65a5a, #db2f2f)`,
+            borderRadius: 10,
+          }}
+        />
+
+        {/* Labels for Gradient */}
+        <Typography variant="body2" sx={{ position: 'absolute', left: 0, transform: 'translateY(30px)' }}>
+          Least Worked
+        </Typography>
+        <Typography variant="body2" sx={{ position: 'absolute', right: 0, transform: 'translateY(30px)' }}>
+          Highly Worked
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
+/**
  * HeatMap component for displaying a heat map of workout history.
  * Allows users to visualize their workout activity intensity and frequency over time.
  * 
@@ -145,10 +187,10 @@ const HeatMap = ({ workoutHistory }) => {
           <Box sx={{ display: 'flex', gap: 4 }}>
             {/* Front View Model */}
             <Model
-            data={data}
-            style={{ width: '20rem', padding: '2rem' }}
-            onClick={handleClick}
-            highlightedColors={highlightedColors}
+              data={data}
+              style={{ width: '20rem', padding: '2rem' }}
+              onClick={handleClick}
+              highlightedColors={highlightedColors}
             />
 
             {/* Posterior View Model */}
@@ -167,6 +209,7 @@ const HeatMap = ({ workoutHistory }) => {
               No workouts found. Get started by adding one!
             </Typography>
           )}
+          <GradientLegend />
         </Box>
   
         {/* Workout Statistics */}
