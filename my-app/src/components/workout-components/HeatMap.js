@@ -19,22 +19,8 @@
  */
 
 import React, { useMemo } from 'react';
-import { Box, Typography, Container, Stack  } from '@mui/material';
+import { Box, Typography, Container } from '@mui/material';
 import Model from 'react-body-highlighter';
-
-//TODO revise workout statisitcs
-/**
- * Maps body parts to muscles in the format expected by react-body-highlighter.
- */
-const muscleMap = {
-  Chest: ['chest'],
-  Shoulders: ['front-deltoids', 'back-deltoids'],
-  Arms: ['biceps', 'triceps', 'forearm'],
-  Abs: ['abs', 'obliques'],
-  Legs: ['quadriceps', 'hamstring', 'calves', 'adductor', 'abductors', 'gluteal'],
-  Back: ['trapezius', 'upper-back', 'lower-back'],
-  Forearms: ['forearm'],
-};
 
 /**
  * Converts workout history data into the format required by react-body-highlighter.
@@ -47,7 +33,7 @@ const convertWorkoutHistoryToHeatmapData = (workoutHistory) => {
 
   workoutHistory.forEach((workout) => {
     workout.exercises.forEach((exercise) => {
-      const { label, bodyPart } = exercise;
+      const { label, muscles } = exercise;
 
       if (!exerciseDataMap[label]) {
         exerciseDataMap[label] = { name: label, muscles: [], frequency: 0 };
@@ -56,10 +42,8 @@ const convertWorkoutHistoryToHeatmapData = (workoutHistory) => {
       // Increment frequency for each occurrence
       exerciseDataMap[label].frequency += 1;
 
-      // Map body part to muscles
-      if (muscleMap[bodyPart]) {
-        exerciseDataMap[label].muscles = muscleMap[bodyPart];
-      }
+      // Directly use the muscles array from exercise data
+      exerciseDataMap[label].muscles = muscles;
     });
   });
 
@@ -67,7 +51,7 @@ const convertWorkoutHistoryToHeatmapData = (workoutHistory) => {
 };
 
 /**
- * Calculates the percentage of workout frequency for each body part.
+ * Calculates the percentage of workout frequency for each muscle group.
  *
  * @param {Array} workoutHistory - The workout history array.
  * @returns {Object} - The percentage data for each muscle group.
@@ -227,7 +211,6 @@ const HeatMap = ({ workoutHistory }) => {
     </Box>
   );
 };
-
 
 const highlightedColors = [
   "#b3e5fc", // Light Blue - Least worked
