@@ -23,10 +23,10 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Autocomplete, TextField ,IconButton ,Box ,Modal ,Card ,CardContent ,Button ,Typography, Alert, Snackbar} from "@mui/material";
+import { Autocomplete, TextField, IconButton, Box, Modal, Card, CardContent, Button, Typography, Alert, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./Exercise_Sub_Card";
-import { v4 as uuidv4 } from 'uuid'; 
+import { v4 as uuidv4 } from 'uuid';
 import { getUser } from '../../services/AuthService';
 
 /**
@@ -46,9 +46,10 @@ import { getUser } from '../../services/AuthService';
  * @param {string} props.editMode - Determines if in edit mode
  * @param {string} props.ToEditId - The id of the workout / split being edited
  * @param {function} props.putWorkout - Function to put (edit) a workout to the backend.
+ * @param {string} props.ToEditDate - The date of the workout / split being edited
  * @returns {React.Element} - The rendered Workout_Card component.
  */
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, ToEditId, putWorkout, putSplit }) {
+function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, ToEditId, putWorkout, putSplit, ToEditDate }) {
   const user = getUser();
 
   // Initialize state variables
@@ -69,7 +70,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     if (open) {
       setExercises(preloadedExercises);
       setUniqueId(uuidv4()); // Generate a unique ID for the workout
-      setWorkoutDate(new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })); // Set today's date with time for the workout
+
 
       // Filter out preloaded exercises from the available exercises
       const filteredExercises = strengthWorkouts.filter(
@@ -81,14 +82,30 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
       if (editMode) {
         setIsEditMode(true);
         setUniqueId(ToEditId)
+        console.log("old workout date", workoutDate);
+        setWorkoutDate(ToEditDate);
+        console.log("workout date: ", workoutDate);
         console.log('!!!!!!in edit mode for: ', uniqueId);
         // Additional initialization for edit mode if needed
       } else {
+        setWorkoutDate(new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })); // Set today's date with time for the workout
         setIsEditMode(false);
         console.log("returned back to normal mode");
       }
     }
   }, [open, preloadedExercises, editMode]);
+
+  const formatDateToDatetimeLocal = (date) => {
+    // Formats a date object to YYYY-MM-DDTHH:mm for <input type="datetime-local">
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60 * 1000);
+    return localDate.toISOString().slice(0, 16);
+  };
+
+  const handleDateChange = (e) => {
+    const selectedDate = new Date(e.target.value);
+    setWorkoutDate(selectedDate.toISOString());
+  };
 
   /**
    * Adds a new exercise to the exercises list.
@@ -138,7 +155,6 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     setExercises(updatedExercises);
   };
 
-
   /**
    * Creates the workout or split and validates inputs.
    * Handles both 'createWorkout' and 'addSplit' modes.
@@ -169,12 +185,12 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
 
       let workout = {
         workoutId: uniqueId,
-        date: workoutDate,
+        date: workoutDate, // Already in ISO string format
         username: user.username,
         type: type,
         exercises: exercises,
       };
-      if (!editMode){
+      if (!isEditMode){
         saveWorkout(workout);
       } else {
         putWorkout(workout);
@@ -202,7 +218,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
           sets: exercise.sets.map(set => ({ setCount: set.setCount })) // Only include set count
         })),
       };
-      if (!editMode){
+      if (!isEditMode){
         saveSplit(workoutSplit);
       } else {
         putSplit(workoutSplit);
@@ -264,6 +280,15 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
               : "Add exercises to your workout and customize sets, weights, and reps."}
           </Typography>
 
+          {/* Date Picker */}
+          <TextField
+            label="Workout Date"
+            type="datetime-local"
+            value={formatDateToDatetimeLocal(new Date(workoutDate))}
+            onChange={handleDateChange}
+            sx={{ width: 300, mr: 2 }}
+          />
+
           <Box
             sx={{
               display: 'flex',
@@ -280,7 +305,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
             <Autocomplete
               disablePortal
               id="combo-box-demo"
-              options={availableExercises} // Dynamically updated available exercises
+              options={availableExercises}
               value={selectedExercise}
               onChange={(event, newValue) => {
                 setSelectedExercise(newValue);
@@ -289,7 +314,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
               onInputChange={(event, newInputValue) => {
                 setInputValue(newInputValue);
               }}
-              sx={{ width: 300, mr: 2 }}
+              sx={{ width: 300, mr: 2 }} // Adjust width and margin
               renderInput={(params) => <TextField {...params} label="Exercise" />}
             />
             <Button onClick={addExercise} variant="contained" color="primary">
@@ -306,20 +331,19 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
                 index={index}
                 removeExercise={removeExercise}
                 updateExerciseSets={updateExerciseSets}
-                allowWeightAndReps={mode === "createWorkout"} // Show weights/reps only in "createWorkout" mode
+                allowWeightAndReps={mode === "createWorkout"}
               />
             ))}
           </Box>
 
           {/* Create Workout button at the bottom */}
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
-            {/* Snackbar positioned to the left of the button */}
             <Snackbar
               open={snackbarOpen}
               autoHideDuration={4000}
               onClose={handleCloseSnackbar}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              sx={{ position: 'absolute', right: 180, bottom: 20 }} // Position to the left of the button
+              sx={{ position: 'absolute', right: 180, bottom: 20 }}
             >
               <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
                 {message}
