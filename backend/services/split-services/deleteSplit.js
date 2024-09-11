@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to delete a workout split from DynamoDB by ID.
  * 
- * @file backend/services/deleteSplit.js
+ * @file backend/services/split-services/deleteSplit.js
  * 
  * Exposes the `deleteSplit()` function to handle the deletion of a split.
  * 
@@ -16,7 +16,7 @@ AWS.config.update({
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const splitTable = 'fit-graph-user-splits'; 
-const util = require('../utils/util');
+const util = require('../../utils/util');
 
 /**
  * Deletes a workout split from DynamoDB by its ID.

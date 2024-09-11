@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to handle user login by verifying credentials and generating a token.
  * 
- * @file backend/services/login.js
+ * @file backend/services/auth-services/login.js
  * 
  * Exposes the `login()` function to handle user authentication.
  * 
@@ -13,9 +13,9 @@ const AWS = require('aws-sdk');
 AWS.config.update({
   region: 'us-east-1'
 })
-const util = require('../utils/util');
+const util = require('../../utils/util');
 const bcrypt = require('bcryptjs');
-const auth = require('../utils/auth');
+const auth = require('../../utils/auth');
 const verifyPasswordService = require('./VerifyPassword');  
 
 

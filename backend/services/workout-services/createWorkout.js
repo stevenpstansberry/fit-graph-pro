@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to upload a new workout to DynamoDB.
  * 
- * @file backend/services/createWorkout.js
+ * @file backend/services/workout-services/createWorkout.js
  * 
  * Exposes the `uploadWorkout()` function to handle the upload of a workout.
  * 
@@ -17,7 +17,7 @@ AWS.config.update({
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const workoutTable = 'fit-graph-user-workouts';
-const util = require('../utils/util');
+const util = require('../../utils/util');
 
 
 /**

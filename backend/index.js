@@ -12,24 +12,24 @@
  */
 
 // Import required service modules
-const registerService = require('./services/register');
-const loginService = require('./services/login');
+const registerService = require('./services/auth-services/register');
+const loginService = require('./services/auth-services/login');
 const verifyService = require('./services/verify');
 const contactService = require('./services/contactService');
-const getWorkoutByIdService = require ('./services/getWorkout');
-const getAllWorkoutsService = require ('./services/getAllWorkouts');
-const getAllSplitsService = require ('./services/getAllSplits');
-const createWorkoutService = require ('./services/createWorkout');
-const createSplitService = require ('./services/createSplit');
-const deleteWorkoutService = require ('./services/deleteWorkout');
-const deleteSplitService = require ('./services/deleteSplit');
+const getWorkoutByIdService = require ('./services/workout-services/getWorkout');
+const getAllWorkoutsService = require ('./services/workout-services/getAllWorkouts');
+const getAllSplitsService = require ('./services/split-services/getAllSplits');
+const createWorkoutService = require ('./services/workout-services/createWorkout');
+const createSplitService = require ('./services/split-services/createSplit');
+const deleteWorkoutService = require ('./services/workout-services/deleteWorkout');
+const deleteSplitService = require ('./services/split-services/deleteSplit');
 const uploadProfilePictureService = require('./services/uploadProfilePicture');
 const getProfilePictureService = require ('./services/getProfilePicture');
-const PasswordResetService = require ('./services/PasswordReset');
-const ManualPasswordResetService = require ('./services/ManualPasswordReset');
-const VerifyPasswordService = require ('./services/VerifyPassword');
-const EditWorkoutService = require ('./services/editWorkout');
-const EditSplitService = require ('./services/editSplit');
+const PasswordResetService = require ('./services/auth-services/PasswordReset');
+const ManualPasswordResetService = require ('./services/auth-services/ManualPasswordReset');
+const VerifyPasswordService = require ('./services/auth-services/VerifyPassword');
+const EditWorkoutService = require ('./services/workout-services/editWorkout');
+const EditSplitService = require ('./services/split-services/editSplit');
 const util = require('./utils/util');
 
 // Define API paths

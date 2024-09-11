@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to handle user password reset by generating a new password and updating it in the database.
  * 
- * @file backend/services/PasswordReset.js
+ * @file backend/services/auth-services/PasswordReset.js
  * 
  * Exposes the `resetPassword()` function to handle user password reset requests.
  * 
@@ -14,7 +14,7 @@ const AWS = require('aws-sdk');
 AWS.config.update({
   region: 'us-east-1'
 });
-const util = require('../utils/util');
+const util = require('../../utils/util');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const ses = new AWS.SES({ apiVersion: '2010-12-01' });

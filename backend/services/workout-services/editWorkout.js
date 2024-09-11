@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to update an existing workout in DynamoDB.
  * 
- * @file backend/services/updateWorkout.js
+ * @file backend/services/workout-services/updateWorkout.js
  * 
  * Exposes the `updateWorkout()` function to handle the update of a workout.
  * 
@@ -17,7 +17,7 @@ AWS.config.update({
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const workoutTable = 'fit-graph-user-workouts';
-const util = require('../utils/util');
+const util = require('../../utils/util');
 
 /**
  * Updates an existing workout in DynamoDB.

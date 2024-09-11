@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to handle user password verification by comparing the provided encrypted password with the stored hash.
  * 
- * @file backend/services/VerifyPassword.js
+ * @file backend/services/auth-services/VerifyPassword.js
  * 
  * Exposes the `verifyPassword()` function to handle password verification requests.
  * 
@@ -13,7 +13,7 @@ const AWS = require('aws-sdk');
 AWS.config.update({
   region: 'us-east-1'
 });
-const util = require('../utils/util');
+const util = require('../../utils/util');
 const bcrypt = require('bcryptjs');
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
