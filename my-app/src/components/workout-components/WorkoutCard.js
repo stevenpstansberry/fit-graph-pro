@@ -30,8 +30,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { getUser } from '../../services/AuthService';
 
 /**
- * Workout_Card component for managing and creating workouts or workout splits.
- * Provides a modal interface to add exercises, specify sets, weights, and reps, and save the data.
+ * WorkoutCard component for managing and creating workouts or workout splits.
+ * Provides a modal interface to add exercises, specify sets, weights, and reps, and save or update the data.
  * 
  * @component
  * @param {Object} props - Component props.
@@ -39,17 +39,15 @@ import { getUser } from '../../services/AuthService';
  * @param {function} props.onClose - Function to close the modal.
  * @param {Array} props.preloadedExercises - Array of exercises to preload into the workout or split.
  * @param {string} props.mode - Mode of operation for the component ('createWorkout' or 'addSplit').
- * @param {function} props.saveSplit - Function to save a workout split to the backend.
- * @param {function} props.saveWorkout - Function to save a workout to the backend.
  * @param {string} props.newSplitName - Name of the new workout split.
  * @param {string} props.type - Type of workout.
- * @param {string} props.editMode - Determines if in edit mode
- * @param {string} props.ToEditId - The id of the workout / split being edited
- * @param {function} props.putWorkout - Function to put (edit) a workout to the backend.
- * @param {string} props.ToEditDate - The date of the workout / split being edited
- * @returns {React.Element} - The rendered Workout_Card component.
+ * @param {boolean} props.editMode - Determines if in edit mode.
+ * @param {string} props.ToEditId - The ID of the workout or split being edited.
+ * @param {string} props.ToEditDate - The date of the workout or split being edited.
+ * @param {function} props.manageWorkoutOrSplit - Function to manage (save or update) a workout or split to the backend.
+ * @returns {React.Element} - The rendered WorkoutCard component.
  */
-function WorkoutCard({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, ToEditId, putWorkout, putSplit, ToEditDate }) {
+function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, type, editMode, ToEditId, ToEditDate, manageWorkoutOrSplit }) {
   const user = getUser();
 
 // ======== State for managing input and UI interactions ========
@@ -215,9 +213,9 @@ const handleDateChange = (e) => {
         exercises: exercises,
       };
       if (!isEditMode){
-        saveWorkout(workout);
+        manageWorkoutOrSplit(workout, 'workout', 'save');
       } else {
-        putWorkout(workout);
+        manageWorkoutOrSplit(workout, 'workout', 'update');
       }
     }
 
@@ -243,9 +241,9 @@ const handleDateChange = (e) => {
         })),
       };
       if (!isEditMode){
-        saveSplit(workoutSplit);
+        manageWorkoutOrSplit(workoutSplit, 'split', 'save');
       } else {
-        putSplit(workoutSplit);
+        manageWorkoutOrSplit(workoutSplit, 'split', 'update');
       }
     }
     onClose();
