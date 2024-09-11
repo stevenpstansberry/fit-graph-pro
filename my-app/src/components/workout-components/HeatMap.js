@@ -18,23 +18,12 @@
  * intensity of workouts, helping users quickly identify periods of high or low activity.
  */
 
-import React, { useMemo } from 'react';
-import { Box, Typography, Container } from '@mui/material';
+import React, { useMemo, useState, useEffect } from 'react';
+import { Box, Typography, Container, Snackbar, Alert, Tooltip, IconButton } from '@mui/material';
 import Model from 'react-body-highlighter';
-
-//TODO revise workout statisitcs
-/**
- * Maps body parts to muscles in the format expected by react-body-highlighter.
- */
-const muscleMap = {
-  Chest: ['chest'],
-  Shoulders: ['front-deltoids', 'back-deltoids'],
-  Arms: ['biceps', 'triceps', 'forearm'],
-  Abs: ['abs', 'obliques'],
-  Legs: ['quadriceps', 'hamstring', 'calves', 'adductor', 'abductors', 'gluteal'],
-  Back: ['trapezius', 'upper-back', 'lower-back'],
-  Forearms: ['forearm'],
-};
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import TimeframeSelector from './TimeframeSelector'; 
+import DateSelector from './DateSelector'; 
 
 /**
  * Converts workout history data into the format required by react-body-highlighter.
@@ -47,7 +36,7 @@ const convertWorkoutHistoryToHeatmapData = (workoutHistory) => {
 
   workoutHistory.forEach((workout) => {
     workout.exercises.forEach((exercise) => {
-      const { label, bodyPart } = exercise;
+      const { label, muscles } = exercise;
 
       if (!exerciseDataMap[label]) {
         exerciseDataMap[label] = { name: label, muscles: [], frequency: 0 };
@@ -56,10 +45,8 @@ const convertWorkoutHistoryToHeatmapData = (workoutHistory) => {
       // Increment frequency for each occurrence
       exerciseDataMap[label].frequency += 1;
 
-      // Map body part to muscles
-      if (muscleMap[bodyPart]) {
-        exerciseDataMap[label].muscles = muscleMap[bodyPart];
-      }
+      // Directly use the muscles array from exercise data or provide a default empty array if undefined
+      exerciseDataMap[label].muscles = muscles || [];
     });
   });
 
@@ -67,7 +54,7 @@ const convertWorkoutHistoryToHeatmapData = (workoutHistory) => {
 };
 
 /**
- * Calculates the percentage of workout frequency for each body part.
+ * Calculates the percentage of workout frequency for each muscle group.
  *
  * @param {Array} workoutHistory - The workout history array.
  * @returns {Object} - The percentage data for each muscle group.
@@ -77,10 +64,9 @@ const calculateMuscleGroupPercentages = (workoutHistory) => {
     Chest: 0,
     Shoulders: 0,
     Arms: 0,
-    Abs: 0,
+    Core: 0,
     Legs: 0,
     Back: 0,
-    Forearms: 0,
   };
 
   let totalExercises = 0;
@@ -105,6 +91,50 @@ const calculateMuscleGroupPercentages = (workoutHistory) => {
 };
 
 /**
+ * Component to render the gradient legend for the workout heat map.
+ *
+ * @component
+ * @returns {React.Element} - The rendered GradientLegend component.
+ */
+const GradientLegend = () => {
+  return (
+    <Box sx={{ mt: 4, width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ maxWidth: '1200px', width: '100%' }}>  {/* Limit maxWidth and center content */}
+        <Typography variant="h6" gutterBottom>
+          Workout Intensity Legend
+        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            mt: 1,
+            position: 'relative',
+          }}
+        >
+          {/* Gradient Slider */}
+          <Box
+            sx={{
+              height: 20,
+              width: '100%',
+              background: `linear-gradient(to right, #81d4fa, #4fc3f7, #29b6f6, #03a9f4, #039be5, #0288d1, #0277bd, #e57373, #ef5350, #f44336, #e53935, #d32f2f, #c62828, #b71c1c, #e65a5a)`,
+              borderRadius: 10,
+            }}
+          />
+
+          {/* Labels for Gradient */}
+          <Typography variant="body2" sx={{ position: 'absolute', left: 0, transform: 'translateY(30px)' }}>
+            Least Worked
+          </Typography>
+          <Typography variant="body2" sx={{ position: 'absolute', right: 0, transform: 'translateY(30px)' }}>
+            Highly Worked
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+/**
  * HeatMap component for displaying a heat map of workout history.
  * Allows users to visualize their workout activity intensity and frequency over time.
  * 
@@ -114,61 +144,126 @@ const calculateMuscleGroupPercentages = (workoutHistory) => {
  * @returns {React.Element} - The rendered HeatMap component.
  */
 const HeatMap = ({ workoutHistory }) => {
-  const data = useMemo(() => convertWorkoutHistoryToHeatmapData(workoutHistory), [workoutHistory]);
-  const musclePercentages = useMemo(() => calculateMuscleGroupPercentages(workoutHistory), [workoutHistory]);
 
-  const handleClick = React.useCallback(({ muscle, data }) => {
-    const { exercises, frequency } = data;
+  const [filteredWorkouts, setFilteredWorkouts] = useState(workoutHistory); // State to manage filtered workouts
+  const [timeframe, setTimeframe] = useState('currentMonth'); // State for selected timeframe
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // State for selected month
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // State for selected year
 
-    alert(`You clicked the ${muscle}! You've worked out this muscle ${frequency} times through the following exercises: ${JSON.stringify(exercises)}`);
-  }, [data]);
+  // Memoized data for filtered workouts
+  const filteredData = useMemo(() => convertWorkoutHistoryToHeatmapData(filteredWorkouts), [filteredWorkouts]);
+  const musclePercentages = useMemo(() => calculateMuscleGroupPercentages(filteredWorkouts), [filteredWorkouts]);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  const handleClick = React.useCallback(
+    ({ muscle, data }) => {
+      const { exercises, frequency } = data;
+  
+      const message =
+        frequency > 0
+          ? `You clicked the ${muscle}! You've worked out this muscle ${frequency} times through the following exercises: ${JSON.stringify(exercises)}`
+          : `You clicked the ${muscle}, but you haven't worked out this muscle yet.`;
+  
+      setSnackbarMessage(message);
+      setSnackbarOpen(true);
+    },
+    []
+  );
+
+
+  
+
+  // Handle closing the snackbar
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
+  // Effect to filter workouts based on selected timeframe and date range
+  useEffect(() => {
+    let filtered = workoutHistory;
+    if (timeframe === 'currentMonth') {
+      filtered = workoutHistory.filter(workout =>
+        new Date(workout.date).getFullYear() === selectedYear &&
+        new Date(workout.date).getMonth() + 1 === selectedMonth
+      );
+    } else if (timeframe === 'ytd') {
+      filtered = workoutHistory.filter(workout => new Date(workout.date).getFullYear() === selectedYear);
+    }
+    setFilteredWorkouts(filtered);
+  }, [workoutHistory, timeframe, selectedMonth, selectedYear]);
 
   return (
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'column', 
+        flexDirection: 'column',
         flexGrow: 1,
-        minHeight: '100vh', 
+        minHeight: '100vh',
         padding: 4,
       }}
     >
-      {/* Main Content Container */}
-      <Container sx={{ flexGrow: 1, display: 'flex' }}>
-        {/* Heat Map Model Container */}
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="h4" gutterBottom>
-            Workout Heat Map
-          </Typography>
-          
-          {/* Front and Posterior Models Side by Side */}
-          <Box sx={{ display: 'flex', gap: 4 }}>
-            {/* Front View Model */}
-            <Model
-              data={data}
-              style={{ width: '20rem', padding: '2rem' }}
-              onClick={handleClick}
-            />
-  
-            {/* Posterior View Model */}
-            <Model
-              type='posterior'
-              data={data}
-              style={{ width: '20rem', padding: '2rem' }}
-              onClick={handleClick}
-            />
-          </Box>
+      {/* Title at the top */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+        <Typography variant="h4" gutterBottom>
+          Workout Heat Map
+        </Typography>
+        {/* Tooltip to explain the features */}
+        <Tooltip
+          title="This heatmap shows the intensity and frequency of your workouts. Click on a muscle group to see how often it was worked out."
+          placement="right"
+          arrow
+          componentsProps={{
+            tooltip: {
+              sx: {
+                bgcolor: 'rgba(2, 136, 209, 0.8)',
+              },
+            },
+          }}
+        >
+          <IconButton>
+            <HelpOutlineIcon sx={{ color: '#4fc3f7' }} /> {/* Light blue color for the tooltip icon */}
+          </IconButton>
+        </Tooltip>
+      </Box>
 
-          {/* Message to prompt user to add workouts if none exist */}
-          {workoutHistory.length === 0 && (
-            <Typography variant="body1" sx={{ mt: 4 }}>
-              No workouts found. Get started by adding one!
-            </Typography>
-          )}
+      {/* Timeframe and Date Selectors */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 2 }}>
+        <TimeframeSelector timeframe={timeframe} onChange={(event) => setTimeframe(event.target.value)} />
+        {timeframe === 'currentMonth' && (
+          <DateSelector
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            setSelectedMonth={setSelectedMonth}
+            setSelectedYear={setSelectedYear}
+          />
+        )}
+      </Box>
+
+      {/* Main Content Container */}
+      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', gap: 4 }}>
+        {/* Heat Map Models Side by Side */}
+        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
+          {/* Front View Model */}
+          <Model
+            data={filteredData}  
+            style={{ width: '20rem', padding: '2rem' }}
+            onClick={handleClick}
+            highlightedColors={highlightedColors}
+          />
+          {/* Posterior View Model */}
+          <Model
+            type='posterior'
+            data={filteredData}  
+            style={{ width: '20rem', padding: '2rem' }}
+            onClick={handleClick}
+            highlightedColors={highlightedColors}
+          />
         </Box>
-  
-        {/* Workout Statistics */}
-        <Box sx={{ flex: 1, paddingLeft: 4 }}>
+
+        {/* Workout Statistics to the Right of Models */}
+        <Box sx={{ flex: 1, paddingLeft: 4, maxWidth: '20rem' }}>
           <Typography variant="h5" gutterBottom>
             Workout Statistics (% by Muscle Group)
           </Typography>
@@ -179,8 +274,42 @@ const HeatMap = ({ workoutHistory }) => {
           ))}
         </Box>
       </Container>
+
+      {/* Gradient Legend and Snackbar for Muscle Click Information */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
+        <GradientLegend />
+      </Box>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="info" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
+
+const highlightedColors = [
+  "#4fc3f7", // Light Sky Blue
+  "#29b6f6", // Sky Blue
+  "#03a9f4", // Medium Blue
+  "#039be5", // Light Blue-Gray
+  "#0288d1", // Medium Blue-Gray
+  "#0277bd", // Darker Blue
+  "#e57373", // Light Red
+  "#ef5350", // Medium Light Red
+  "#f44336", // Medium Red
+  "#e53935", // Medium Dark Red
+  "#d32f2f", // Dark Red
+  "#c62828", // Darker Red
+  "#b71c1c", // Very Dark Red
+  "#e65a5a", // Intense Red - Highly worked (interpolated value)
+  "#db2f2f", // Passionate Red - Most worked
+];
 
 export default HeatMap;
