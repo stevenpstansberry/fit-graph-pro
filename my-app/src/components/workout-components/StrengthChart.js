@@ -347,12 +347,8 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
 
           </Box>
         )}
-         {/* Check if there are enough workouts to display a chart */}
-         {displayData.length <= 1 ? (
-        <Typography variant="h6" color="error" sx={{ mt: 4 }}>
-          You only have {displayData.length} exercise(s) under the current filters. You need at least two exercises under the selected filters to produce a graph.
-        </Typography>
-        ) : (
+
+
           <>
 
 
@@ -418,7 +414,6 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
               </LineChart>
             </ResponsiveContainer>
           </>
-        )}
       </Box>
     </Box>
   );
