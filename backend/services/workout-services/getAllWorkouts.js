@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to retrieve all workouts from DynamoDB for all users or a specific user.
  * 
- * @file backend/services/getAllWorkouts.js
+ * @file backend/services/workout-services/getAllWorkouts.js
  * 
  * Exposes two functions:
  * - `getAllWorkouts()`: Fetches all workouts.
@@ -23,7 +23,7 @@ AWS.config.update({
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const workoutTable = 'fit-graph-user-workouts';
-const util = require('../utils/util');
+const util = require('../../utils/util');
 
 /**
  * Fetches all workouts from DynamoDB.

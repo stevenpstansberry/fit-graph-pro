@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to handle manual user password reset by updating the new password in the database.
  * 
- * @file backend/services/ManualPasswordReset.js
+ * @file backend/services/auth-services/ManualPasswordReset.js
  * 
  * Exposes the `manualPasswordReset()` function to handle user password reset requests.
  * 
@@ -13,7 +13,7 @@ const AWS = require('aws-sdk');
 AWS.config.update({
   region: 'us-east-1'
 });
-const util = require('../utils/util');
+const util = require('../../utils/util');
 const bcrypt = require('bcryptjs');
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();

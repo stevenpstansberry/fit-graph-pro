@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to retrieve all workout splits from DynamoDB for all users or a specific user.
  * 
- * @file backend/services/getAllSplits.js
+ * @file backend/services/split-services/getAllSplits.js
  * 
  * Exposes two functions:
  * - `getAllSplits()`: Fetches all splits.
@@ -23,7 +23,7 @@ AWS.config.update({
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const workoutTable = 'fit-graph-user-splits';
-const util = require('../utils/util');
+const util = require('../../utils/util');
 
 /**
  * Fetches all workout splits from DynamoDB.

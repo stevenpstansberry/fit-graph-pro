@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to delete a workout from DynamoDB by ID.
  * 
- * @file backend/services/deleteWorkout.js
+ * @file backend/services/workout-services/deleteWorkout.js
  * 
  * Exposes the `deleteWorkout()` function to handle the deletion of a workout.
  * 
@@ -16,7 +16,7 @@ AWS.config.update({
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const workoutTable = 'fit-graph-user-workouts';
-const util = require('../utils/util');
+const util = require('../../utils/util');
 
 /**
  * Deletes a workout from DynamoDB by its ID.

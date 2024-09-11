@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to retrieve a workout by ID from DynamoDB.
  * 
- * @file backend/services/getWorkout.js
+ * @file backend/services/workout-services/getWorkout.js
  * 
  * Exposes the `getWorkoutById()` function to handle retrieval of a workout.
  * 
@@ -16,7 +16,7 @@ AWS.config.update({
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const workoutTable = 'fit-graph-user-workouts';
-const util = require('../utils/util');
+const util = require('../../utils/util');
 
 /**
  * Retrieves a workout by its ID from DynamoDB.

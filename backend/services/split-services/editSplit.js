@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to update an existing workout split in DynamoDB.
  * 
- * @file backend/services/editSplit.js
+ * @file backend/services/split-services/editSplit.js
  * 
  * Exposes the `editSplit()` function to handle the update of a split.
  * 
@@ -16,7 +16,7 @@ AWS.config.update({
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const splitTable = 'fit-graph-user-splits';
-const util = require('../utils/util');
+const util = require('../../utils/util');
 
 /**
  * Updates an existing workout split in DynamoDB.

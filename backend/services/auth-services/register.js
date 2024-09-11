@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to handle user registration by saving new user data to DynamoDB.
  * 
- * @file backend/services/register.js
+ * @file backend/services/auth-services/register.js
  * 
  * Exposes the `register()` function to handle the creation of a new user.
  * 
@@ -13,9 +13,9 @@ const AWS = require('aws-sdk');
 AWS.config.update({
   region: 'us-east-1'
 })
-const util = require('../utils/util');
+const util = require('../../utils/util');
 const bcrypt = require('bcryptjs');
-const auth = require('../utils/auth');
+const auth = require('../../utils/auth');
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const userTable = 'fit-graph-users';

@@ -1,7 +1,7 @@
 /**
  * @fileoverview Service to upload a new workout split to DynamoDB.
  * 
- * @file backend/services/createSplit.js
+ * @file backend/services/split-services/createSplit.js
  * 
  * Exposes the `uploadSplit()` function to handle the upload of a split.
  * 
@@ -18,7 +18,7 @@ AWS.config.update({
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const splitTable = 'fit-graph-user-splits';
-const util = require('../utils/util');
+const util = require('../../utils/util');
 
 /**
  * Uploads a new workout split to DynamoDB.
