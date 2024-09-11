@@ -95,17 +95,38 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     }
   }, [open, preloadedExercises, editMode]);
 
-  const formatDateToDatetimeLocal = (date) => {
-    // Formats a date object to YYYY-MM-DDTHH:mm for <input type="datetime-local">
-    const offset = date.getTimezoneOffset();
-    const localDate = new Date(date.getTime() - offset * 60 * 1000);
-    return localDate.toISOString().slice(0, 16);
-  };
+/**
+ * Formats a Date object to a string in the format "YYYY-MM-DDTHH:mm",
+ * suitable for use with <input type="datetime-local"> HTML elements.
+ * Adjusts the date to the local timezone offset.
+ * 
+ * @function formatDateToDatetimeLocal
+ * @param {Date} date - The Date object to format.
+ * @returns {string} A formatted date string in "YYYY-MM-DDTHH:mm" format.
+ */
+const formatDateToDatetimeLocal = (date) => {
+  // Get the timezone offset in minutes
+  const offset = date.getTimezoneOffset();
+  // Create a new date adjusted to the local timezone
+  const localDate = new Date(date.getTime() - offset * 60 * 1000);
+  // Convert to ISO string and slice to "YYYY-MM-DDTHH:mm" format
+  return localDate.toISOString().slice(0, 16);
+};
 
-  const handleDateChange = (e) => {
-    const selectedDate = new Date(e.target.value);
-    setWorkoutDate(selectedDate.toISOString());
-  };
+/**
+ * Handles the change event for a date input field.
+ * Converts the selected date to an ISO string format and updates the workout date state.
+ * 
+ * @function handleDateChange
+ * @param {Object} e - The event object from the date input field.
+ * @param {string} e.target.value - The selected date value from the input field.
+ */
+const handleDateChange = (e) => {
+  // Create a Date object from the input value
+  const selectedDate = new Date(e.target.value);
+  // Convert the date to ISO string format and update state
+  setWorkoutDate(selectedDate.toISOString());
+};
 
   /**
    * Adds a new exercise to the exercises list.

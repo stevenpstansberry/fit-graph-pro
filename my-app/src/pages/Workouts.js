@@ -318,7 +318,7 @@ const fetchWorkouts = async () => {
    * Edits a workout
    * 
    * @param {object} workout - The workout to be edited
-   */ 
+    */ 
     const handleEditWorkout = (workout) => {
       setToEditId(workout.workoutId);
       setToEditDate(workout.date);
@@ -327,6 +327,15 @@ const fetchWorkouts = async () => {
       
     }
 
+   /**
+   * Handles the initiation of editing a workout split.
+   * Sets the state to edit mode and initializes relevant states for editing the selected split.
+   * 
+   * @function handleEditSplit
+   * @param {Object} split - The split object to be edited.
+   * @param {string} split.splitId - The unique identifier of the split to be edited.
+   * @param {Array} split.exercises - The list of exercises associated with the split.
+   */ 
   const handleEditSplit = (split) => {
     console.log("split id being edited: ", split.splitId);
     setEditMode(true);
