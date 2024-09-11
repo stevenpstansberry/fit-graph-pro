@@ -52,18 +52,21 @@ import { getUser } from '../../services/AuthService';
 function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, ToEditId, putWorkout, putSplit, ToEditDate }) {
   const user = getUser();
 
-  // Initialize state variables
-  const [inputValue, setInputValue] = useState('');
-  const [message, setMessage] = useState('');
-  const [exercises, setExercises] = useState([]);
-  const [selectedExercise, setSelectedExercise] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises
-  const [isEditMode, setIsEditMode] = useState(editMode || false); // Initialize based on editMode prop
+// ======== State for managing input and UI interactions ========
+const [inputValue, setInputValue] = useState(''); // Input value for the exercise search
+const [message, setMessage] = useState(''); // Snackbar message content
+const [snackbarOpen, setSnackbarOpen] = useState(false); // State for controlling Snackbar visibility
 
-  // Workout metadata
-  const [uniqueId, setUniqueId] = useState('');
-  const [workoutDate, setWorkoutDate] = useState(null);
+// ======== State for managing exercises and workout data ========
+const [exercises, setExercises] = useState([]); // List of exercises added to the workout
+const [selectedExercise, setSelectedExercise] = useState(null); // Currently selected exercise from the dropdown
+const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises in the dropdown
+
+// ======== State for managing workout and split modes ========
+const [isEditMode, setIsEditMode] = useState(editMode || false); // State to determine if editing mode is enabled
+const [uniqueId, setUniqueId] = useState(''); // Unique ID for the workout or split
+const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
+
 
   // Initialize workout metadata and preload exercises when the modal opens
   useEffect(() => {
