@@ -18,7 +18,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import Workout_Card from '../components/workout-components/Workout_Card';
+import WorkoutCard from '../components/workout-components/WorkoutCard';
 import { getUser,getSessionData, setSessionData } from '../services/AuthService';
 import ViewWorkouts from '../components/workout-components/ViewWorkouts';
 import StrengthChart from '../components/workout-components/StrengthChart';
@@ -318,7 +318,7 @@ const fetchWorkouts = async () => {
    * Edits a workout
    * 
    * @param {object} workout - The workout to be edited
-   */ 
+    */ 
     const handleEditWorkout = (workout) => {
       setToEditId(workout.workoutId);
       setToEditDate(workout.date);
@@ -327,6 +327,15 @@ const fetchWorkouts = async () => {
       
     }
 
+   /**
+   * Handles the initiation of editing a workout split.
+   * Sets the state to edit mode and initializes relevant states for editing the selected split.
+   * 
+   * @function handleEditSplit
+   * @param {Object} split - The split object to be edited.
+   * @param {string} split.splitId - The unique identifier of the split to be edited.
+   * @param {Array} split.exercises - The list of exercises associated with the split.
+   */ 
   const handleEditSplit = (split) => {
     console.log("split id being edited: ", split.splitId);
     setEditMode(true);
@@ -338,179 +347,93 @@ const fetchWorkouts = async () => {
     setIsCustomSplitDialogOpen(false);
   }
 
+/**
+ * Manages the save or update operation for workouts and splits.
+ * 
+ * @async
+ * @param {Object} item - The item object to save or update (workout or split).
+ * @param {string} itemType - The type of the item ('workout' or 'split').
+ * @param {string} action - The action to perform ('save' or 'update').
+ */
+const manageWorkoutOrSplit = async (item, itemType, action) => {
+  try {
+    // Prepare the data based on type
+    let itemWithDate;
+    if (itemType === 'workout') {
+      itemWithDate = {
+        ...item,
+        date: new Date(item.date), // Ensure the date is a Date object
+      };
+    } else {
+      itemWithDate = { ...item }; // No need for date conversion in splits
+    }
 
+    let updatedItems;
+    let setItemsState;
+    let setSessionKey;
+    let updateBackendFunc;
+    let messageAction;
+    
+    if (itemType === 'workout') {
+      updatedItems = [...workoutHistory];
+      setItemsState = setWorkoutHistory;
+      setSessionKey = 'workouts';
+      updateBackendFunc = action === 'save' ? uploadWorkout : updateWorkout;
+      messageAction = action === 'save' ? 'added' : 'updated';
+    } else if (itemType === 'split') {
+      updatedItems = [...userSplits];
+      setItemsState = setUserSplits;
+      setSessionKey = 'splits';
+      updateBackendFunc = action === 'save' ? uploadSplit : updateSplit;
+      messageAction = action === 'save' ? 'added' : 'updated';
+    }
+
+    // Determine if we are adding or updating
+    if (action === 'save') {
+      updatedItems.push(itemWithDate);
+    } else {
+      const itemIndex = updatedItems.findIndex(i => i[`${itemType}Id`] === item[`${itemType}Id`]);
+      if (itemIndex !== -1) {
+        updatedItems[itemIndex] = itemWithDate;
+      } else {
+        console.error(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} not found for update.`);
+        return;
+      }
+    }
+
+    // Update state and session storage
+    setItemsState(updatedItems);
+    console.log(`${messageAction.charAt(0).toUpperCase() + messageAction.slice(1)} ${itemType}: `, itemWithDate);
+
+    const itemsToStore = updatedItems.map(i => ({
+      ...i,
+      ...(itemType === 'workout' && { date: i.date.toISOString() }), // Store date as a string in ISO format
+    }));
+    setSessionData(setSessionKey, itemsToStore);
+
+    // Perform backend operation
+    if (action === 'update') {
+      await updateBackendFunc(item[`${itemType}Id`], itemWithDate);
+    } else {
+      await updateBackendFunc(itemWithDate);
+    }
+    console.log(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully`);
+
+    // Show success Snackbar
+    setSnackbarMessage(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully!`);
+    setSnackbarSeverity('success');
+    setSnackbarOpen(true);
+  } catch (error) {
+    console.error(`Failed to ${action} ${itemType}: `, error);
+
+    // Show error Snackbar
+    setSnackbarMessage(`Failed to ${action} ${itemType}.`);
+    setSnackbarSeverity('error');
+    setSnackbarOpen(true);
+  }
+};
   
 
-  /**
-   * Saves a workout to the backend and updates state.
-   * 
-   * @async
-   * @param {Object} workout - The workout object to save.
-   */
-  const saveWorkout = async (workout) => {
-    try {
-      const workoutWithDate = {
-        ...workout,
-        date: new Date(workout.date), // Ensure the date is a Date object
-      };
-
-      // Update state
-      const updatedWorkoutHistory = [...workoutHistory, workoutWithDate];
-      setWorkoutHistory(updatedWorkoutHistory);
-      console.log("Saved Workout: ", workoutWithDate);
-
-      // Update session storage with the new workout
-      const workoutsToStore = updatedWorkoutHistory.map(workout => ({
-        ...workout,
-        date: workout.date.toISOString(), // Store date as a string in ISO format
-      }));
-      setSessionData('workouts', workoutsToStore); // Save to session storage
-
-      // Upload the workout to the backend
-      await uploadWorkout(workout);
-      console.log("Workout uploaded Successfully");
-
-      // Show success Snackbar
-      setSnackbarMessage('Workout added successfully!');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
-    } catch (error) {
-      console.error("Failed to upload workout: ", error);
-
-      // Show error Snackbar
-      setSnackbarMessage('Failed to add workout.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-    }
-  };
-
-/**
- * Updates an existing workout in the backend and updates state.
- * 
- * @async
- * @param {Object} workout - The workout object to update.
- */
-const putWorkout = async (workout) => {
-  try {
-    const workoutWithDate = {
-      ...workout,
-      date: new Date(workout.date), // Ensure the date is a Date object
-    };
-
-    // Find the index of the workout to be updated
-    const workoutIndex = workoutHistory.findIndex(w => w.workoutId === workout.workoutId);
-    
-    // If workout exists, update it in the state
-    if (workoutIndex !== -1) {
-      const updatedWorkoutHistory = [...workoutHistory];
-      updatedWorkoutHistory[workoutIndex] = workoutWithDate;
-      setWorkoutHistory(updatedWorkoutHistory);
-      console.log("Updated Workout: ", workoutWithDate);
-
-      // Update session storage with the updated workout
-      const workoutsToStore = updatedWorkoutHistory.map(workout => ({
-        ...workout,
-        date: workout.date.toISOString(), // Store date as a string in ISO format
-      }));
-      setSessionData('workouts', workoutsToStore); // Save to session storage
-
-      // Update the workout in the backend
-      await updateWorkout(workout.workoutId, workoutWithDate);
-      console.log("Workout updated Successfully");
-
-      // Show success Snackbar
-      setSnackbarMessage('Workout updated successfully!');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
-    } else {
-      console.error("Workout not found for update.");
-    }
-  } catch (error) {
-    console.error("Failed to update workout: ", error);
-
-    // Show error Snackbar
-    setSnackbarMessage('Failed to update workout.');
-    setSnackbarSeverity('error');
-    setSnackbarOpen(true);
-  }
-};
-
-/**
- * Updates an existing workout split in the backend and updates state.
- * 
- * @async
- * @param {Object} split - The split object to update.
- */
-const putSplit = async (split) => {
-  try {
-    // Find the index of the split to be updated
-    const splitIndex = userSplits.findIndex(s => s.splitId === split.splitId);
-    
-    // If the split exists, update it in the state
-    if (splitIndex !== -1) {
-      const updatedSplits = [...userSplits];
-      updatedSplits[splitIndex] = split; // Update the split with the new data
-      setUserSplits(updatedSplits);
-      console.log("Updated Split: ", split);
-
-      // Update session storage with the updated split
-      setSessionData('splits', updatedSplits); // Save to session storage
-
-      // Update the split in the backend
-      await updateSplit(split.splitId, split);
-      console.log("Split updated Successfully");
-
-      // Show success Snackbar
-      setSnackbarMessage('Split updated successfully!');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
-    } else {
-      console.error("Split not found for update.");
-    }
-  } catch (error) {
-    console.error("Failed to update split: ", error);
-
-    // Show error Snackbar
-    setSnackbarMessage('Failed to update split.');
-    setSnackbarSeverity('error');
-    setSnackbarOpen(true);
-  }
-};
-
-
-  /**
-   * Saves a workout split to the backend and updates state.
-   * 
-   * @async
-   * @param {Object} split - The split object to save.
-   */
-  const saveSplit = async (split) => {
-    try {
-      // Update state
-      const updatedUserSplits = [...userSplits, split];
-      setUserSplits(updatedUserSplits);
-      console.log("Saved Workout Split: ", split);
-
-      // Update session storage with the new split
-      setSessionData('splits', updatedUserSplits); // Save to session storage
-
-      // Upload the split to the backend
-      await uploadSplit(split);
-      console.log("Split uploaded successfully: ", split)
-
-      // Show success Snackbar
-      setSnackbarMessage('Split added successfully!');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
-    } catch (error) {
-      console.error("Failed to upload split: ", error);
-
-      // Show error Snackbar
-      setSnackbarMessage('Failed to add split.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-    }
-  };
   /**
    * Closes snackbar alert
    */
@@ -556,7 +479,6 @@ const putSplit = async (split) => {
   const handleCloseEditDialog = () => {
     setIsEditDialogOpen(false);
   };
-
 
 
   /**
@@ -700,7 +622,7 @@ const putSplit = async (split) => {
                   const updatedSplits = [...userSplits];
                   updatedSplits[index].name = tempSplitName[index]; // Save temp value to actual state
                   setUserSplits(updatedSplits);
-                  putSplit(updatedSplits[index]); // Save to DB
+                  manageWorkoutOrSplit(updatedSplits[index],'split','update'); // Save to DB
                 }
               }}
               sx={{ mr: 2 }}
@@ -783,20 +705,17 @@ const putSplit = async (split) => {
         </DialogContent>
       </Dialog>
 
-      <Workout_Card
+      <WorkoutCard
         open={isCardVisible}
         onClose={handleClose}
         preloadedExercises={selectedWorkout}
         mode={cardMode}
-        saveWorkout={saveWorkout}
-        saveSplit={saveSplit}
         newSplitName={newSplitName}
         type={workoutType}
         {...(editMode && { editMode: editMode })}
         ToEditId={toEditId}
-        putWorkout={putWorkout}
-        putSplit={putSplit}
         ToEditDate={toEditDate}
+        manageWorkoutOrSplit={manageWorkoutOrSplit}
       />
     </Box>
   );

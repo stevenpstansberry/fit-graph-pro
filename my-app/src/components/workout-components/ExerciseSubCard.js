@@ -28,7 +28,7 @@ import AddIcon from "@mui/icons-material/Add";
  * @param {string} props.mode - Mode indicating how the component should behave (e.g., "addSplit").
  * @returns {React.Element} - The rendered ExerciseSubcard component.
  */
-function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode }) {
+function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode }) {
   const [snackbarOpen, setSnackbarOpen] = useState(false); 
   const [snackbarMessage, setSnackbarMessage] = useState(''); 
 
@@ -177,4 +177,4 @@ function ExerciseSubcard({ exercise, index, removeExercise, updateExerciseSets, 
   );
 }
 
-export default ExerciseSubcard;
+export default ExerciseSubCard;

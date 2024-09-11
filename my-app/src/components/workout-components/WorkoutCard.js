@@ -25,13 +25,13 @@
 import React, { useState, useEffect } from "react";
 import { Autocomplete, TextField, IconButton, Box, Modal, Card, CardContent, Button, Typography, Alert, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import ExerciseSubcard from "./Exercise_Sub_Card";
+import ExerciseSubcard from "./ExerciseSubCard";
 import { v4 as uuidv4 } from 'uuid';
 import { getUser } from '../../services/AuthService';
 
 /**
- * Workout_Card component for managing and creating workouts or workout splits.
- * Provides a modal interface to add exercises, specify sets, weights, and reps, and save the data.
+ * WorkoutCard component for managing and creating workouts or workout splits.
+ * Provides a modal interface to add exercises, specify sets, weights, and reps, and save or update the data.
  * 
  * @component
  * @param {Object} props - Component props.
@@ -39,31 +39,32 @@ import { getUser } from '../../services/AuthService';
  * @param {function} props.onClose - Function to close the modal.
  * @param {Array} props.preloadedExercises - Array of exercises to preload into the workout or split.
  * @param {string} props.mode - Mode of operation for the component ('createWorkout' or 'addSplit').
- * @param {function} props.saveSplit - Function to save a workout split to the backend.
- * @param {function} props.saveWorkout - Function to save a workout to the backend.
  * @param {string} props.newSplitName - Name of the new workout split.
  * @param {string} props.type - Type of workout.
- * @param {string} props.editMode - Determines if in edit mode
- * @param {string} props.ToEditId - The id of the workout / split being edited
- * @param {function} props.putWorkout - Function to put (edit) a workout to the backend.
- * @param {string} props.ToEditDate - The date of the workout / split being edited
- * @returns {React.Element} - The rendered Workout_Card component.
+ * @param {boolean} props.editMode - Determines if in edit mode.
+ * @param {string} props.ToEditId - The ID of the workout or split being edited.
+ * @param {string} props.ToEditDate - The date of the workout or split being edited.
+ * @param {function} props.manageWorkoutOrSplit - Function to manage (save or update) a workout or split to the backend.
+ * @returns {React.Element} - The rendered WorkoutCard component.
  */
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, ToEditId, putWorkout, putSplit, ToEditDate }) {
+function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, type, editMode, ToEditId, ToEditDate, manageWorkoutOrSplit }) {
   const user = getUser();
 
-  // Initialize state variables
-  const [inputValue, setInputValue] = useState('');
-  const [message, setMessage] = useState('');
-  const [exercises, setExercises] = useState([]);
-  const [selectedExercise, setSelectedExercise] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises
-  const [isEditMode, setIsEditMode] = useState(editMode || false); // Initialize based on editMode prop
+// ======== State for managing input and UI interactions ========
+const [inputValue, setInputValue] = useState(''); // Input value for the exercise search
+const [message, setMessage] = useState(''); // Snackbar message content
+const [snackbarOpen, setSnackbarOpen] = useState(false); // State for controlling Snackbar visibility
 
-  // Workout metadata
-  const [uniqueId, setUniqueId] = useState('');
-  const [workoutDate, setWorkoutDate] = useState(null);
+// ======== State for managing exercises and workout data ========
+const [exercises, setExercises] = useState([]); // List of exercises added to the workout
+const [selectedExercise, setSelectedExercise] = useState(null); // Currently selected exercise from the dropdown
+const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises in the dropdown
+
+// ======== State for managing workout and split modes ========
+const [isEditMode, setIsEditMode] = useState(editMode || false); // State to determine if editing mode is enabled
+const [uniqueId, setUniqueId] = useState(''); // Unique ID for the workout or split
+const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
+
 
   // Initialize workout metadata and preload exercises when the modal opens
   useEffect(() => {
@@ -95,17 +96,38 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
     }
   }, [open, preloadedExercises, editMode]);
 
-  const formatDateToDatetimeLocal = (date) => {
-    // Formats a date object to YYYY-MM-DDTHH:mm for <input type="datetime-local">
-    const offset = date.getTimezoneOffset();
-    const localDate = new Date(date.getTime() - offset * 60 * 1000);
-    return localDate.toISOString().slice(0, 16);
-  };
+/**
+ * Formats a Date object to a string in the format "YYYY-MM-DDTHH:mm",
+ * suitable for use with <input type="datetime-local"> HTML elements.
+ * Adjusts the date to the local timezone offset.
+ * 
+ * @function formatDateToDatetimeLocal
+ * @param {Date} date - The Date object to format.
+ * @returns {string} A formatted date string in "YYYY-MM-DDTHH:mm" format.
+ */
+const formatDateToDatetimeLocal = (date) => {
+  // Get the timezone offset in minutes
+  const offset = date.getTimezoneOffset();
+  // Create a new date adjusted to the local timezone
+  const localDate = new Date(date.getTime() - offset * 60 * 1000);
+  // Convert to ISO string and slice to "YYYY-MM-DDTHH:mm" format
+  return localDate.toISOString().slice(0, 16);
+};
 
-  const handleDateChange = (e) => {
-    const selectedDate = new Date(e.target.value);
-    setWorkoutDate(selectedDate.toISOString());
-  };
+/**
+ * Handles the change event for a date input field.
+ * Converts the selected date to an ISO string format and updates the workout date state.
+ * 
+ * @function handleDateChange
+ * @param {Object} e - The event object from the date input field.
+ * @param {string} e.target.value - The selected date value from the input field.
+ */
+const handleDateChange = (e) => {
+  // Create a Date object from the input value
+  const selectedDate = new Date(e.target.value);
+  // Convert the date to ISO string format and update state
+  setWorkoutDate(selectedDate.toISOString());
+};
 
   /**
    * Adds a new exercise to the exercises list.
@@ -191,9 +213,9 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
         exercises: exercises,
       };
       if (!isEditMode){
-        saveWorkout(workout);
+        manageWorkoutOrSplit(workout, 'workout', 'save');
       } else {
-        putWorkout(workout);
+        manageWorkoutOrSplit(workout, 'workout', 'update');
       }
     }
 
@@ -219,9 +241,9 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
         })),
       };
       if (!isEditMode){
-        saveSplit(workoutSplit);
+        manageWorkoutOrSplit(workoutSplit, 'split', 'save');
       } else {
-        putSplit(workoutSplit);
+        manageWorkoutOrSplit(workoutSplit, 'split', 'update');
       }
     }
     onClose();
@@ -368,7 +390,7 @@ function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, save
   );
 }
 
-export default Workout_Card;
+export default WorkoutCard;
 
 // List of strength workout exercises for the autocomplete
 const strengthWorkouts = [
