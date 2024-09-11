@@ -150,13 +150,18 @@ const HeatMap = ({ workoutHistory }) => {
   const handleClick = React.useCallback(
     ({ muscle, data }) => {
       const { exercises, frequency } = data;
-      const message = `You clicked the ${muscle}! You've worked out this muscle ${frequency} times through the following exercises: ${JSON.stringify(exercises)})`;
-      
+  
+      const message =
+        frequency > 0
+          ? `You clicked the ${muscle}! You've worked out this muscle ${frequency} times through the following exercises: ${JSON.stringify(exercises)}`
+          : `You clicked the ${muscle}, but you haven't worked out this muscle yet.`;
+  
       setSnackbarMessage(message);
       setSnackbarOpen(true);
     },
     [data]
   );
+  
 
   // Handle closing the snackbar
   const handleCloseSnackbar = () => {
