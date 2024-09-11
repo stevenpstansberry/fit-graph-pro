@@ -19,8 +19,10 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { Box, Typography, Container, Snackbar, Alert } from '@mui/material';
+import { Box, Typography, Container, Snackbar, Alert, Tooltip, IconButton } from '@mui/material';
 import Model from 'react-body-highlighter';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+
 
 /**
  * Converts workout history data into the format required by react-body-highlighter.
@@ -175,10 +177,22 @@ const HeatMap = ({ workoutHistory }) => {
       <Container sx={{ flexGrow: 1, display: 'flex' }}>
         {/* Heat Map Model Container */}
         <Box sx={{ flex: 1 }}>
-          <Typography variant="h4" gutterBottom>
-            Workout Heat Map
-          </Typography>
-          
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="h4" gutterBottom>
+              Workout Heat Map
+            </Typography>
+            {/* Tooltip to explain the features */}
+            <Tooltip
+              title="This heatmap shows the intensity and frequency of your workouts. Click on a muscle group to see how often it was worked out."
+              placement="right"
+              arrow
+            >
+              <IconButton>
+                <HelpOutlineIcon sx={{ color: '#4fc3f7' }} /> {/* Light blue color for the tooltip icon */}
+              </IconButton>
+            </Tooltip>
+          </Box>
+
           {/* Front and Posterior Models Side by Side */}
           <Box sx={{ display: 'flex', gap: 4 }}>
             {/* Front View Model */}
