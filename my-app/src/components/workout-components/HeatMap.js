@@ -99,7 +99,7 @@ const calculateMuscleGroupPercentages = (workoutHistory) => {
 const GradientLegend = () => {
   return (
     <Box sx={{ mt: 4, width: '100%', display: 'flex', justifyContent: 'center' }}>
-      <Box sx={{ maxWidth: '500px', width: '100%' }}>  {/* Limit maxWidth and center content */}
+      <Box sx={{ maxWidth: '1200px', width: '100%' }}>  {/* Limit maxWidth and center content */}
         <Typography variant="h6" gutterBottom>
           Workout Intensity Legend
         </Typography>
