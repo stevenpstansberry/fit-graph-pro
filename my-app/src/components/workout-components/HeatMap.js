@@ -18,8 +18,8 @@
  * intensity of workouts, helping users quickly identify periods of high or low activity.
  */
 
-import React, { useMemo } from 'react';
-import { Box, Typography, Container } from '@mui/material';
+import React, { useMemo, useState } from 'react';
+import { Box, Typography, Container, Snackbar, Alert } from '@mui/material';
 import Model from 'react-body-highlighter';
 
 /**
@@ -142,11 +142,24 @@ const HeatMap = ({ workoutHistory }) => {
   const data = useMemo(() => convertWorkoutHistoryToHeatmapData(workoutHistory), [workoutHistory]);
   const musclePercentages = useMemo(() => calculateMuscleGroupPercentages(workoutHistory), [workoutHistory]);
 
-  const handleClick = React.useCallback(({ muscle, data }) => {
-    const { exercises, frequency } = data;
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    alert(`You clicked the ${muscle}! You've worked out this muscle ${frequency} times through the following exercises: ${JSON.stringify(exercises)}`);
-  }, [data]);
+  const handleClick = React.useCallback(
+    ({ muscle, data }) => {
+      const { exercises, frequency } = data;
+      const message = `You clicked the ${muscle}! You've worked out this muscle ${frequency} times through the following exercises: ${JSON.stringify(exercises)})`;
+      
+      setSnackbarMessage(message);
+      setSnackbarOpen(true);
+    },
+    [data]
+  );
+
+  // Handle closing the snackbar
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
 
   return (
     <Box
@@ -207,6 +220,18 @@ const HeatMap = ({ workoutHistory }) => {
           ))}
         </Box>
       </Container>
+
+      {/* Snackbar for Muscle Click Information */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="info" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
