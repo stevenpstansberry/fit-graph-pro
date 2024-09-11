@@ -44,8 +44,8 @@ const convertWorkoutHistoryToHeatmapData = (workoutHistory) => {
       // Increment frequency for each occurrence
       exerciseDataMap[label].frequency += 1;
 
-      // Directly use the muscles array from exercise data
-      exerciseDataMap[label].muscles = muscles;
+      // Directly use the muscles array from exercise data or provide a default empty array if undefined
+      exerciseDataMap[label].muscles = muscles || [];
     });
   });
 
