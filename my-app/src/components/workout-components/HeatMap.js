@@ -145,17 +145,19 @@ const HeatMap = ({ workoutHistory }) => {
           <Box sx={{ display: 'flex', gap: 4 }}>
             {/* Front View Model */}
             <Model
-              data={data}
-              style={{ width: '20rem', padding: '2rem' }}
-              onClick={handleClick}
+            data={data}
+            style={{ width: '20rem', padding: '2rem' }}
+            onClick={handleClick}
+            highlightedColors={highlightedColors}
             />
-  
+
             {/* Posterior View Model */}
             <Model
               type='posterior'
               data={data}
               style={{ width: '20rem', padding: '2rem' }}
               onClick={handleClick}
+              highlightedColors={highlightedColors}
             />
           </Box>
 
@@ -182,5 +184,26 @@ const HeatMap = ({ workoutHistory }) => {
     </Box>
   );
 };
+
+
+const highlightedColors = [
+  "#b3e5fc", // Light Blue - Least worked
+  "#81d4fa", // Slightly more blue
+  "#4fc3f7", // Light Sky Blue
+  "#29b6f6", // Sky Blue
+  "#03a9f4", // Medium Blue
+  "#039be5", // Light Blue-Gray
+  "#0288d1", // Medium Blue-Gray
+  "#0277bd", // Darker Blue
+  "#e57373", // Light Red
+  "#ef5350", // Medium Light Red
+  "#f44336", // Medium Red
+  "#e53935", // Medium Dark Red
+  "#d32f2f", // Dark Red
+  "#c62828", // Darker Red
+  "#b71c1c", // Very Dark Red
+  "#e65a5a", // Intense Red - Highly worked (interpolated value)
+  "#db2f2f", // Passionate Red - Most worked
+];
 
 export default HeatMap;
