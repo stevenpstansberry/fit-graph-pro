@@ -30,6 +30,7 @@ import {
   Typography, Grid, FormControlLabel, Checkbox, Button, Collapse
 } from '@mui/material';
 import WorkoutDetailsCard from './WorkoutDetailsCard'
+import DateSelector from './DateSelector';
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -293,56 +294,15 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
           </Select>
         </FormControl>
 
-        {/* Calendar selectors for filtering by date */}
+
+        {/* Use DateSelector component if timeframe is 'currentMonth' */}
         {timeframe === 'currentMonth' && (
-        <Box
-            sx={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 100,
-              backgroundColor: 'white',
-              padding: '10px 0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2,
-              mb: 4,
-              width: '100%',
-            }}
-          >
-            <FormControl sx={{ minWidth: 120 }}>
-              <InputLabel id="month-select-label">Month</InputLabel>
-              <Select
-                labelId="month-select-label"
-                id="month-select"
-                value={selectedMonth}  
-                label="Month"
-                onChange={(e) => setSelectedMonth(monthNameToNumber(e.target.value))}  // Convert back to number
-              >
-                {monthNames.map((month) => (
-                  <MenuItem key={month} value={month}>
-                    {month}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl sx={{ minWidth: 120 }}>
-              <InputLabel id="year-select-label">Year</InputLabel>
-              <Select
-                labelId="year-select-label"
-                id="year-select"
-                value={selectedYear}
-                label="Year"
-                onChange={(e) => setSelectedYear(e.target.value)}
-              >
-                {[2023, 2024, 2025].map((year) => (
-                  <MenuItem key={year} value={year}>
-                    {year}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
+          <DateSelector
+            selectedMonth={monthNameToNumber(selectedMonth)}
+            selectedYear={selectedYear}
+            setSelectedMonth={setSelectedMonth}
+            setSelectedYear={setSelectedYear}
+          />
         )}
           <>
             {/* Checkboxes to toggle weight and reps display */}
