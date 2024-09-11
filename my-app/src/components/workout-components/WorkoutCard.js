@@ -425,5 +425,16 @@ const strengthWorkouts = [
   { label: 'Seated Dumbbell Press', type: 'Strength', bodyPart: 'Shoulders', muscles: ['front-deltoids', 'triceps'] },
   { label: 'Skull Crusher', type: 'Strength', bodyPart: 'Arms', muscles: ['triceps'] },
   { label: 'Dips', type: 'Strength', bodyPart: 'Chest', muscles: ['chest', 'triceps', 'front-deltoids'] },
-  { label: 'Single-leg Deadlift', type: 'Strength', bodyPart: 'Legs', muscles: ['hamstring', 'gluteal', 'lower-back'] }
+  { label: 'Single-leg Deadlift', type: 'Strength', bodyPart: 'Legs', muscles: ['hamstring', 'gluteal', 'lower-back'] },
+  { label: 'Russian Twist', type: 'Strength', bodyPart: 'Core', muscles: ['obliques', 'abs'] },
+  { label: 'Hanging Leg Raise', type: 'Strength', bodyPart: 'Core', muscles: ['abs', 'obliques'] },
+  { label: 'Farmers Walk', type: 'Strength', bodyPart: 'Full Body', muscles: ['forearm', 'trapezius', 'abs', 'calves'] },
+  { label: 'Neck Curl', type: 'Strength', bodyPart: 'Neck', muscles: ['neck'] },
+  { label: 'Hip Adduction Machine', type: 'Strength', bodyPart: 'Legs', muscles: ['adductor'] },
+  { label: 'Hip Abduction Machine', type: 'Strength', bodyPart: 'Legs', muscles: ['abductors'] },
+  { label: 'Wrist Curl', type: 'Strength', bodyPart: 'Arms', muscles: ['forearm'] },
+  { label: 'Hanging Oblique Crunch', type: 'Strength', bodyPart: 'Core', muscles: ['obliques'] },
+  { label: 'Landmine Rotation', type: 'Strength', bodyPart: 'Core', muscles: ['obliques', 'abs'] },
+  { label: 'Reverse Hyperextension', type: 'Strength', bodyPart: 'Back', muscles: ['lower-back', 'gluteal', 'hamstring'] },
+  { label: 'Good Morning', type: 'Strength', bodyPart: 'Back', muscles: ['lower-back', 'hamstring', 'gluteal'] }
 ];

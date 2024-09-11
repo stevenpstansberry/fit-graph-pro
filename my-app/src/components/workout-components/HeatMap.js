@@ -61,10 +61,9 @@ const calculateMuscleGroupPercentages = (workoutHistory) => {
     Chest: 0,
     Shoulders: 0,
     Arms: 0,
-    Abs: 0,
+    Core: 0,
     Legs: 0,
     Back: 0,
-    Forearms: 0,
   };
 
   let totalExercises = 0;
@@ -113,7 +112,7 @@ const GradientLegend = () => {
           sx={{
             height: 20,
             width: '100%',
-            background: `linear-gradient(to right, #b3e5fc, #81d4fa, #4fc3f7, #29b6f6, #03a9f4, #039be5, #0288d1, #0277bd, #e57373, #ef5350, #f44336, #e53935, #d32f2f, #c62828, #b71c1c, #e65a5a, #db2f2f)`,
+            background: `linear-gradient(to right, #81d4fa, #4fc3f7, #29b6f6, #03a9f4, #039be5, #0288d1, #0277bd, #e57373, #ef5350, #f44336, #e53935, #d32f2f, #c62828, #b71c1c, #e65a5a)`,
             borderRadius: 10,
           }}
         />
@@ -213,8 +212,6 @@ const HeatMap = ({ workoutHistory }) => {
 };
 
 const highlightedColors = [
-  "#b3e5fc", // Light Blue - Least worked
-  "#81d4fa", // Slightly more blue
   "#4fc3f7", // Light Sky Blue
   "#29b6f6", // Sky Blue
   "#03a9f4", // Medium Blue
