@@ -186,6 +186,13 @@ const HeatMap = ({ workoutHistory }) => {
               title="This heatmap shows the intensity and frequency of your workouts. Click on a muscle group to see how often it was worked out."
               placement="right"
               arrow
+              componentsProps={{
+                  tooltip: {
+                      sx: {
+                          bgcolor: 'rgba(2, 136, 209, 0.8)', 
+                      },
+                  },
+              }}
             >
               <IconButton>
                 <HelpOutlineIcon sx={{ color: '#4fc3f7' }} /> {/* Light blue color for the tooltip icon */}
