@@ -18,7 +18,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import Workout_Card from '../components/workout-components/Workout_Card';
+import WorkoutCard from '../components/workout-components/WorkoutCard';
 import { getUser,getSessionData, setSessionData } from '../services/AuthService';
 import ViewWorkouts from '../components/workout-components/ViewWorkouts';
 import StrengthChart from '../components/workout-components/StrengthChart';
@@ -792,7 +792,7 @@ const putSplit = async (split) => {
         </DialogContent>
       </Dialog>
 
-      <Workout_Card
+      <WorkoutCard
         open={isCardVisible}
         onClose={handleClose}
         preloadedExercises={selectedWorkout}

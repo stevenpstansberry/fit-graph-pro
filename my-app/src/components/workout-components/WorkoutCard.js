@@ -25,7 +25,7 @@
 import React, { useState, useEffect } from "react";
 import { Autocomplete, TextField, IconButton, Box, Modal, Card, CardContent, Button, Typography, Alert, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import ExerciseSubcard from "./Exercise_Sub_Card";
+import ExerciseSubcard from "./ExerciseSubCard";
 import { v4 as uuidv4 } from 'uuid';
 import { getUser } from '../../services/AuthService';
 
@@ -49,7 +49,7 @@ import { getUser } from '../../services/AuthService';
  * @param {string} props.ToEditDate - The date of the workout / split being edited
  * @returns {React.Element} - The rendered Workout_Card component.
  */
-function Workout_Card({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, ToEditId, putWorkout, putSplit, ToEditDate }) {
+function WorkoutCard({ open, onClose, preloadedExercises, mode, saveSplit, saveWorkout, newSplitName, type, editMode, ToEditId, putWorkout, putSplit, ToEditDate }) {
   const user = getUser();
 
 // ======== State for managing input and UI interactions ========
@@ -392,7 +392,7 @@ const handleDateChange = (e) => {
   );
 }
 
-export default Workout_Card;
+export default WorkoutCard;
 
 // List of strength workout exercises for the autocomplete
 const strengthWorkouts = [
