@@ -25,7 +25,6 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import TimeframeSelector from './TimeframeSelector'; 
 import DateSelector from './DateSelector'; 
 
-
 /**
  * Converts workout history data into the format required by react-body-highlighter.
  *
@@ -100,7 +99,7 @@ const calculateMuscleGroupPercentages = (workoutHistory) => {
 const GradientLegend = () => {
   return (
     <Box sx={{ mt: 4, width: '100%', display: 'flex', justifyContent: 'center' }}>
-      <Box sx={{ maxWidth: '1200px', width: '100%' }}>  {/* Limit maxWidth and center content */}
+      <Box sx={{ maxWidth: '500px', width: '100%' }}>  {/* Limit maxWidth and center content */}
         <Typography variant="h6" gutterBottom>
           Workout Intensity Legend
         </Typography>
@@ -151,8 +150,9 @@ const HeatMap = ({ workoutHistory }) => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // State for selected month
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // State for selected year
 
-  const data = useMemo(() => convertWorkoutHistoryToHeatmapData(workoutHistory), [workoutHistory]);
-  const musclePercentages = useMemo(() => calculateMuscleGroupPercentages(workoutHistory), [workoutHistory]);
+  // Memoized data for filtered workouts
+  const filteredData = useMemo(() => convertWorkoutHistoryToHeatmapData(filteredWorkouts), [filteredWorkouts]);
+  const musclePercentages = useMemo(() => calculateMuscleGroupPercentages(filteredWorkouts), [filteredWorkouts]);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -169,7 +169,7 @@ const HeatMap = ({ workoutHistory }) => {
       setSnackbarMessage(message);
       setSnackbarOpen(true);
     },
-    [data]
+    []
   );
   
 
@@ -178,21 +178,21 @@ const HeatMap = ({ workoutHistory }) => {
     setSnackbarOpen(false);
   };
 
-    // Effect to filter workouts based on selected timeframe and date range
-    useEffect(() => {
-      let filtered = workoutHistory;
-      if (timeframe === 'currentMonth') {
-        filtered = workoutHistory.filter(workout =>
-          new Date(workout.date).getFullYear() === selectedYear &&
-          new Date(workout.date).getMonth() + 1 === selectedMonth
-        );
-      } else if (timeframe === 'ytd') {
-        filtered = workoutHistory.filter(workout => new Date(workout.date).getFullYear() === selectedYear);
-      }
-      setFilteredWorkouts(filtered);
-    }, [workoutHistory, timeframe, selectedMonth, selectedYear]);
+  // Effect to filter workouts based on selected timeframe and date range
+  useEffect(() => {
+    let filtered = workoutHistory;
+    if (timeframe === 'currentMonth') {
+      filtered = workoutHistory.filter(workout =>
+        new Date(workout.date).getFullYear() === selectedYear &&
+        new Date(workout.date).getMonth() + 1 === selectedMonth
+      );
+    } else if (timeframe === 'ytd') {
+      filtered = workoutHistory.filter(workout => new Date(workout.date).getFullYear() === selectedYear);
+    }
+    setFilteredWorkouts(filtered);
+  }, [workoutHistory, timeframe, selectedMonth, selectedYear]);
 
-    return (
+  return (
     <Box
       sx={{
         display: 'flex',
@@ -245,7 +245,7 @@ const HeatMap = ({ workoutHistory }) => {
         <Box sx={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
           {/* Front View Model */}
           <Model
-            data={data}
+            data={filteredData}  
             style={{ width: '20rem', padding: '2rem' }}
             onClick={handleClick}
             highlightedColors={highlightedColors}
@@ -253,7 +253,7 @@ const HeatMap = ({ workoutHistory }) => {
           {/* Posterior View Model */}
           <Model
             type='posterior'
-            data={data}
+            data={filteredData}  
             style={{ width: '20rem', padding: '2rem' }}
             onClick={handleClick}
             highlightedColors={highlightedColors}
@@ -289,8 +289,8 @@ const HeatMap = ({ workoutHistory }) => {
         </Alert>
       </Snackbar>
     </Box>
-    );
-  };
+  );
+};
 
 const highlightedColors = [
   "#4fc3f7", // Light Sky Blue
