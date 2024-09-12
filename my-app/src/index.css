@@ -1,10 +1,15 @@
+/* 
+  Global Styles
+  Applies general styles to the entire application.
+*/
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased; 
+  -moz-osx-font-smoothing: grayscale;  
 }
 
 code {
@@ -12,18 +17,24 @@ code {
     monospace;
 }
 
+/* 
+  SVG Styling
+  Styles to enhance the interactivity and appearance of the SVG muscles in react-body-highlighter.
+*/
 
-/* Target the SVG elements inside the .rbh class */
+/* Hover effect for polygons (muscles) in the model */
 .rbh polygon:hover {
-  fill: #757782 !important; /* Change this color to your preferred hover color */
-  transition: fill 0.3s ease; /* Add smooth transition */
+  fill: #757782 !important; /* Changes color on hover */
+  transition: fill 0.3s ease; /* Adds a smooth transition effect */
 }
 
+/* Hover effect for paths (muscles) in the model */
 .rbh path:hover {
-  fill: #757782 !important; /* Change this color to your preferred hover color */
-  transition: fill 0.3s ease; /* Add smooth transition */
+  fill: #757782 !important; /* Changes color on hover */
+  transition: fill 0.3s ease; /* Adds a smooth transition effect */
 }
 
+/* General transition for all polygons to enhance color changes */
 .rbh polygon {
   transition: fill 0.5s ease; /* Smooth transition for all polygons */
 }
