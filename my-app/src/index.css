@@ -23,3 +23,7 @@ code {
   fill: #757782 !important; /* Change this color to your preferred hover color */
   transition: fill 0.3s ease; /* Add smooth transition */
 }
+
+.rbh polygon {
+  transition: fill 0.3s ease; /* Smooth transition for all polygons */
+}
