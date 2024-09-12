@@ -24,6 +24,7 @@ import Model from 'react-body-highlighter';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import TimeframeSelector from './TimeframeSelector'; 
 import DateSelector from './DateSelector'; 
+import '../../index.css';
 
 /**
  * Converts workout history data into the format required by react-body-highlighter.

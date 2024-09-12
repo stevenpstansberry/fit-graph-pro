@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+/* Target the SVG elements inside the .rbh class */
+.rbh polygon:hover {
+  fill: #757782 !important; /* Change this color to your preferred hover color */
+  transition: fill 0.3s ease; /* Add smooth transition */
+}
+
+.rbh path:hover {
+  fill: #757782 !important; /* Change this color to your preferred hover color */
+  transition: fill 0.3s ease; /* Add smooth transition */
+}
