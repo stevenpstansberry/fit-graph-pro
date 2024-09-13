@@ -189,7 +189,6 @@ const HeatMap = ({ workoutHistory }) => {
   // Effect to filter workouts based on selected timeframe and date range
   useEffect(() => {
     let filtered = workoutHistory;
-    let message = '';
 
     if (timeframe === 'currentMonth') {
       filtered = workoutHistory.filter(workout =>
@@ -254,7 +253,7 @@ const HeatMap = ({ workoutHistory }) => {
             marginBottom: 2, 
           }}
         >
-          {getTitle(timeframe, selectedMonth, selectedYear)}
+          {getTitle("heatmap",timeframe, selectedMonth, selectedYear)}
         </Typography>
 
       {/* Timeframe and Date Selectors */}
