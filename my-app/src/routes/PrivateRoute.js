@@ -18,7 +18,7 @@
  */
 
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { getToken } from '../services/AuthService';
 
 /**
@@ -34,7 +34,15 @@ import { getToken } from '../services/AuthService';
  */
 function PrivateRoute({ children }) {
   const auth = getToken(); // Get the authentication token
-  return auth ? <>{children}</> : <Navigate to="/login" />; // Render children if authenticated, otherwise redirect
+  const location = useLocation(); // Get the current location
+
+  // If authenticated, render children; otherwise, redirect to login with the original path
+  return auth ? (
+    <>{children}</>
+  ) : (
+    <Navigate to="/login" state={{ from: location }} replace />
+  );
 }
 
 export default PrivateRoute;
+
