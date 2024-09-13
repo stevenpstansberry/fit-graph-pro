@@ -176,8 +176,12 @@ const HeatMap = ({ workoutHistory }) => {
 
   
 
-  // Handle closing the snackbar
-  const handleCloseSnackbar = () => {
+  const handleCloseSnackbar = (event, reason) => {
+    // Ignore "clickaway" reason to prevent snackbar from closing when clicking on the heatmap model
+    if (reason === 'clickaway') {
+      return;
+    }
+  
     setSnackbarOpen(false);
   };
 
