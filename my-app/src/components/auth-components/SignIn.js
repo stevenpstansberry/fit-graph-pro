@@ -14,9 +14,9 @@
  */
 
 import { Alert, Button, TextField, Link, Grid, Box, Typography, Container, Snackbar } from "@mui/material";
-import React, { useState } from 'react';
+import React, { useState, } from 'react';
 import { setUserSession } from "../../services/AuthService";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { loginUser } from "../../services/APIServices";  // Import the loginUser function from APIServices
 
 /**
@@ -29,6 +29,8 @@ import { loginUser } from "../../services/APIServices";  // Import the loginUser
  */
 function SignIn() {
   const navigate = useNavigate(); // React Router hook for navigation
+  const location = useLocation();
+
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' }); // State to handle Snackbar
 
   /**
@@ -58,13 +60,16 @@ function SignIn() {
       const response = await loginUser(credentials);  // Use the loginUser function
       setUserSession(response.user, response.token); // Set the user session
       showSnackbar('Login successful!', 'success');  // Show success message
-      navigate('/profile'); // Redirect to profile page
+
+      // Redirect to the original requested page or to the profile page
+      const redirectTo = location.state?.from?.pathname || '/profile';
+      navigate(redirectTo, { replace: true });
     } catch (error) {
       console.log(error.response.status);
 
       let errorMSG;
 
-      switch(true) {
+      switch(error.response.status) {
         case error.response.status === 403:
           errorMSG = "Incorrect Password";
           break;
