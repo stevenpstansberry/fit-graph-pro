@@ -11,7 +11,7 @@
  * @returns {React.Element} - The rendered HeatMap component.
  * 
  * @version 1.0.0
- * @updated By Steven Stansberry
+ * @author Steven Stansberry
  * 
  * The HeatMap component is designed to give users a visual overview of their workout habits
  * and trends over a selected period. It uses color intensity to represent the frequency or
