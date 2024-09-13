@@ -24,6 +24,7 @@ import Model from 'react-body-highlighter';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import TimeframeSelector from './TimeframeSelector'; 
 import DateSelector from './DateSelector'; 
+import {getTitle} from './common/util';
 import '../../index.css';
 
 /**
@@ -188,6 +189,8 @@ const HeatMap = ({ workoutHistory }) => {
   // Effect to filter workouts based on selected timeframe and date range
   useEffect(() => {
     let filtered = workoutHistory;
+    let message = '';
+
     if (timeframe === 'currentMonth') {
       filtered = workoutHistory.filter(workout =>
         new Date(workout.date).getFullYear() === selectedYear &&
@@ -196,8 +199,10 @@ const HeatMap = ({ workoutHistory }) => {
     } else if (timeframe === 'ytd') {
       filtered = workoutHistory.filter(workout => new Date(workout.date).getFullYear() === selectedYear);
     }
+
     setFilteredWorkouts(filtered);
   }, [workoutHistory, timeframe, selectedMonth, selectedYear]);
+
 
   return (
     <Box
@@ -232,6 +237,25 @@ const HeatMap = ({ workoutHistory }) => {
           </IconButton>
         </Tooltip>
       </Box>
+
+        <Typography
+          variant="h5"
+          sx={{
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            marginBottom: 2,
+            color: '#4A4A4A', 
+            fontWeight: 'bold',
+            backgroundColor: '#e0e0e0', 
+            padding: '8px 16px',
+            borderRadius: '8px',
+            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+            marginBottom: 2, 
+          }}
+        >
+          {getTitle(timeframe, selectedMonth, selectedYear)}
+        </Typography>
 
       {/* Timeframe and Date Selectors */}
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 2 }}>
