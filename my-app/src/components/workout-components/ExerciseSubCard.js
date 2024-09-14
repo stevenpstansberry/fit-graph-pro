@@ -158,18 +158,6 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
             </IconButton>
           </Box>
         ))}
-
-        {/* Snackbar notification */}
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={4000}
-          onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        >
-          <Alert onClose={handleCloseSnackbar} severity="warning" sx={{ width: '100%' }}>
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
       </CardContent>
     </Card>
   );
