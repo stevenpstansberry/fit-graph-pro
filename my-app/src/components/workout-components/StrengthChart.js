@@ -88,6 +88,7 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
   const [showWeight, setShowWeight] = useState(true); // Toggle weight line on the chart
   const [showReps, setShowReps] = useState(true); // Toggle reps line on the chart
   const [showStats, setShowStats] = useState(false); // Toggle statistics visibility
+  const [noWorkouts, setNoWorkouts] = useState(false); // Flag to indicate no workouts for the selected combination
 
 
 
@@ -179,8 +180,10 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
       dataToDisplay = workoutHistory;
     }
 
+    const filteredData = getFilteredData(dataToDisplay);
     setDisplayData(getFilteredData(dataToDisplay));
     setStats(calculateStats(dataToDisplay));
+    setNoWorkouts(filteredData.length === 0);
   }, [filteredWorkouts, workoutHistory, timeframe, selectedExercise, selectedYear]);
 
   // Function to handle the change of selected exercise
@@ -211,19 +214,6 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
       </Box>
     );
   }
-
-  // Function to generate the title for the chart based on the selected timeframe and exercise
-  // const getTitle = () => {
-  //   if (timeframe === 'currentMonth') {
-  //     return `Displaying Workout History for: ${selectedExercise}, ${selectedMonth} ${selectedYear}`;
-  //   } else if (timeframe === 'ytd') {
-  //     return `Displaying Year-to-Date Workout History for: ${selectedExercise}, ${selectedYear}`;
-  //   } else if (timeframe === 'allTime') {
-  //     return `Displaying All-Time Workout History for: ${selectedExercise}`;
-  //   } else {
-  //     return `Displaying Workout History for: ${selectedExercise}`;
-  //   }
-  // };
 
   
 
@@ -351,8 +341,8 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
             </Container>
               {/* Line Chart Display */}
               <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={displayData}>
-                <CartesianGrid strokeDasharray="3 3" />
+              <LineChart data={displayData.length > 0 ? displayData : [{ date: '', weight: 0, reps: 0 }]}>
+              <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip content={<CustomTooltip />} /> {/* Use custom tooltip for displaying workout details */}
@@ -361,6 +351,13 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
                 {showReps && <Line type="monotone" dataKey="reps" stroke="#82ca9d" />}
               </LineChart>
             </ResponsiveContainer>
+
+          {/* Error message when no workouts are found for display */}
+          {noWorkouts && (
+            <Typography variant="body1" color="error" sx={{ mt: 2 }}>
+              No workouts found for the selected combination.
+            </Typography>
+          )}
           </>
       </Box>
     </Box>
