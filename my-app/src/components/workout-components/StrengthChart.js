@@ -32,6 +32,7 @@ import {
 import WorkoutDetailsCard from './WorkoutDetailsCard'
 import DateSelector from './DateSelector';
 import TimeframeSelector from './TimeframeSelector';  
+import { getTitle } from './common/util';
 
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -212,17 +213,17 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
   }
 
   // Function to generate the title for the chart based on the selected timeframe and exercise
-  const getTitle = () => {
-    if (timeframe === 'currentMonth') {
-      return `Displaying Workout History for: ${selectedExercise}, ${selectedMonth} ${selectedYear}`;
-    } else if (timeframe === 'ytd') {
-      return `Displaying Year-to-Date Workout History for: ${selectedExercise}, ${selectedYear}`;
-    } else if (timeframe === 'allTime') {
-      return `Displaying All-Time Workout History for: ${selectedExercise}`;
-    } else {
-      return `Displaying Workout History for: ${selectedExercise}`;
-    }
-  };
+  // const getTitle = () => {
+  //   if (timeframe === 'currentMonth') {
+  //     return `Displaying Workout History for: ${selectedExercise}, ${selectedMonth} ${selectedYear}`;
+  //   } else if (timeframe === 'ytd') {
+  //     return `Displaying Year-to-Date Workout History for: ${selectedExercise}, ${selectedYear}`;
+  //   } else if (timeframe === 'allTime') {
+  //     return `Displaying All-Time Workout History for: ${selectedExercise}`;
+  //   } else {
+  //     return `Displaying Workout History for: ${selectedExercise}`;
+  //   }
+  // };
 
   
 
@@ -263,8 +264,8 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
             marginBottom: 2, 
           }}
         >
-          {getTitle()}
-        </Typography>
+          {getTitle('strengthChart', timeframe, selectedMonth, selectedYear, selectedExercise)}
+          </Typography>
 
         {/* Exercise and Timeframe Selectors */}
         <FormControl sx={{ m: 1, minWidth: 120 }}>

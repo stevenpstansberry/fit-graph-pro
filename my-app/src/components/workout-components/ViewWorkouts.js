@@ -15,6 +15,7 @@ import { Typography, Box, Button, IconButton, Select, MenuItem, Tooltip } from '
 import EditIcon from '@mui/icons-material/Edit';
 import WorkoutCardPreview from './WorkoutCardPreview';
 import fitnessImage from '../../assets/fitnessImage.png';
+import { getTitle } from './common/util';
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -81,10 +82,24 @@ const ViewWorkouts = ({
         pb: 8,  // Add padding to the bottom
       }}
     >
-      <Typography variant="h4" component="p" sx={{ mb: 8 }}>
-        Your Workouts for {name}
-      </Typography>
-
+        <Typography
+          variant="h5"
+          sx={{
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            marginBottom: 2,
+            color: '#4A4A4A', 
+            fontWeight: 'bold',
+            backgroundColor: '#e0e0e0', 
+            padding: '8px 16px',
+            borderRadius: '8px',
+            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+            marginBottom: 2, 
+          }}
+        >
+          {getTitle('viewWorkouts', 'currentMonth', selectedMonth, selectedYear)}
+        </Typography>
       {/* Conditionally render workout cards or show a message if none exist */}
       {hasWorkoutsInHistory ? (  // Check if there are any workouts at all
         <>
