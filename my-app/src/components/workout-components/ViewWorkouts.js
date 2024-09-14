@@ -11,7 +11,7 @@
  */
 
 import React, {useState, useEffect} from 'react';
-import { Typography, Box, Button, IconButton, Select, MenuItem, Tooltip } from '@mui/material';
+import { Typography, Box, Button, IconButton, Select, MenuItem, Tooltip, Pagination } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import WorkoutCardPreview from './WorkoutCardPreview';
 import fitnessImage from '../../assets/fitnessImage.png';
@@ -31,7 +31,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June", "Jul
  * @param {number} props.selectedYear - The currently selected year for filtering.
  * @param {function} props.setSelectedYear - Function to set the selected year.
  * @param {function} props.toggleAddWorkoutCard - Function to toggle the workout card visibility.
- * @param {Array} props.userSplits - The list of user-defined workout splits.
+ * @param {Array} props.userSplits - The list of user-defined workout splits
  * @param {function} props.handleDeleteWorkout - Function to handle workout deletion.
  * @param {function} props.handleOpenEditDialog - Function to open the edit dialog for workout splits.
  * @param {Array} props.workoutHistory - The complete workout history of the user.
@@ -55,10 +55,20 @@ const ViewWorkouts = ({
   const hasWorkoutsForSelectedDate = filteredWorkouts.length > 0;  // Check if there are workouts for the selected month/year
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const workoutsPerPage = 25;
+
   console.log("workout history:" , workoutHistory)
 
   // Sort the workouts by date and time in ascending order
   const sortedFilteredWorkouts = [...filteredWorkouts].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  const totalPages = Math.ceil(sortedFilteredWorkouts.length / workoutsPerPage);
+  const currentWorkouts = sortedFilteredWorkouts.slice((currentPage - 1) * workoutsPerPage, currentPage * workoutsPerPage);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
 
   useEffect(() => {
@@ -143,16 +153,24 @@ const ViewWorkouts = ({
 
           {/* Check if there are workouts for the selected date */}
           {hasWorkoutsForSelectedDate ? (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
-              {sortedFilteredWorkouts.map((workout, index) => (
-                <WorkoutCardPreview
-                  key={workout.workoutId || index}
-                  workout={workout}
-                  onDelete={() => handleDeleteWorkout(workout.workoutId)}
-                  onEdit={() => handleEditWorkout(workout)}
-                />
-              ))}
-            </Box>
+            <>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
+                {currentWorkouts.map((workout, index) => (
+                  <WorkoutCardPreview
+                    key={workout.workoutId || index}
+                    workout={workout}
+                    onDelete={() => handleDeleteWorkout(workout.workoutId)}
+                    onEdit={() => handleEditWorkout(workout)}
+                  />
+                ))}
+              </Box>
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                sx={{ mt: 4 }}
+              />
+            </>
           ) : (
             <Typography variant="h6" color="textSecondary" sx={{ mb: 4 }}>
               No workouts for {monthNames[selectedMonth - 1]} {selectedYear}
