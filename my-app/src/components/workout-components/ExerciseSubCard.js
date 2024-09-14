@@ -28,9 +28,7 @@ import AddIcon from "@mui/icons-material/Add";
  * @param {string} props.mode - Mode indicating how the component should behave (e.g., "addSplit").
  * @returns {React.Element} - The rendered ExerciseSubcard component.
  */
-function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode }) {
-  const [snackbarOpen, setSnackbarOpen] = useState(false); 
-  const [snackbarMessage, setSnackbarMessage] = useState(''); 
+function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode, snackbarMessage, setSnackbarMessage, snackbarOpen, setSnackbarOpen }) {
 
   /**
    * Handles the change in input for weight or reps in a specific set.
@@ -160,18 +158,6 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
             </IconButton>
           </Box>
         ))}
-
-        {/* Snackbar notification */}
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={4000}
-          onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        >
-          <Alert onClose={handleCloseSnackbar} severity="warning" sx={{ width: '100%' }}>
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
       </CardContent>
     </Card>
   );
