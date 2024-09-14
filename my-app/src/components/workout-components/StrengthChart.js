@@ -52,7 +52,7 @@ const monthNameToNumber = (monthName) => monthNames.indexOf(monthName) + 1;
  * @returns {React.Element} - The rendered custom tooltip.
  */
 const CustomTooltip = ({ active, payload }) => {
-  if (active && payload && payload.length) {
+  if (active && payload && payload.length && payload[0].payload.workout) {
     const workout = payload[0].payload.workout; // Get the full workout object from the data point
 
     return (
@@ -191,10 +191,6 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
     setSelectedExercise(event.target.value);
   };
 
-  // Function to handle the change of selected timeframe
-  const handleTimeframeChange = (event) => {
-    setTimeframe(event.target.value);
-  };
 
   if (workoutHistory.length === 0) {
     return (

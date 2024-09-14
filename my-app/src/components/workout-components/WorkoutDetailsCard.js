@@ -4,7 +4,7 @@
  * @file src/components/workout-components/WorkoutDetailsCard.js
  *
  * Provides a user interface to show detailed information about a workout, including exercises and sets.
- * Designed to be used by StrengthChart.js
+ * Designed to be used by StrengthChart.js as an on hover component to show detailed workout information.
  * 
  * @component
  * @param {Object} props - Component props.
