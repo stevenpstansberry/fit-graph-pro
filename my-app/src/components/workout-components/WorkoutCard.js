@@ -149,6 +149,9 @@ const handleDateChange = (e) => {
         prevExercises.filter((exercise) => exercise.label !== selectedExercise.label)
       );
       setSelectedExercise(null);  // Reset the selected exercise
+    } else {
+      setSnackbarMessage("Please select an exercise to add.");
+      setSnackbarOpen(true);
     }
   };
 
