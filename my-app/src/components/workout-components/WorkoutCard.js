@@ -323,6 +323,7 @@ const handleDateChange = (e) => {
               top: 0,
               zIndex: 10,
               backgroundColor: 'white',
+              paddingTop: 2,
               paddingBottom: 2,
               borderBottom: '1px solid #ccc',
             }}
@@ -345,6 +346,19 @@ const handleDateChange = (e) => {
             <Button onClick={addExercise} variant="contained" color="primary">
               Add Exercise
             </Button>
+
+
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={4000}
+              onClose={handleCloseSnackbar}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              sx={{ position: 'absolute', right: 180, bottom: 20 }}
+            >
+              <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+                {snackbarMessage}
+              </Alert>
+            </Snackbar>
           </Box>
 
           {/* List of exercises */}
@@ -367,18 +381,6 @@ const handleDateChange = (e) => {
 
           {/* Create Workout button at the bottom */}
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
-            <Snackbar
-              open={snackbarOpen}
-              autoHideDuration={4000}
-              onClose={handleCloseSnackbar}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              sx={{ position: 'absolute', right: 180, bottom: 20 }}
-            >
-              <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
-                {snackbarMessage}
-              </Alert>
-            </Snackbar>
-
             <Button
               size="large"
               variant="contained"
