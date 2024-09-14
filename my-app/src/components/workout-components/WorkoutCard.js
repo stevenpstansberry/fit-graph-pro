@@ -52,8 +52,9 @@ function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, ty
 
 // ======== State for managing input and UI interactions ========
 const [inputValue, setInputValue] = useState(''); // Input value for the exercise search
-const [message, setMessage] = useState(''); // Snackbar message content
+const [snackbarMessage, setSnackbarMessage] = useState(''); // Snackbar message content
 const [snackbarOpen, setSnackbarOpen] = useState(false); // State for controlling Snackbar visibility
+
 
 // ======== State for managing exercises and workout data ========
 const [exercises, setExercises] = useState([]); // List of exercises added to the workout
@@ -189,7 +190,7 @@ const handleDateChange = (e) => {
 
     // Check to see if any exercises have been added
     if (exercises.length === 0) {
-      setMessage("Workout is empty, add sets.");
+      setSnackbarMessage("Workout is empty, add sets.");
       setSnackbarOpen(true);
       return;
     }
@@ -201,7 +202,7 @@ const handleDateChange = (e) => {
       );
 
       if (isAnyExerciseEmpty) {
-        setMessage("One or more exercises have empty sets, please fill them in.");
+        setSnackbarMessage("One or more exercises have empty sets, please fill them in.");
         setSnackbarOpen(true);
         return;
       }
@@ -226,7 +227,7 @@ const handleDateChange = (e) => {
       const isAnySetEmpty = exercises.some(exercise => exercise.sets.length === 0);
 
       if (isAnySetEmpty) {
-        setMessage("One or more exercises have empty sets.");
+        setSnackbarMessage("One or more exercises have empty sets.");
         setSnackbarOpen(true);
         return;
       }
@@ -356,6 +357,10 @@ const handleDateChange = (e) => {
                 removeExercise={removeExercise}
                 updateExerciseSets={updateExerciseSets}
                 allowWeightAndReps={mode === "createWorkout"}
+                snackbarMessage={snackbarMessage}
+                setSnackbarMessage={setSnackbarMessage}
+                snackbarOpen={snackbarOpen}
+                setSnackbarOpen={setSnackbarOpen}
               />
             ))}
           </Box>
@@ -370,7 +375,7 @@ const handleDateChange = (e) => {
               sx={{ position: 'absolute', right: 180, bottom: 20 }}
             >
               <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
-                {message}
+                {snackbarMessage}
               </Alert>
             </Snackbar>
 
