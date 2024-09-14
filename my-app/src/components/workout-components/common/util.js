@@ -29,30 +29,30 @@ export const getTitle = (component, timeframe, selectedMonth, selectedYear, sele
     "July", "August", "September", "October", "November", "December"
   ];
 
-  const componentName = component === 'heatmap' ? 'Heatmap' : 'Strength Chart';
+  const componentName = component === 'heatmap' ? 'Heatmap' : component === 'strengthChart' ? 'Strength Chart' : 'View Workouts';
 
-  if (component === 'strengthChart' && selectedExercise) {
+  if (component === 'strengthChart') {
     if (timeframe === 'currentMonth') {
-      return `Displaying Workout History for: ${selectedExercise}, ${selectedMonth} ${selectedYear}`;
+      return ` ${componentName} for: ${selectedExercise}, ${selectedMonth} ${selectedYear}`;
     } else if (timeframe === 'ytd') {
       const today = new Date();
       const todayDate = `${monthNames[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`;
-      return `Displaying Year-to-Date ${componentName} for ${selectedExercise} from Jan 1 ${selectedYear} through ${todayDate}`;
+      return ` Year-to-Date ${componentName} for ${selectedExercise} from Jan 1 ${selectedYear} through ${todayDate}`;
     } else if (timeframe === 'allTime') {
-      return `Displaying All-Time Workout History for: ${selectedExercise}`;
+      return ` All-Time ${componentName} for: ${selectedExercise}`;
     } else {
       return `Displaying Workout History for: ${selectedExercise}`;
     }
   } else {
     if (timeframe === 'currentMonth') {
       const monthName = monthNames[selectedMonth - 1]; // Get the month name
-      return `Displaying Workout History ${componentName} for: ${monthName} ${selectedYear}`;
+      return ` ${componentName} for: ${monthName} ${selectedYear}`;
     } else if (timeframe === 'ytd') {
       const today = new Date();
-      const todayDate = `${monthNames[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`;
-      return `Displaying Year-to-Date Workout History ${componentName} from Jan 1 ${selectedYear} through ${todayDate}`;
+      const todayDate = `${monthNames[today.getMonth()]} ${today.getDate()}`;
+      return ` Year-to-Date  ${componentName} from Jan 1 ${selectedYear} through ${todayDate}`;
     } else if (timeframe === 'allTime') {
-      return `Displaying All-Time Workout History ${componentName}`;
+      return ` All-Time  ${componentName}`;
     } else {
       return `Displaying Workout History ${componentName}`;
     }
