@@ -55,6 +55,8 @@ function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, ty
 const [inputValue, setInputValue] = useState(''); // Input value for the exercise search
 const [snackbarMessage, setSnackbarMessage] = useState(''); // Snackbar message content
 const [snackbarOpen, setSnackbarOpen] = useState(false); // State for controlling Snackbar visibility
+const [snackbarSeverity, setSnackbarSeverity] = useState('error'); // Severity of the snackbar message
+const [snackbarKey, setSnackbarKey] = useState(0); // Unique key for Snackbar
 
 
 // ======== State for managing exercises and workout data ========
@@ -122,6 +124,22 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
   };
 
   /**
+   * Displays a Snackbar notification with a specified message and severity level.
+   * This function updates the state variables required to show a Snackbar notification.
+   *
+   * @function showSnackbar
+   * @param {string} message - The message to display in the Snackbar.
+   * @param {'success' | 'error' | 'warning' | 'info'} severity - The severity level of the Snackbar, which determines its visual style and icon.
+   * @returns {void} This function does not return a value; it updates the state to display the Snackbar.
+   */
+  const showSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarKey(prevKey => prevKey + 1);  // Increment key to ensure the Snackbar appears correctly
+    setSnackbarOpen(true);
+  };
+
+  /**
    * Formats a Date object to a string in the format "YYYY-MM-DDTHH:mm",
    * suitable for use with <input type="datetime-local"> HTML elements.
    * Adjusts the date to the local timezone offset.
@@ -173,9 +191,9 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
         prevExercises.filter((exercise) => exercise.label !== selectedExercise.label)
       );
       setSelectedExercise(null);  // Reset the selected exercise
+      showSnackbar(`${selectedExercise.label} added successfully.`, 'success');
     } else {
-      setSnackbarMessage("Please select an exercise to add.");
-      setSnackbarOpen(true);
+      showSnackbar("Please select an exercise to add.", 'error');;
     }
   };
 
@@ -191,6 +209,7 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
 
     // Add the removed exercise back to the available options
     setAvailableExercises((prevExercises) => [...prevExercises, exerciseToRemove]);
+    showSnackbar(`${exerciseToRemove.label} removed successfully.`, 'success');
   };
 
   /**
@@ -217,8 +236,7 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
 
     // Check to see if any exercises have been added
     if (exercises.length === 0) {
-      setSnackbarMessage("Workout is empty, add sets.");
-      setSnackbarOpen(true);
+      showSnackbar("Workout is empty, add sets.", 'error');
       return;
     }
 
@@ -229,8 +247,7 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
       );
 
       if (isAnyExerciseEmpty) {
-        setSnackbarMessage("One or more exercises have empty sets, please fill them in.");
-        setSnackbarOpen(true);
+        showSnackbar("One or more exercises have empty sets, please fill them in.", 'error');
         return;
       }
 
@@ -254,8 +271,7 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
       const isAnySetEmpty = exercises.some(exercise => exercise.sets.length === 0);
 
       if (isAnySetEmpty) {
-        setSnackbarMessage("One or more exercises have empty sets.");
-        setSnackbarOpen(true);
+        showSnackbar("One or more exercises have empty sets.", 'error');
         return;
       }
 
@@ -380,13 +396,14 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
 
 
             <Snackbar
+              key={snackbarKey} // Use the unique key here
               open={snackbarOpen}
               autoHideDuration={4000}
               onClose={handleCloseSnackbar}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               sx={{ position: 'absolute', right: 180, bottom: 20 }}
             >
-              <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+              <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
                 {snackbarMessage}
               </Alert>
             </Snackbar>
@@ -402,11 +419,18 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
                       {(provided) => (
                         <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                           <ExerciseSubcard
+                            key={index}
                             exercise={exercise}
                             index={index}
-                            removeExercise={() => removeExercise(index)}
+                            removeExercise={removeExercise}
                             updateExerciseSets={updateExerciseSets}
                             allowWeightAndReps={mode === "createWorkout"}
+                            snackbarMessage={snackbarMessage}
+                            setSnackbarMessage={setSnackbarMessage}
+                            snackbarOpen={snackbarOpen}
+                            setSnackbarOpen={setSnackbarOpen}
+                            setSnackbarSeverity={setSnackbarSeverity}
+                            showSnackbar={showSnackbar}
                           />
                         </div>
                       )}

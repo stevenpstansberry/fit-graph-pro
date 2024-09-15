@@ -28,7 +28,7 @@ import AddIcon from "@mui/icons-material/Add";
  * @param {string} props.mode - Mode indicating how the component should behave (e.g., "addSplit").
  * @returns {React.Element} - The rendered ExerciseSubcard component.
  */
-function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode, snackbarMessage, setSnackbarMessage, snackbarOpen, setSnackbarOpen }) {
+function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode, showSnackbar }) {
 
   /**
    * Handles the change in input for weight or reps in a specific set.
@@ -49,12 +49,10 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
     } else {
       // Set specific error messages based on the validation failure
       if (value.length > 4) {
-        setSnackbarMessage('No more than 4 digits allowed.');
+        showSnackbar('No more than 4 digits allowed.', 'error');
       } else {
-        setSnackbarMessage('Only positive values greater than 0 are accepted.');
-      }
-      // Show snackbar notification
-      setSnackbarOpen(true);
+        showSnackbar('Only positive values greater than 0 are accepted.', 'error');
+        }
     }
   };
 
@@ -65,12 +63,12 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
    */
   const addSet = () => {
     if (exercise.sets.length >= 9) {
-      setSnackbarMessage('You cannot add more than 9 sets.');
-      setSnackbarOpen(true);
+      showSnackbar('You cannot add more than 9 sets.', 'error');
       return;
     }
     const newSets = [...exercise.sets, { weight: "", reps: "" }];
     updateExerciseSets(index, newSets); // Add new set to the sets array
+    showSnackbar('Set added successfully.', 'success');
   };
 
   /**
@@ -82,16 +80,9 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
   const handleRemoveSet = (setIndex) => {
     const newSets = exercise.sets.filter((_, i) => i !== setIndex);
     updateExerciseSets(index, newSets); // Remove the set from the sets array
+    showSnackbar('Set removed successfully.', 'success');
   };
 
-  /**
-   * Closes the snackbar notification.
-   * 
-   * @function handleCloseSnackbar
-   */
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
 
   return (
     <Card sx={{ mb: 2 }}>
