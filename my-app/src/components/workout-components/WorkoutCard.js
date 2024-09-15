@@ -84,12 +84,9 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
       if (editMode) {
         setIsEditMode(true);
         setUniqueId(ToEditId)
-        console.log("old workout date", workoutDate);
         setWorkoutDate(ToEditDate);
-        console.log("workout date: ", workoutDate);
-        console.log('!!!!!!in edit mode for: ', uniqueId);
-        // Additional initialization for edit mode if needed
       } else {
+        console.log(mode)
         setWorkoutDate(new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })); // Set today's date with time for the workout
         setIsEditMode(false);
         console.log("returned back to normal mode");
@@ -308,14 +305,18 @@ const handleDateChange = (e) => {
               : "Add exercises to your workout and customize sets, weights, and reps."}
           </Typography>
 
-          {/* Date Picker */}
-          <TextField
-            label="Workout Date"
-            type="datetime-local"
-            value={formatDateToDatetimeLocal(new Date(workoutDate))}
-            onChange={handleDateChange}
-            sx={{ width: 300, mr: 2 }}
-          />
+          {mode === 'createWorkout' && (
+            <>
+              {/* Date Picker */}
+              <TextField
+                label="Workout Date"
+                type="datetime-local"
+                value={formatDateToDatetimeLocal(new Date(workoutDate))}
+                onChange={handleDateChange}
+                sx={{ width: 300, mr: 2 }}
+              />
+            </>
+          )}
 
           <Box
             sx={{
