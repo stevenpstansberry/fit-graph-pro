@@ -18,27 +18,38 @@ import React, { useState } from 'react';
 import { Box, Typography, Button, Grid, Paper } from '@mui/material';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import ManualPasswordReset from '../components/auth-components/ManualPasswordReset';
+import ConfirmPassword from '../components/auth-components/ConfirmPassword';
 import { getUser } from '../services/AuthService';
 
 function Account() {
   const user = getUser();
-  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
+  const [confirmPasswordOpen, setConfirmPasswordOpen] = useState(false);
+  const [mode, setMode] = useState('ResetPassword');
 
   /**
    * Opens the password reset dialog.
    * @function handleOpenResetPassword
    */
   const handleOpenResetPassword = () => {
-    setResetPasswordOpen(true);
+    setMode('ResetPassword');
+    setConfirmPasswordOpen(true);
   };
 
   /**
-   * Closes the password reset dialog.
-   * @function handleCloseResetPassword
+   * Opens the delete account dialog.
+   * @function handleOpenDeleteAccount
    */
-  const handleCloseResetPassword = () => {
-    setResetPasswordOpen(false);
+  const handleOpenDeleteAccount = () => {
+    setMode('DeleteUser');
+    setConfirmPasswordOpen(true);
+  };
+
+  /**
+   * Closes the confirmation dialog.
+   * @function handleCloseConfirmPassword
+   */
+  const handleCloseConfirmPassword = () => {
+    setConfirmPasswordOpen(false);
   };
 
   return (
@@ -78,14 +89,21 @@ function Account() {
               >
                 Reset Password
               </Button>
-              {/* Add more account-related actions as needed */}
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleOpenDeleteAccount}
+                sx={{ mt: 2 }}
+              >
+                Delete Account
+              </Button>
             </Paper>
           </Grid>
         </Grid>
       </Box>
 
-      {/* ManualPasswordReset Dialog */}
-      <ManualPasswordReset open={resetPasswordOpen} onClose={handleCloseResetPassword} user ={user}/>
+      {/* ConfirmPassword Dialog */}
+      <ConfirmPassword open={confirmPasswordOpen} onClose={handleCloseConfirmPassword} user={user} mode={mode} />
 
       {/* Footer Section */}
       <Footer />
