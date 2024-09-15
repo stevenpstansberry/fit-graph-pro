@@ -51,6 +51,7 @@ const ManualPasswordResetPath = '/password-reset/manual';
 const VerifyPasswordPath = '/verify-password';
 const editWorkoutPath = '/workouts/edit';
 const editSplitsPath = '/splits/edit'
+const deleteAccountPath = '/delete';
 
 
 
@@ -203,6 +204,11 @@ exports.handler = async (event) => {
         case event.httpMethod === 'PUT' && event.path.startsWith(editSplitsPath + '/'):
             const editSplitBody = JSON.parse(event.body)
             response = await EditSplitService.editSplit(editSplitBody);
+            break;    
+
+        // Delete user account route
+        case event.httpMethod === 'DELETE' && event.path === deleteAccountPath:
+            response = util.buildResponse(200, {message: 'Delete user method reached'});
             break;    
             
             
