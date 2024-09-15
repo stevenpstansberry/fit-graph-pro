@@ -26,6 +26,7 @@ import AddIcon from "@mui/icons-material/Add";
  * @param {function} props.updateExerciseSets - Function to update the sets of an exercise in the parent component's state.
  * @param {boolean} props.allowWeightAndReps - Flag indicating whether to show weight and reps input fields.
  * @param {string} props.mode - Mode indicating how the component should behave (e.g., "addSplit").
+ * @param {function} props.showSnackbar - Function to display a snackbar message.
  * @returns {React.Element} - The rendered ExerciseSubcard component.
  */
 function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode, showSnackbar }) {
