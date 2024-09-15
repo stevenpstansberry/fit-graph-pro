@@ -11,12 +11,14 @@
 
 
 const AWS = require('aws-sdk');
+const { v4: uuidv4 } = require('uuid');
 AWS.config.update({
   region: 'us-east-1'
 });
 const util = require('../../utils/util');
 const bcrypt = require('bcryptjs');
 const auth = require('../../utils/auth');
+const createSplitService = require('../split-services/createSplit');
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const userTable = 'fit-graph-users';
@@ -72,6 +74,9 @@ async function register(userInfo) {
         return util.buildResponse(503, { message: 'Server Error. Please try again later.' });
     }
 
+    // Create default workout splits for the new user
+    await createDefaultSplits(username.toLowerCase().trim());
+
     const token = auth.generateToken(userInfo);
 
     // Response object
@@ -80,6 +85,57 @@ async function register(userInfo) {
         token: token
     };
     return util.buildResponse(200, response);
+}
+
+/**
+ * Creates default workout splits for a new user and saves them to DynamoDB.
+ * 
+ * @async
+ * @function createDefaultSplits
+ * @param {string} username - The username of the new user.
+ * @returns {Promise<void>}
+ */
+async function createDefaultSplits(username) {
+  const splits = [
+    {
+      name: "Push Day",
+      exercises: [
+        { label: "Bench Press", bodyPart: "Chest", muscles: ["chest", "triceps", "front-deltoids"], sets: [{}, {}, {}] },
+        { label: "Overhead Press", bodyPart: "Shoulders", muscles: ["front-deltoids", "triceps"], sets: [{}, {}, {}] },
+        { label: "Dips", bodyPart: "Chest", muscles: ["chest", "triceps", "front-deltoids"], sets: [{}, {}, {}] },
+        { label: "Side Lateral Raise", bodyPart: "Shoulders", muscles: ["back-deltoids", "front-deltoids"], sets: [{}, {}, {}, {}, {}] },
+        { label: "Tricep Extension", bodyPart: "Arms", muscles: ["triceps"], sets: [{}, {}, {}] }
+      ]
+    },
+    {
+      name: "Pull Day",
+      exercises: [
+        { label: "Deadlift", bodyPart: "Back", muscles: ["lower-back", "hamstring", "gluteal", "trapezius"], sets: [{}, {}, {}] },
+        { label: "Barbell Row", bodyPart: "Back", muscles: ["upper-back", "biceps", "lower-back", "trapezius"], sets: [{}, {}, {}] },
+        { label: "Face Pull", bodyPart: "Back", muscles: ["upper-back", "trapezius", "rear-deltoids"], sets: [{}, {}, {}] },
+        { label: "Hammer Curl", bodyPart: "Arms", muscles: ["biceps", "forearm"], sets: [{}, {}, {}] },
+        { label: "Bicep Curl", bodyPart: "Arms", muscles: ["biceps"], sets: [{}, {}, {}] },
+        { label: "Pull Up", bodyPart: "Back", muscles: ["upper-back", "biceps", "trapezius"], sets: [{}, {}, {}] }
+      ]
+    },
+    {
+      name: "Leg Day",
+      exercises: [
+        { label: "Squat", bodyPart: "Legs", muscles: ["quadriceps", "hamstring", "gluteal", "calves"], sets: [{}, {}, {}] },
+        { label: "Bulgarian Split Squat", bodyPart: "Legs", muscles: ["quadriceps", "hamstring", "gluteal"], sets: [{}, {}, {}] },
+        { label: "Leg Curl", bodyPart: "Legs", muscles: ["hamstring"], sets: [{}, {}, {}] },
+        { label: "Calf Raise", bodyPart: "Legs", muscles: ["calves"], sets: [{}, {}, {}, {}] },
+        { label: "Leg Press", bodyPart: "Legs", muscles: ["quadriceps", "gluteal"], sets: [{}, {}, {}] }
+      ]
+    }
+  ];
+
+  // Assign a unique splitId and save each split to DynamoDB
+  for (const split of splits) {
+    split.splitId = uuidv4(); // Generate a unique ID for each split
+    split.username = username; // Associate the split with the user's username
+    await createSplitService.uploadSplit(split);
+  }
 }
 
 /**
