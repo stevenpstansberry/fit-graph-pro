@@ -30,6 +30,7 @@ const ManualPasswordResetService = require ('./services/auth-services/ManualPass
 const VerifyPasswordService = require ('./services/auth-services/VerifyPassword');
 const EditWorkoutService = require ('./services/workout-services/editWorkout');
 const EditSplitService = require ('./services/split-services/editSplit');
+const deleteAccountService = require ('./services/auth-services/deleteAccount');
 const util = require('./utils/util');
 
 // Define API paths
@@ -208,7 +209,10 @@ exports.handler = async (event) => {
 
         // Delete user account route
         case event.httpMethod === 'DELETE' && event.path === deleteAccountPath:
-            response = util.buildResponse(200, {message: 'Delete user method reached'});
+            const deleteAccountBody = JSON.parse(event.body);
+            console.log("EVENT BODY:" + deleteAccount);
+            response = await deleteAccountService.deleteAccount(deleteAccountBody);
+            //response = util.buildResponse(200, {message: 'Delete user method reached'});
             break;    
             
             
