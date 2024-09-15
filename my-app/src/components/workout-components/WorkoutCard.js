@@ -111,16 +111,15 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
   * @returns {void} Updates the state of exercises to reflect the new order after drag-and-drop.
   */
 
-    // Handle drag-and-drop reordering
-    const onDragEnd = (result) => {
-      if (!result.destination) return;
-  
-      const reorderedExercises = Array.from(exercises);
-      const [movedExercise] = reorderedExercises.splice(result.source.index, 1);
-      reorderedExercises.splice(result.destination.index, 0, movedExercise);
-  
-      setExercises(reorderedExercises);
-    };
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const reorderedExercises = Array.from(exercises);
+    const [movedExercise] = reorderedExercises.splice(result.source.index, 1);
+    reorderedExercises.splice(result.destination.index, 0, movedExercise);
+
+    setExercises(reorderedExercises);
+  };
 
   /**
    * Formats a Date object to a string in the format "YYYY-MM-DDTHH:mm",
