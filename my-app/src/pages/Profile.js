@@ -146,7 +146,7 @@ function Profile() {
             src={profileImageUrl ? profileImageUrl : undefined}
             onClick={handleOpenUploadModal}
           >
-            {!profileImageUrl && name.charAt(0).toUpperCase()}
+           
           </Avatar>
           <Typography variant="h4" component="h1" gutterBottom>
             {name}
