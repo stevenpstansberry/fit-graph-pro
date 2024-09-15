@@ -676,34 +676,43 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
     </Dialog>
 
 
-      <Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
-        <DialogTitle sx={{ pb: 2 }}>Name Your Custom Split</DialogTitle>
-        <DialogContent sx={{ minWidth: 500, minHeight: 200 }}>
-          <TextField
-            label="Split Name"
-            value={customSplitName}
-            onChange={(e) => setCustomSplitName(e.target.value)}
-            sx={{
-              width: 500,
-              mb: 2,
-              '& .MuiInputLabel-root': { fontSize: '1rem' },
-              '& .MuiInputBase-root': { paddingRight: 2 },
-            }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              setNewSplitName(customSplitName);
-              setIsCardVisible(true);
-              setCardMode("addSplit");
-              setIsCustomSplitDialogOpen(false);
-            }}
-          >
-            Create Split
-          </Button>
-        </DialogContent>
-      </Dialog>
+    <Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
+      <DialogTitle sx={{ pb: 2 }}>Name Your Custom Split</DialogTitle>
+      <DialogContent sx={{ minWidth: 500, minHeight: 200 }}>
+        <TextField
+          label="Split Name"
+          value={customSplitName}
+          onChange={(e) => setCustomSplitName(e.target.value)}
+          sx={{
+            width: 500,
+            mb: 2,
+            '& .MuiInputLabel-root': { fontSize: '1rem' },
+            '& .MuiInputBase-root': { paddingRight: 2 },
+          }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            if (!customSplitName.trim()) {  // Check if the customSplitName is empty or only contains spaces
+              setSnackbarMessage('Split name cannot be empty.');
+              setSnackbarSeverity('error');
+              setSnackbarOpen(true);
+              return;
+            }
+
+            // If not empty, proceed with creating the split
+            setNewSplitName(customSplitName);
+            setIsCardVisible(true);
+            setCardMode("addSplit");
+            setIsCustomSplitDialogOpen(false);
+          }}
+        >
+          Create Split
+        </Button>
+      </DialogContent>
+    </Dialog>
+
 
       <WorkoutCard
         open={isCardVisible}
