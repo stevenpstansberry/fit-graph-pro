@@ -35,14 +35,12 @@ const getFromAPI = async (endpoint, errorHandler) => {
   console.log('Making GET request to:', url);
   console.log('Request Headers:', {
     'Content-Type': 'application/json',
-    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
   });
 
   try {
     const response = await axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
-        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
       },
     });
 
@@ -91,14 +89,12 @@ const postToAPI = async (endpoint, data, errorHandler) => {
   console.log('Request Data:', data);
   console.log('Request Headers:', {
     'Content-Type': 'application/json', 
-    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
   });
 
   try {
     const response = await axios.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
-        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
       },
     });
 
@@ -132,31 +128,33 @@ const postToAPI = async (endpoint, data, errorHandler) => {
 
 
 /**
- * Sends a DELETE request to a specified API endpoint.
+ * Sends a DELETE request to a specified API endpoint with optional data.
  * 
  * @async
  * @function deleteToAPI
  * @param {string} endpoint - The API endpoint to send the DELETE request to.
+ * @param {Object} [data] - Optional data to include in the DELETE request.
  * @param {function} [errorHandler] - Optional callback function to handle errors.
  * @returns {Promise<Object|null>} Response data from the API or handled value from the error handler.
  * @throws Will throw an error if the request fails and no errorHandler is provided.
  */
-const deleteToAPI = async (endpoint, errorHandler) => {
+const deleteToAPI = async (endpoint, data = {}, errorHandler) => {
   const url = `${fitGraphProd}${endpoint}`; // Construct the full URL
 
   // Log the request details before making the request
   console.log('Making DELETE request to:', url);
+  console.log('Request Data:', data); // Log the request data
   console.log('Request Headers:', {
     'Content-Type': 'application/json',
-    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, 
   });
 
   try {
     const response = await axios.delete(url, {
       headers: {
         'Content-Type': 'application/json',
-        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
+        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Add any additional headers you need
       },
+      data: data // Include the optional data in the request
     });
 
     // Log the response status and data
@@ -184,6 +182,7 @@ const deleteToAPI = async (endpoint, errorHandler) => {
     throw error; // Re-throw the error after logging it
   }
 };
+
 
 /**
  * Sends a PUT request to a specified API endpoint with data.
@@ -535,4 +534,20 @@ export const updateWorkout = async (workoutToEditId, workoutData, errorHandler) 
 export const updateSplit = async (splitToEditId, splitData, errorHandler) => {
   const endpoint = `/splits/edit/${splitToEditId}`; 
   return await putToAPI(endpoint, splitData, errorHandler);
+};
+
+
+/**
+ * Deletes a user from the API.
+ * 
+ * @async
+ * @function deleteUser
+ * @param {Object} credentials - The user credentials for account deletion.
+ * @param {string} credentials.username - The username of the user.
+ * @param {string} credentials.password - The password of the user.
+ * @returns {Promise<Object>} Response data from the API indicating success or failure of the deletion.
+ * @throws Will throw an error if the request fails.
+ */
+export const deleteUser = async (credentials) => {
+  return deleteToAPI('/delete', credentials);
 };
