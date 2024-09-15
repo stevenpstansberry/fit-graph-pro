@@ -69,6 +69,8 @@ const [tempSplitName, setTempSplitName] = useState({}); // Temporary storage for
 const [snackbarOpen, setSnackbarOpen] = useState(false); // Controls visibility of snackbar notifications
 const [snackbarMessage, setSnackbarMessage] = useState(''); // Stores the message to be displayed in the snackbar
 const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // Stores the severity level of the snackbar (success, error, etc.)
+const [snackbarKey, setSnackbarKey] = useState(0); // Unique key for Snackbar
+
 
 // ======== Deletion States ========
 const [itemToDelete, setItemToDelete] = useState(null); // Stores the ID of the item to be deleted (workout or split)
@@ -261,16 +263,12 @@ const fetchWorkouts = async () => {
         setSessionData('workouts', workoutsToStore); // Save to session storage
 
         // Show success Snackbar
-        setSnackbarMessage('Workout deleted successfully!');
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
+        showSnackbar('Workout deleted successfully!', 'success');
       } catch (error) {
         console.error("Failed to delete workout:", error);
 
         // Show error Snackbar
-        setSnackbarMessage('Failed to delete workout.');
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
+        showSnackbar('Failed to delete workout.', 'error');
       }
     } else if (deleteType === 'split') {
       try {
@@ -285,16 +283,12 @@ const fetchWorkouts = async () => {
         setSessionData('splits', updatedSplits); // Save to session storage
 
         // Show success Snackbar
-        setSnackbarMessage('Split deleted successfully!');
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
+        showSnackbar('Split deleted successfully!', 'success');
       } catch (error) {
         console.error("Failed to delete split:", error);
 
         // Show error Snackbar
-        setSnackbarMessage('Failed to delete split.');
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
+        showSnackbar('Failed to delete split.', 'error');
       }
     }
 
@@ -420,16 +414,12 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
     console.log(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully`);
 
     // Show success Snackbar
-    setSnackbarMessage(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully!`);
-    setSnackbarSeverity('success');
-    setSnackbarOpen(true);
+    showSnackbar(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully!`, 'success');
   } catch (error) {
     console.error(`Failed to ${action} ${itemType}: `, error);
 
     // Show error Snackbar
-    setSnackbarMessage(`Failed to ${action} ${itemType}.`);
-    setSnackbarSeverity('error');
-    setSnackbarOpen(true);
+    showSnackbar(`Failed to ${action} ${itemType}.`, 'error');
   }
 };
   
@@ -439,6 +429,22 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
    */
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
+  };
+
+    /**
+   * Displays a Snackbar notification with a specified message and severity level.
+   * This function updates the state variables required to show a Snackbar notification.
+   *
+   * @function showSnackbar
+   * @param {string} message - The message to display in the Snackbar.
+   * @param {'success' | 'error' | 'warning' | 'info'} severity - The severity level of the Snackbar, which determines its visual style and icon.
+   * @returns {void} This function does not return a value; it updates the state to display the Snackbar.
+   */
+  const showSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarKey(prevKey => prevKey + 1);  // Increment key to ensure the Snackbar appears correctly
+    setSnackbarOpen(true);
   };
 
   /**
@@ -496,6 +502,7 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Snackbar for success/error messages */}
       <Snackbar
+        key={snackbarKey} // Use the unique key here
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
@@ -657,9 +664,7 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
             onClick={() => {
               if (userSplits.length >= 8) {
                 // Show error Snackbar if there are already 9 splits
-                setSnackbarMessage('You cannot have more than 9 splits.');
-                setSnackbarSeverity('error');
-                setSnackbarOpen(true);
+                showSnackbar('You cannot have more than 9 splits.', 'error');
               } else {
                 // Open the dialog to add a new custom split
                 setIsCustomSplitDialogOpen(true);
@@ -695,9 +700,7 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
           color="primary"
           onClick={() => {
             if (!customSplitName.trim()) {  // Check if the customSplitName is empty or only contains spaces
-              setSnackbarMessage('Split name cannot be empty.');
-              setSnackbarSeverity('error');
-              setSnackbarOpen(true);
+              showSnackbar('Split name cannot be empty.', 'error');
               return;
             }
 
