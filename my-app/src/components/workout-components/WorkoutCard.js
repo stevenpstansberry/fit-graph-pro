@@ -23,6 +23,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Autocomplete, TextField, IconButton, Box, Modal, Card, CardContent, Button, Typography, Alert, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./ExerciseSubCard";
@@ -94,38 +95,65 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
     }
   }, [open, preloadedExercises, editMode]);
 
-/**
- * Formats a Date object to a string in the format "YYYY-MM-DDTHH:mm",
- * suitable for use with <input type="datetime-local"> HTML elements.
- * Adjusts the date to the local timezone offset.
- * 
- * @function formatDateToDatetimeLocal
- * @param {Date} date - The Date object to format.
- * @returns {string} A formatted date string in "YYYY-MM-DDTHH:mm" format.
- */
-const formatDateToDatetimeLocal = (date) => {
-  // Get the timezone offset in minutes
-  const offset = date.getTimezoneOffset();
-  // Create a new date adjusted to the local timezone
-  const localDate = new Date(date.getTime() - offset * 60 * 1000);
-  // Convert to ISO string and slice to "YYYY-MM-DDTHH:mm" format
-  return localDate.toISOString().slice(0, 16);
-};
+  /**
+  * Handles the end of a drag-and-drop operation to reorder exercises in the workout.
+  *
+  * If the dragged item is dropped outside a valid droppable area, the function exits early without making changes.
+  * Otherwise, it creates a new reordered list of exercises by removing the dragged exercise from its
+  * original position and inserting it at the new destination.
+  *
+  * @function onDragEnd
+  * @param {Object} result - The result object provided by `react-beautiful-dnd` after a drag event.
+  * @param {Object} result.source - The source object containing information about the starting point of the dragged item.
+  * @param {number} result.source.index - The index of the exercise in the original list.
+  * @param {Object} result.destination - The destination object containing information about where the dragged item is dropped.
+  * @param {number} result.destination.index - The index where the exercise should be moved to in the new list.
+  * @returns {void} Updates the state of exercises to reflect the new order after drag-and-drop.
+  */
 
-/**
- * Handles the change event for a date input field.
- * Converts the selected date to an ISO string format and updates the workout date state.
- * 
- * @function handleDateChange
- * @param {Object} e - The event object from the date input field.
- * @param {string} e.target.value - The selected date value from the input field.
- */
-const handleDateChange = (e) => {
-  // Create a Date object from the input value
-  const selectedDate = new Date(e.target.value);
-  // Convert the date to ISO string format and update state
-  setWorkoutDate(selectedDate.toISOString());
-};
+    // Handle drag-and-drop reordering
+    const onDragEnd = (result) => {
+      if (!result.destination) return;
+  
+      const reorderedExercises = Array.from(exercises);
+      const [movedExercise] = reorderedExercises.splice(result.source.index, 1);
+      reorderedExercises.splice(result.destination.index, 0, movedExercise);
+  
+      setExercises(reorderedExercises);
+    };
+
+  /**
+   * Formats a Date object to a string in the format "YYYY-MM-DDTHH:mm",
+   * suitable for use with <input type="datetime-local"> HTML elements.
+   * Adjusts the date to the local timezone offset.
+   * 
+   * @function formatDateToDatetimeLocal
+   * @param {Date} date - The Date object to format.
+   * @returns {string} A formatted date string in "YYYY-MM-DDTHH:mm" format.
+   */
+  const formatDateToDatetimeLocal = (date) => {
+    // Get the timezone offset in minutes
+    const offset = date.getTimezoneOffset();
+    // Create a new date adjusted to the local timezone
+    const localDate = new Date(date.getTime() - offset * 60 * 1000);
+    // Convert to ISO string and slice to "YYYY-MM-DDTHH:mm" format
+    return localDate.toISOString().slice(0, 16);
+  };
+
+  /**
+   * Handles the change event for a date input field.
+   * Converts the selected date to an ISO string format and updates the workout date state.
+   * 
+   * @function handleDateChange
+   * @param {Object} e - The event object from the date input field.
+   * @param {string} e.target.value - The selected date value from the input field.
+   */
+  const handleDateChange = (e) => {
+    // Create a Date object from the input value
+    const selectedDate = new Date(e.target.value);
+    // Convert the date to ISO string format and update state
+    setWorkoutDate(selectedDate.toISOString());
+  };
 
   /**
    * Adds a new exercise to the exercises list.
@@ -365,23 +393,31 @@ const handleDateChange = (e) => {
             </Snackbar>
           </Box>
 
-          {/* List of exercises */}
-          <Box>
-            {exercises.map((exercise, index) => (
-              <ExerciseSubcard
-                key={index}
-                exercise={exercise}
-                index={index}
-                removeExercise={removeExercise}
-                updateExerciseSets={updateExerciseSets}
-                allowWeightAndReps={mode === "createWorkout"}
-                snackbarMessage={snackbarMessage}
-                setSnackbarMessage={setSnackbarMessage}
-                snackbarOpen={snackbarOpen}
-                setSnackbarOpen={setSnackbarOpen}
-              />
-            ))}
-          </Box>
+          {/* List of exercises with drag-and-drop support */}
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="exercises">
+              {(provided) => (
+                <Box {...provided.droppableProps} ref={provided.innerRef}>
+                  {exercises.map((exercise, index) => (
+                    <Draggable key={exercise.label} draggableId={exercise.label} index={index}>
+                      {(provided) => (
+                        <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                          <ExerciseSubcard
+                            exercise={exercise}
+                            index={index}
+                            removeExercise={() => removeExercise(index)}
+                            updateExerciseSets={updateExerciseSets}
+                            allowWeightAndReps={mode === "createWorkout"}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </Box>
+              )}
+            </Droppable>
+          </DragDropContext>
 
           {/* Create Workout button at the bottom */}
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
