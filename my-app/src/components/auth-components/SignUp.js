@@ -95,12 +95,12 @@ function SignUp() {
       
       let errorMSG;
 
-      switch(true) {
-        case error.response.status === 401:
+      switch(error.response.status) {
+        case 401:
           errorMSG = 'Username already exists, please select a different username';
           break;
 
-        case error.response.status === 503:
+        case 503:
           errorMSG = 'Server is offline, please try again later.';
           break;
 
