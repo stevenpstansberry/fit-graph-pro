@@ -24,7 +24,7 @@
 
 import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Autocomplete, TextField, IconButton, Box, Modal, Card, CardContent, Button, Typography, Alert, Snackbar } from "@mui/material";
+import { Autocomplete, TextField, IconButton, Box, Modal, Card, CardContent, Button, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./ExerciseSubCard";
 import { v4 as uuidv4 } from 'uuid';

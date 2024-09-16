@@ -10,7 +10,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Card, Modal, Typography, CircularProgress, Box, List, ListItem, ListItemText, IconButton, Stack, Grid } from "@mui/material";
+import { Card, Modal, Typography, CircularProgress, Box, List, ListItem, ListItemText, IconButton} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { getExerciseInfo } from "../../services/ExerciseDBAPIServices";
 import { toTitleCase } from "./common/util";

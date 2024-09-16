@@ -11,7 +11,7 @@
  */
 
 import React, { useState } from "react";
-import { Card, CardContent, Box, TextField, Button, Typography, IconButton, Snackbar, Alert } from "@mui/material";
+import { Card, CardContent, Box, TextField, Button, Typography, IconButton} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import ExerciseInfoCard from "./ExerciseInfoCard";
