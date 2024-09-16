@@ -18,7 +18,6 @@ import axios from 'axios';
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 
 
-//axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PROD_KEY;
 
 /**
  * Sends a GET request to a specified API endpoint.
