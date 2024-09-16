@@ -46,17 +46,15 @@ import { getUser } from '../../services/AuthService';
  * @param {string} props.ToEditId - The ID of the workout or split being edited.
  * @param {string} props.ToEditDate - The date of the workout or split being edited.
  * @param {function} props.manageWorkoutOrSplit - Function to manage (save or update) a workout or split to the backend.
+ * @param {function} props.showSnackbar - Function to display a snackbar message in Workout Page.
  * @returns {React.Element} - The rendered WorkoutCard component.
  */
-function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, type, editMode, ToEditId, ToEditDate, manageWorkoutOrSplit }) {
+function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, type, editMode, ToEditId, ToEditDate, manageWorkoutOrSplit, showSnackbar }) {
   const user = getUser();
 
 // ======== State for managing input and UI interactions ========
 const [inputValue, setInputValue] = useState(''); // Input value for the exercise search
-const [snackbarMessage, setSnackbarMessage] = useState(''); // Snackbar message content
-const [snackbarOpen, setSnackbarOpen] = useState(false); // State for controlling Snackbar visibility
-const [snackbarSeverity, setSnackbarSeverity] = useState('error'); // Severity of the snackbar message
-const [snackbarKey, setSnackbarKey] = useState(0); // Unique key for Snackbar
+
 
 
 // ======== State for managing exercises and workout data ========
@@ -123,21 +121,6 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
     setExercises(reorderedExercises);
   };
 
-  /**
-   * Displays a Snackbar notification with a specified message and severity level.
-   * This function updates the state variables required to show a Snackbar notification.
-   *
-   * @function showSnackbar
-   * @param {string} message - The message to display in the Snackbar.
-   * @param {'success' | 'error' | 'warning' | 'info'} severity - The severity level of the Snackbar, which determines its visual style and icon.
-   * @returns {void} This function does not return a value; it updates the state to display the Snackbar.
-   */
-  const showSnackbar = (message, severity) => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setSnackbarKey(prevKey => prevKey + 1);  // Increment key to ensure the Snackbar appears correctly
-    setSnackbarOpen(true);
-  };
 
   /**
    * Formats a Date object to a string in the format "YYYY-MM-DDTHH:mm",
@@ -295,10 +278,6 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
     onClose();
   };
 
-  // Handle closing the snackbar
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
 
   return (
     <Modal
@@ -393,20 +372,6 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
             <Button onClick={addExercise} variant="contained" color="primary">
               Add Exercise
             </Button>
-
-
-            <Snackbar
-              key={snackbarKey} // Use the unique key here
-              open={snackbarOpen}
-              autoHideDuration={4000}
-              onClose={handleCloseSnackbar}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              sx={{ position: 'absolute', right: 180, bottom: 20 }}
-            >
-              <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
-                {snackbarMessage}
-              </Alert>
-            </Snackbar>
           </Box>
 
           {/* List of exercises with drag-and-drop support */}
@@ -425,11 +390,6 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
                             removeExercise={removeExercise}
                             updateExerciseSets={updateExerciseSets}
                             allowWeightAndReps={mode === "createWorkout"}
-                            snackbarMessage={snackbarMessage}
-                            setSnackbarMessage={setSnackbarMessage}
-                            snackbarOpen={snackbarOpen}
-                            setSnackbarOpen={setSnackbarOpen}
-                            setSnackbarSeverity={setSnackbarSeverity}
                             showSnackbar={showSnackbar}
                           />
                         </div>
