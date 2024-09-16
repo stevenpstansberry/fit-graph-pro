@@ -10,7 +10,8 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Card, Modal, Typography, CircularProgress, Box, List, ListItem, ListItemText } from "@mui/material";
+import { Card, Modal, Typography, CircularProgress, Box, List, ListItem, ListItemText, IconButton, Stack, Grid } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 import { getExerciseInfo } from "../../services/ExerciseDBAPIServices";
 import { toTitleCase } from "./common/util";
 
@@ -76,12 +77,24 @@ function ExerciseInfoCard({ open, onClose, exercise }) {
           overflowY: 'auto',
         }}
       >
+        {/* Close Button at the top left corner */}
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{ position: 'absolute', top: 8, left: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
+  
         {loading ? (
-          <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+          <Box
+            display="flex" justifyContent="center" alignItems="center" sx={{ height: '100vh' }} 
+          >
             <CircularProgress />
           </Box>
         ) : exerciseData ? (
           <>
+            {/* Exercise Information */}
             <Typography variant="h4" gutterBottom>
               {toTitleCase(exerciseData.name)}
             </Typography>
@@ -99,14 +112,20 @@ function ExerciseInfoCard({ open, onClose, exercise }) {
                 <strong>Secondary Muscles:</strong> {exerciseData.secondaryMuscles.map(toTitleCase).join(', ')}
               </Typography>
             )}
-            <img
-              src={exerciseData.gifUrl}
-              alt={exerciseData.name}
-              style={{ maxWidth: '100%', height: 'auto', marginTop: '20px', marginBottom: '20px' }}
-            />
+  
+            {/* Exercise GIF centered */}
+            <Box display="flex" justifyContent="center" my={2}>
+              <img
+                src={exerciseData.gifUrl}
+                alt={exerciseData.name}
+                style={{ maxWidth: '100%', height: 'auto' }}
+              />
+            </Box>
+  
+            {/* How to Perform Section */}
             {exerciseData.instructions && exerciseData.instructions.length > 0 ? (
               <>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h5" gutterBottom>
                   How to Perform:
                 </Typography>
                 <List>
@@ -131,6 +150,7 @@ function ExerciseInfoCard({ open, onClose, exercise }) {
       </Card>
     </Modal>
   );
+  
 }
 
 export default ExerciseInfoCard;
