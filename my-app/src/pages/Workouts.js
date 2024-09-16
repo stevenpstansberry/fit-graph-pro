@@ -728,6 +728,7 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
         ToEditId={toEditId}
         ToEditDate={toEditDate}
         manageWorkoutOrSplit={manageWorkoutOrSplit}
+        showSnackbar={showSnackbar}
       />
     </Box>
   );
