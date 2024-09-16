@@ -31,6 +31,36 @@ import { v4 as uuidv4 } from 'uuid';
 import { getUser } from '../../services/AuthService';
 import { getAllExercises } from "../../services/ExerciseDBAPIServices";
 import { toTitleCase } from "./common/util";
+import { FixedSizeList } from "react-window"; 
+
+
+/**
+ * VirtualizedListbox component for rendering a virtualized list of options
+ * in the Autocomplete component to improve performance with large datasets.
+ * This component utilizes react-window's FixedSizeList to render only the visible
+ * portion of the list, significantly reducing rendering overhead.
+ *
+ * @function VirtualizedListbox
+ * @param {Object} props - Component props.
+ * @param {React.ReactNode} props.children - The children passed to the Listbox component.
+ * @param {React.Ref} ref - A ref that is forwarded to the root div of the Listbox component.
+ * @returns {React.Element} - The rendered VirtualizedListbox component.
+ */
+const VirtualizedListbox = React.forwardRef(function VirtualizedListbox(props, ref) {
+  const { children, ...other } = props;
+  const itemData = React.Children.toArray(children);
+
+  // Render a row for each item
+  const Row = ({ index, style }) => <div style={style}>{itemData[index]}</div>;
+
+  return (
+    <div ref={ref} {...other}>
+      <FixedSizeList height={300} width="100%" itemSize={46} itemCount={itemData.length} overscanCount={5}>
+        {Row}
+      </FixedSizeList>
+    </div>
+  );
+});
 
 /**
  * WorkoutCard component for managing and creating workouts or workout splits.
@@ -492,6 +522,7 @@ const mapMuscleName = (muscleName) => {
             sx={{ width: 300, mr: 2 }} // Adjust width and margin
             getOptionLabel={(option) => option.displayLabel} // Use displayLabel for the dropdown
             isOptionEqualToValue={(option, value) => option.label === value.label} // Compare based on the internal label
+            ListboxComponent={VirtualizedListbox} // Use virtualized list for better performance
             renderInput={(params) => <TextField {...params} label="Exercise" />}
           />
             <Button onClick={addExercise} variant="contained" color="primary">
