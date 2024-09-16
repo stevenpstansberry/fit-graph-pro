@@ -145,12 +145,11 @@ const GradientLegend = () => {
  * @param {Array} props.workoutHistory - Full workout data of the user.
  * @returns {React.Element} - The rendered HeatMap component.
  */
-const HeatMap = ({ workoutHistory }) => {
+const HeatMap = ({ workoutHistory, selectedMonth, setSelectedMonth, selectedYear, setSelectedYear }) => {
 
   const [filteredWorkouts, setFilteredWorkouts] = useState(workoutHistory); // State to manage filtered workouts
   const [timeframe, setTimeframe] = useState('currentMonth'); // State for selected timeframe
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // State for selected month
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // State for selected year
+
 
   // Memoized data for filtered workouts
   const filteredData = useMemo(() => convertWorkoutHistoryToHeatmapData(filteredWorkouts), [filteredWorkouts]);
