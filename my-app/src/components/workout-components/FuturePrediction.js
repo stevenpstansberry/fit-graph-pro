@@ -15,7 +15,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Button, Grid, Container, Tooltip, IconButton, Tabs, Tab, Autocomplete, Snackbar, Alert } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { calculateFuturePerformance } from '../../services/APIServices';
+import { calculateFuturePerformance } from '../../services/FitGraphAPIServices';
 
 /**
  * FuturePrediction component

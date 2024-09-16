@@ -20,7 +20,7 @@ import { Card, Modal } from "@mui/material";
  * @param {Object} props - The properties passed to the component.
  * @param {boolean} props.open - Flag indicating whether the modal is open.
  * @param {function} props.onClose - Function to close the modal.
- * @param {Object} props.exercise - The exercise object containing label, bodyPart, and sets. 
+ * @param {Object} props.exercise - The exercise object containing label, bodyPart, and muscles. 
  * @returns {React.Element} - The rendered ExerciseInfoCard component.
  */
 function ExerciseInfoCard({ open, onClose, exercise }) {

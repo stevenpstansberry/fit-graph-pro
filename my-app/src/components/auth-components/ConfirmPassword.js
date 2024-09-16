@@ -18,7 +18,7 @@
  */
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Alert, Snackbar } from '@mui/material';
-import { verifyPassword, UserPasswordReset, deleteUser } from '../../services/APIServices';
+import { verifyPassword, UserPasswordReset, deleteUser } from '../../services/FitGraphAPIServices';
 import { resetUserSession } from '../../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 

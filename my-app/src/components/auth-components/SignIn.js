@@ -17,7 +17,7 @@ import { Alert, Button, TextField, Link, Grid, Box, Typography, Container, Snack
 import React, { useState, } from 'react';
 import { setUserSession } from "../../services/AuthService";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { loginUser } from "../../services/APIServices";  // Import the loginUser function from APIServices
+import { loginUser } from "../../services/FitGraphAPIServices";  // Import the loginUser function from APIServices
 
 /**
  * 

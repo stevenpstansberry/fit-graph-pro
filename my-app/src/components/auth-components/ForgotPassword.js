@@ -15,7 +15,7 @@
 
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Container, Snackbar, Alert } from '@mui/material';
-import { requestPasswordReset } from '../../services/APIServices'; 
+import { requestPasswordReset } from '../../services/FitGraphAPIServices'; 
 
 /**
  * ForgotPassword component for requesting a password reset link.
