@@ -20,9 +20,10 @@ import { getExerciseInfo } from "../../services/ExerciseDBAPIServices";
  * @param {Object} props - The properties passed to the component.
  * @param {boolean} props.open - Flag indicating whether the modal is open.
  * @param {function} props.onClose - Function to close the modal.
+ * @param {Object} props.exercise - The exercise object containing label, body part, and muscles worked
  * @returns {React.Element} - The rendered ExerciseInfoCard component.
  */
-function ExerciseInfoCard({ open, onClose }) {
+function ExerciseInfoCard({ open, onClose, exercise }) {
   const [exerciseData, setExerciseData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,7 +32,7 @@ function ExerciseInfoCard({ open, onClose }) {
     const fetchExerciseData = async () => {
       try {
         // Hardcoded request to get the bench press exercise information
-        const data = await getExerciseInfo("bench press");
+        const data = await getExerciseInfo(exercise.label.toLowerCase());
         setExerciseData(data);
         setLoading(false);
       } catch (error) {
