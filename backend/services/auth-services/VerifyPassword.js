@@ -15,8 +15,9 @@ AWS.config.update({
 });
 const util = require('../../utils/util');
 const bcrypt = require('bcryptjs');
+const common = require('./common');
 
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+
 const userTable = 'fit-graph-users';
 
 /**
@@ -41,7 +42,7 @@ async function verifyPassword(user) {
   }
 
   // Get user from DynamoDB or return error if user not found
-  const dynamoUser = await getUser(username.toLowerCase().trim());
+  const dynamoUser = await common.getUser(userTable, username.toLowerCase().trim());
   if (!dynamoUser || !dynamoUser.username) {
     return util.buildResponse(403, { message: 'user does not exist' });
   }
@@ -59,27 +60,5 @@ async function verifyPassword(user) {
   return util.buildResponse(200, { message: 'Password verified successfully' });
 }
 
-/**
- * Retrieves a user from DynamoDB based on the provided username.
- * 
- * @async
- * @function getUser
- * @param {string} username - The username of the user to retrieve.
- * @returns {Promise<Object|null>} The user object if found, otherwise null.
- */
-async function getUser(username) {
-    const params = {
-      TableName: userTable,
-      Key: {
-        username: username
-      }
-    }
-  
-    return await dynamodb.get(params).promise().then(response => {
-      return response.Item;
-    }, error => {
-      console.error('There is an error getting user: ', error);
-    })
-  }
 
 module.exports.verifyPassword = verifyPassword;
