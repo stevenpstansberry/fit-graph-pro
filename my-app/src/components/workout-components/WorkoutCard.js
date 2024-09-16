@@ -29,6 +29,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./ExerciseSubCard";
 import { v4 as uuidv4 } from 'uuid';
 import { getUser } from '../../services/AuthService';
+import { getAllExercises } from "../../services/ExerciseDBAPIServices";
 
 /**
  * WorkoutCard component for managing and creating workouts or workout splits.
@@ -54,13 +55,14 @@ function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, ty
 
 // ======== State for managing input and UI interactions ========
 const [inputValue, setInputValue] = useState(''); // Input value for the exercise search
+const [loading, setLoading] = useState(true); // Loading state for API call
 
 
 
 // ======== State for managing exercises and workout data ========
 const [exercises, setExercises] = useState([]); // List of exercises added to the workout
 const [selectedExercise, setSelectedExercise] = useState(null); // Currently selected exercise from the dropdown
-const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises in the dropdown
+const [availableExercises, setAvailableExercises] = useState([]); // State for available exercises in the dropdown
 
 // ======== State for managing workout and split modes ========
 const [isEditMode, setIsEditMode] = useState(editMode || false); // State to determine if editing mode is enabled
@@ -71,29 +73,58 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
   // Initialize workout metadata and preload exercises when the modal opens
   useEffect(() => {
     if (open) {
-      setExercises(preloadedExercises);
+      setExercises(preloadedExercises); // Set the preloaded exercises
       setUniqueId(uuidv4()); // Generate a unique ID for the workout
-
-
-      // Filter out preloaded exercises from the available exercises
-      const filteredExercises = strengthWorkouts.filter(
-        (exercise) => !preloadedExercises.some(preloaded => preloaded.label === exercise.label)
-      );
-      setAvailableExercises(filteredExercises);
-
+  
       // Set edit mode if passed in
       if (editMode) {
         setIsEditMode(true);
-        setUniqueId(ToEditId)
+        setUniqueId(ToEditId);
         setWorkoutDate(ToEditDate);
       } else {
-        console.log(mode)
+        console.log(mode);
         setWorkoutDate(new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })); // Set today's date with time for the workout
         setIsEditMode(false);
         console.log("returned back to normal mode");
       }
+  
+      // Fetch exercises from ExerciseDB API and transform the data
+      fetchExercises();
     }
   }, [open, preloadedExercises, editMode]);
+  
+  /**
+   * Fetches all exercises from the ExerciseDB API and transforms them to the required format.
+   * Filters out exercises that are already preloaded and sets the available exercises in state.
+   */
+  const fetchExercises = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllExercises(); // Fetch all exercises
+      console.log("ALL WORKOUTS!!!!!!!", data);
+      const transformedExercises = data.map((exercise) => ({
+        label: exercise.name, // Use 'name' as 'label'
+        bodyPart: exercise.bodyPart,
+        muscles: exercise.secondaryMuscles
+          ? [mapMuscleName(exercise.target), ...exercise.secondaryMuscles.map(mapMuscleName)].filter(Boolean) // Map muscles and filter out undefined values
+          : [mapMuscleName(exercise.target)].filter(Boolean), // Map target muscle and filter out undefined values
+        gifUrl: exercise.gifUrl,
+        instructions: exercise.instructions,
+      }));
+  
+      // Filter out preloaded exercises from the available exercises
+      const filteredExercises = transformedExercises.filter(
+        (exercise) => !preloadedExercises.some(preloaded => preloaded.label === exercise.label)
+      );
+  
+      setAvailableExercises(filteredExercises); // Set the filtered exercises
+    } catch (error) {
+      console.error("Failed to fetch exercises:", error);
+      showSnackbar("Failed to load exercises. Please try again later.", 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /**
   * Handles the end of a drag-and-drop operation to reorder exercises in the workout.
@@ -277,6 +308,59 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
     }
     onClose();
   };
+
+/**
+ * Maps API muscle names to the acceptable names for react-body-highlighter.
+ *
+ * @function mapMuscleName
+ * @param {string} muscleName - The muscle name from the API.
+ * @returns {string|null} - The mapped muscle name or null if it doesn't match any acceptable name.
+ */
+const mapMuscleName = (muscleName) => {
+  const muscleMapping = {
+    // Chest
+    "pectorals": "chest",
+    "chest": "chest",
+
+    // Back
+    "upper back": "upper-back",
+    "lower back": "lower-back",
+    "trapezius": "trapezius",
+    "traps": "trapezius",
+
+    // Arms
+    "biceps": "biceps",
+    "triceps": "triceps",
+    "forearms": "forearm",
+    "deltoids": "front-deltoids",
+    "rear deltoids": "back-deltoids",
+
+    // Abs
+    "abdominals": "abs",
+    "lower abs": "abs", 
+    "obliques": "obliques",
+
+    // Legs
+    "adductors": "adductor",
+    "inner thighs": "adductor", 
+    "quads": "quadriceps",
+    "quadriceps": "quadriceps",
+    "hamstrings": "hamstring",
+    "calves": "calves",
+    "glutes": "gluteal",
+    "abductors": "abductors",
+    "soleus": "calves", 
+
+    // Head
+    "neck": "neck",
+    "sternocleidomastoid": "neck", 
+    "head": "head",
+  };
+
+  // Return the mapped muscle name if found, otherwise return undefined to discard
+  return muscleMapping[muscleName.toLowerCase()];
+};
+
 
 
   return (

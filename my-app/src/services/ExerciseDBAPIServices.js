@@ -67,21 +67,48 @@ export const getExerciseInfo = async (exerciseName) => {
  *
  * @async
  * @function getAllExercises
- * @returns {Promise<Array>} Response data from the ExerciseDB API containing all exercises.
+ * @returns {Promise<Object[]>} Response data from the ExerciseDB API containing all exercises.
  * @throws Will throw an error if the request fails.
  */
 export const getAllExercises = async () => {
   try {
-    const response = await axios.get(`${exerciseDBBaseURL}/exercises`, {
+    // Construct the full URL for the API endpoint with the limit parameter set to 0 to retrieve all exercises
+    const url = `${exerciseDBBaseURL}/exercises?limit=0`;
+
+    // Log the request details before making the request
+    console.log('Making GET request to:', url);
+    console.log('Request Headers:', {
+      'Content-Type': 'application/json',
+      'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com',
+      'X-RapidAPI-Key': exerciseDBApiKey,
+    });
+
+    const response = await axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
         'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com',
         'X-RapidAPI-Key': exerciseDBApiKey,
       },
     });
-    return response.data;
+
+    // Log the response status and data
+    console.log('Response Status:', response.status);
+    console.log('Response Data Length:', response.data.length);
+
+    return response.data; // Return all exercises
   } catch (error) {
-    console.error('Error fetching exercises:', error);
-    throw error;
+    if (error.response) {
+      // Request made and server responded
+      console.error('Response Error:', error.response.data);
+      console.error('Status:', error.response.status);
+      console.error('Headers:', error.response.headers);
+    } else if (error.request) {
+      // Request made but no response received
+      console.error('Request Error:', error.request);
+    } else {
+      // Something happened in setting up the request
+      console.error('Error', error.message);
+    }
+    throw error; // Re-throw the error after logging it
   }
-};  
+};
