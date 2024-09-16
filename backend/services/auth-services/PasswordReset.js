@@ -1,14 +1,13 @@
 /**
- * @fileoverview Service to handle user password reset by generating a new password and updating it in the database.
+ * @fileoverview Service to handle user password reset by generating a reset link and updating the password in the database.
  * 
  * @file backend/services/auth-services/PasswordReset.js
  * 
- * Exposes the `resetPassword()` function to handle user password reset requests.
+ * Exposes the `resetPassword()` and `verifyResetToken()` functions to handle user password reset requests.
  * 
  * @author Steven Stansberry
  * @version 1.0.0
  */
-
 
 const AWS = require('aws-sdk');
 AWS.config.update({
@@ -18,13 +17,11 @@ const util = require('../../utils/util');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const ses = new AWS.SES({ apiVersion: '2010-12-01' });
-
-
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const userTable = 'fit-graph-users';
 
 /**
- * Resets a user's password by generating a new password and updating it in the database.
+ * Initiates a password reset by generating a secure reset link and sending it to the user's email.
  * 
  * @async
  * @function resetPassword
@@ -32,50 +29,79 @@ const userTable = 'fit-graph-users';
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
 async function resetPassword(event) {
-    // Parse the JSON string body to a JavaScript object
-    const body = JSON.parse(event.body);
-    const email = body.email;
-  
-    // Check if the email is provided
-    if (!email) {
-      return util.buildResponse(401, {
-        message: 'email is required'
-      });
-    }
-  
-    // Get user from DynamoDB or return error if user not found
-    const dynamoUser = await getUserByEmail(email.toLowerCase().trim());
-    if (!dynamoUser || !dynamoUser.email) {
-      return util.buildResponse(403, { message: 'user does not exist' });
-    }
-  
-    // Generate a new random password
-    const newPassword = generateRandomPassword();
-  
-    // Hash the new password before saving it
-    const encryptedPW = bcrypt.hashSync(newPassword.trim(), 10);
-  
-    // Update the user's password in DynamoDB
-    await updateUserPasswordByUsername(dynamoUser.username, encryptedPW);
-  
-    // Temporarily log the new password to the console for testing
-    console.log(`Password reset successful. New password for user with email ${email}: ${newPassword}... ${encryptedPW}`);
-  
-    await sendResetEmail(dynamoUser.email, newPassword);
-  
-    return util.buildResponse(200, { message: `Password reset successful.` });
+  const body = JSON.parse(event.body);
+  const email = body.email;
+
+  if (!email) {
+    return util.buildResponse(401, {
+      message: 'email is required'
+    });
   }
 
+  // Get user from DynamoDB
+  const dynamoUser = await getUserByEmail(email.toLowerCase().trim());
+  if (!dynamoUser || !dynamoUser.email) {
+    return util.buildResponse(403, { message: 'user does not exist' });
+  }
+
+  // Generate a secure token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  const tokenExpiry = Date.now() + 3600000; // Token expires in 1 hour
+
+  // Update the user in DynamoDB with the token and expiry time
+  await updateUserResetToken(dynamoUser.username, resetToken, tokenExpiry);
+
+  // Send email with reset link
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}&email=${encodeURIComponent(dynamoUser.email)}`;
+  await sendResetEmail(dynamoUser.email, resetLink);
+
+  return util.buildResponse(200, { message: `Password reset link sent to ${dynamoUser.email}.` });
+}
+
 /**
- * Sends an email to the user with their new password using AWS SES.
+ * Verifies the reset token and updates the user's password in DynamoDB.
+ * 
+ * @async
+ * @function verifyResetToken
+ * @param {Object} event - The event object containing the body with token, email, and new password.
+ * @returns {Promise<Object>} Response object indicating success or failure.
+ */
+async function verifyResetToken(event) {
+  const body = JSON.parse(event.body);
+  const { email, token, newPassword } = body;
+
+  // Validate input
+  if (!email || !token || !newPassword) {
+    return util.buildResponse(400, { message: 'Missing parameters.' });
+  }
+
+  const dynamoUser = await getUserByEmail(email.toLowerCase().trim());
+  if (!dynamoUser || dynamoUser.resetToken !== token || Date.now() > dynamoUser.tokenExpiry) {
+    return util.buildResponse(403, { message: 'Invalid or expired token.' });
+  }
+
+  // Hash the new password
+  const encryptedPW = bcrypt.hashSync(newPassword.trim(), 10);
+
+  // Update password in DynamoDB
+  await updateUserPasswordByUsername(dynamoUser.username, encryptedPW);
+
+  // Clear reset token and expiry
+  await updateUserResetToken(dynamoUser.username, null, null);
+
+  return util.buildResponse(200, { message: 'Password has been reset successfully.' });
+}
+
+/**
+ * Sends an email to the user with the password reset link using AWS SES.
  * 
  * @async
  * @function sendResetEmail
  * @param {string} recipientEmail - The recipient's email address.
- * @param {string} newPassword - The new password to send to the user.
+ * @param {string} resetLink - The password reset link to send to the user.
  * @returns {Promise<void>}
  */
-async function sendResetEmail(recipientEmail, newPassword) {
+async function sendResetEmail(recipientEmail, resetLink) {
   const params = {
     Destination: {
       ToAddresses: [recipientEmail],
@@ -84,11 +110,11 @@ async function sendResetEmail(recipientEmail, newPassword) {
       Body: {
         Html: {
           Charset: "UTF-8",
-          Data: `<p>Your password has been reset. Your new password is: <strong>${newPassword}</strong></p><p>Please login and change your password immediately.</p>`,
+          Data: `<p>Click the link below to reset your password:</p><p><a href="${resetLink}">Reset Password</a></p><p>This link is valid for one hour.</p>`,
         },
         Text: {
           Charset: "UTF-8",
-          Data: `Your password has been reset. Your new password is: ${newPassword}. Please login and change your password immediately.`,
+          Data: `Click the link below to reset your password: ${resetLink}. This link is valid for one hour.`,
         },
       },
       Subject: {
@@ -96,13 +122,69 @@ async function sendResetEmail(recipientEmail, newPassword) {
         Data: "Your Password Reset for FitGraphPro",
       },
     },
-    Source: process.env.SES_SOURCE_EMAIL, 
-    ReplyToAddresses: [process.env.SES_REPLY_TO_EMAIL], 
+    Source: process.env.SES_SOURCE_EMAIL,
+    ReplyToAddresses: [process.env.SES_REPLY_TO_EMAIL],
   };
 
   await ses.sendEmail(params).promise();
 }
-  
+
+/**
+ * Updates the user's reset token and expiry time in DynamoDB.
+ * 
+ * @async
+ * @function updateUserResetToken
+ * @param {string} username - The username of the user.
+ * @param {string} resetToken - The generated reset token.
+ * @param {number} tokenExpiry - The expiry time of the reset token in milliseconds.
+ * @returns {Promise<void>}
+ */
+async function updateUserResetToken(username, resetToken, tokenExpiry) {
+  const params = {
+    TableName: userTable,
+    Key: { username: username },
+    UpdateExpression: 'set #resetToken = :resetToken, #tokenExpiry = :tokenExpiry',
+    ExpressionAttributeNames: {
+      '#resetToken': 'resetToken',
+      '#tokenExpiry': 'tokenExpiry'
+    },
+    ExpressionAttributeValues: {
+      ':resetToken': resetToken,
+      ':tokenExpiry': tokenExpiry
+    }
+  };
+
+  return await dynamodb.update(params).promise().then(() => {
+    console.log('Reset token updated successfully for user with username:', username);
+  }, error => {
+    console.error('There is an error updating reset token for user:', error);
+  });
+}
+
+/**
+ * Updates the user's password in DynamoDB 
+ * 
+ * @async
+ * @function updateUserPasswordByUsername
+ * @param {string} user - The user
+ * @param {string} newPassword - The new encrypted password to be set.
+ * @returns {Promise<void>}
+ */
+async function updateUserPasswordByUsername(username, newPassword) {
+  const params = {
+    TableName: userTable,
+    Key: { username: username },
+    UpdateExpression: 'set #password = :password',
+    ExpressionAttributeNames: { '#password': 'password' },
+    ExpressionAttributeValues: { ':password': newPassword }
+  };
+
+  return await dynamodb.update(params).promise().then(() => {
+    console.log('Password updated successfully for user with username:', username);
+  }, error => {
+    console.error('There is an error updating user password:', error);
+  });
+}
 
 /**
  * Retrieves a user from DynamoDB based on the provided email using a Scan operation.
@@ -126,44 +208,6 @@ async function getUserByEmail(email) {
   }, error => {
     console.error('There is an error getting user by email: ', error);
   });
-}
-
-/**
- * Updates the user's password in DynamoDB 
- * 
- * @async
- * @function updateUserPasswordByUsername
- * @param {string} user - The user
- * @param {string} newPassword - The new encrypted password to be set.
- * @returns {Promise<void>}
- */
-async function updateUserPasswordByUsername(username, newPassword) {
-  // Fetch the user by scanning the table to get the username (primary key)
-
-
-  const params = {
-    TableName: userTable,
-    Key: { username: username }, // Update based on username (primary key)
-    UpdateExpression: 'set #password = :password',
-    ExpressionAttributeNames: { '#password': 'password' },
-    ExpressionAttributeValues: { ':password': newPassword }
-  };
-
-  return await dynamodb.update(params).promise().then(() => {
-    console.log('Password updated successfully for user with username:', username);
-  }, error => {
-    console.error('There is an error updating user password by email: ', error);
-  });
-}
-
-/**
- * Generates a random password for the user.
- * 
- * @function generateRandomPassword
- * @returns {string} A random password string.
- */
-function generateRandomPassword() {
-  return crypto.randomBytes(8).toString('hex'); // Generates a 16-character hex string
 }
 
 module.exports.resetPassword = resetPassword;
