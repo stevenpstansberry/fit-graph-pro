@@ -12,7 +12,7 @@
  */
 
 import { getUser, resetUserSession, getProfileImageUrlFromSession, setProfileImageUrlToSession } from '../services/AuthService';
-import { getProfilePicture } from '../services/APIServices';
+import { getProfilePicture } from '../services/FitGraphAPIServices';
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';

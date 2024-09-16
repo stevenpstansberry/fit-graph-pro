@@ -31,7 +31,7 @@ import Workouts from './pages/Workouts';
 import ResetPassword from './pages/ResetPassword';
 import Account from './pages/Account';
 import Attributions from './pages/Attributions';
-import { verifyToken } from './services/APIServices';  
+import { verifyToken } from './services/FitGraphAPIServices';  
 import ResetPasswordFromEmail from './pages/ResetPasswordFromEmail';
 
 function App() {

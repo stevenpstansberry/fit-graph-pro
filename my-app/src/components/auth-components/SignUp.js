@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import { Container, Typography, Box, TextField, Grid, Button, Snackbar, Alert, Link } from '@mui/material';
 import { setUserSession } from "../../services/AuthService";
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from "../../services/APIServices"; 
+import { registerUser } from "../../services/FitGraphAPIServices"; 
 
 /**
  * 

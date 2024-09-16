@@ -14,6 +14,7 @@ import React, { useState } from "react";
 import { Card, CardContent, Box, TextField, Button, Typography, IconButton, Snackbar, Alert } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import ExerciseInfoCard from "./ExerciseInfoCard";
 
 /**
  * Component for rendering and managing an exercise card within a workout.
@@ -30,6 +31,26 @@ import AddIcon from "@mui/icons-material/Add";
  * @returns {React.Element} - The rendered ExerciseSubcard component.
  */
 function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode, showSnackbar }) {
+
+  const [isInfoCardOpen, setIsInfoCardOpen] = useState(false);
+  
+
+  /**
+   * Closes the exercise info card modal.
+   */
+    const handleClose = () => {
+      setIsInfoCardOpen(false);
+    };
+
+  /**
+   * Opens the exercise info card modal.
+   * 
+   **/
+    const handleOpen = () => {
+      console.log("EXERCISE:", exercise)
+      setIsInfoCardOpen(true);
+    }
+
 
   /**
    * Handles the change in input for weight or reps in a specific set.
@@ -91,7 +112,7 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {/* Display the exercise label and body part */}
           <Typography variant="h6" component="div">
-            {exercise.label} - {exercise.bodyPart}
+            {exercise.displayLabel} - {exercise.displayBodyPart} - <Button onClick={handleOpen}>Info</Button>
           </Typography>
 
           {/* Button for adding sets and icon for deleting the exercise */}
@@ -151,6 +172,7 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
           </Box>
         ))}
       </CardContent>
+      <ExerciseInfoCard open={isInfoCardOpen} onClose={handleClose} exercise={exercise} />
     </Card>
   );
 }

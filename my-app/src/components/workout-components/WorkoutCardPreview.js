@@ -90,7 +90,7 @@ function WorkoutCardPreview({ workout, onDelete, onEdit }) {
             {workout.exercises.map((exercise, index) => (
               <Box key={index} sx={{ mb: 1 }}>
                 <Typography variant="subtitle1">
-                  {exercise.label} - {exercise.bodyPart}
+                  {exercise.displayLabel} - {exercise.displayBodyPart}
                 </Typography>
                 {exercise.sets.map((set, i) => (
                   <Typography key={i} variant="body2">

@@ -24,7 +24,7 @@ import { Container, Typography, Box, Button, Avatar, Divider, CircularProgress }
 import WorkoutsPerWeekChart from '../components/profile-components/WorkoutsPerWeekChart';
 import ProfilePictureUpload from '../components/profile-components/ProfilePictureUpload'; 
 import RecentWorkouts from '../components/profile-components/RecentWorkouts'; 
-import { getAllWorkouts, getProfilePicture } from '../services/APIServices';
+import { getAllWorkouts, getProfilePicture } from '../services/FitGraphAPIServices';
 
 /**
  * Profile page component for displaying user information and managing profile-related actions.

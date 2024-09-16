@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TextField, Button, Box, Typography, Snackbar, Alert } from '@mui/material';
-import { requestPasswordReset } from '../services/APIServices';
+import { requestPasswordReset } from '../services/FitGraphAPIServices';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import fitGraphLogo from '../assets/fit-graph-logo.png';

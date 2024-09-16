@@ -16,7 +16,8 @@ import axios from 'axios';
 
 // Base URL for the FitGraph production environment API
 const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
-axios.defaults.headers.common['X-Api-Key'] = process.env.REACT_APP_FIT_GRAPH_PROD_KEY;
+
+
 
 /**
  * Sends a GET request to a specified API endpoint.
@@ -41,6 +42,7 @@ const getFromAPI = async (endpoint, errorHandler) => {
     const response = await axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
+        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
       },
     });
 
@@ -95,6 +97,7 @@ const postToAPI = async (endpoint, data, errorHandler) => {
     const response = await axios.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
+        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
       },
     });
 
@@ -152,7 +155,7 @@ const deleteToAPI = async (endpoint, data = {}, errorHandler) => {
     const response = await axios.delete(url, {
       headers: {
         'Content-Type': 'application/json',
-        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, // Add any additional headers you need
+        'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY, 
       },
       data: data // Include the optional data in the request
     });
@@ -203,7 +206,6 @@ const putToAPI = async (endpoint, data, errorHandler) => {
   console.log('Request Data:', data);
   console.log('Request Headers:', {
     'Content-Type': 'application/json', 
-    'X-Api-Key': process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
   });
 
   try {

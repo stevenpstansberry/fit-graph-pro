@@ -24,7 +24,7 @@ import ViewWorkouts from '../components/workout-components/ViewWorkouts';
 import StrengthChart from '../components/workout-components/StrengthChart';
 import FuturePrediction from '../components/workout-components/FuturePrediction';
 import HeatMap from '../components/workout-components/HeatMap';
-import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout, updateSplit } from '../services/APIServices';
+import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout, updateSplit } from '../services/FitGraphAPIServices';
 import { useSearchParams } from 'react-router-dom';
 import Confetti from 'react-confetti';
 

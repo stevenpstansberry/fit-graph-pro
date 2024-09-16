@@ -29,6 +29,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./ExerciseSubCard";
 import { v4 as uuidv4 } from 'uuid';
 import { getUser } from '../../services/AuthService';
+import { getAllExercises } from "../../services/ExerciseDBAPIServices";
+import { toTitleCase } from "./common/util";
 
 /**
  * WorkoutCard component for managing and creating workouts or workout splits.
@@ -54,13 +56,15 @@ function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, ty
 
 // ======== State for managing input and UI interactions ========
 const [inputValue, setInputValue] = useState(''); // Input value for the exercise search
+const [loading, setLoading] = useState(true); // Loading state for API call
 
 
 
 // ======== State for managing exercises and workout data ========
 const [exercises, setExercises] = useState([]); // List of exercises added to the workout
 const [selectedExercise, setSelectedExercise] = useState(null); // Currently selected exercise from the dropdown
-const [availableExercises, setAvailableExercises] = useState(strengthWorkouts); // State for available exercises in the dropdown
+const [availableExercises, setAvailableExercises] = useState([]); // State for available exercises in the dropdown
+const [exercisesFetched, setExercisesFetched] = useState(false); // State to track if exercises have been fetched
 
 // ======== State for managing workout and split modes ========
 const [isEditMode, setIsEditMode] = useState(editMode || false); // State to determine if editing mode is enabled
@@ -71,29 +75,91 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
   // Initialize workout metadata and preload exercises when the modal opens
   useEffect(() => {
     if (open) {
-      setExercises(preloadedExercises);
+      setExercises(preloadedExercises); // Set the preloaded exercises
       setUniqueId(uuidv4()); // Generate a unique ID for the workout
-
-
-      // Filter out preloaded exercises from the available exercises
-      const filteredExercises = strengthWorkouts.filter(
-        (exercise) => !preloadedExercises.some(preloaded => preloaded.label === exercise.label)
-      );
-      setAvailableExercises(filteredExercises);
-
+  
       // Set edit mode if passed in
       if (editMode) {
         setIsEditMode(true);
-        setUniqueId(ToEditId)
+        setUniqueId(ToEditId);
         setWorkoutDate(ToEditDate);
       } else {
-        console.log(mode)
+        console.log(mode);
         setWorkoutDate(new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })); // Set today's date with time for the workout
         setIsEditMode(false);
         console.log("returned back to normal mode");
       }
+  
+      // Fetch exercises from ExerciseDB API and transform the data only if not fetched before
+      if (!exercisesFetched) {
+        fetchExercises();
+      }
     }
   }, [open, preloadedExercises, editMode]);
+  
+/**
+ * Fetches all exercises from the ExerciseDB API and transforms them to the required format.
+ * Filters out exercises that are already preloaded and sets the available exercises in state.
+ */
+const fetchExercises = async () => {
+  if (exercisesFetched) return; // Ensure fetchExercises is called only once
+
+  setLoading(true);
+  try {
+    const data = await getAllExercises(); // Fetch all exercises
+    console.log("ALL WORKOUTS!!!!!!!", data);
+
+    // Use a Map to ensure uniqueness by exercise name
+    const exerciseMap = new Map();
+
+    data.forEach((exercise) => {
+      const label = exercise.name.toLowerCase().trim(); // Normalize the name for uniqueness check
+
+      if (!exerciseMap.has(label)) {
+        const displayLabel = toTitleCase(exercise.name); // Title case for exercise name
+        const displayBodyPart = toTitleCase(exercise.bodyPart); // Title case for body part
+
+        console.log(`Processed Exercise: ${displayLabel}, Display Body Part: ${displayBodyPart}`); // Debugging log
+
+        exerciseMap.set(label, {
+          label: exercise.name, // Use 'name' as 'label'
+          displayLabel: displayLabel, // Display name with proper capitalization
+          bodyPart: exercise.bodyPart,
+          displayBodyPart: displayBodyPart, // Display body part with proper capitalization
+          muscles: exercise.secondaryMuscles
+            ? [mapMuscleName(exercise.target), ...exercise.secondaryMuscles.map(mapMuscleName)].filter(Boolean) // Map muscles and filter out undefined values
+            : [mapMuscleName(exercise.target)].filter(Boolean), // Map target muscle and filter out undefined values
+          gifUrl: exercise.gifUrl,
+          instructions: exercise.instructions,
+        });
+      }
+    });
+
+    // Convert Map back to an array for setting state
+    const uniqueExercises = Array.from(exerciseMap.values());
+
+    // Filter out exercises with bodyPart equal to 'cardio' and preloaded exercises from the available exercises
+    const filteredExercises = uniqueExercises.filter(
+      (exercise) =>
+        exercise.bodyPart.toLowerCase() !== 'cardio' && // Exclude 'cardio' exercises
+        !preloadedExercises.some((preloaded) => preloaded.label === exercise.label) // Exclude preloaded exercises
+    );
+
+    console.log("TRANSFORMED EXERCISES: ", filteredExercises); // Log transformed exercises to verify
+
+    setAvailableExercises(filteredExercises); // Set the filtered exercises
+    setExercisesFetched(true); 
+  } catch (error) {
+    console.error("Failed to fetch exercises:", error);
+    showSnackbar("Failed to load exercises. Please try again later.", 'error');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
 
   /**
   * Handles the end of a drag-and-drop operation to reorder exercises in the workout.
@@ -162,7 +228,9 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
     if (selectedExercise) {
       const newExercise = { 
         label: selectedExercise.label, 
+        displayLabel: selectedExercise.displayLabel,
         bodyPart: selectedExercise.bodyPart, 
+        displayBodyPart: selectedExercise.displayBodyPart, 
         muscles: selectedExercise.muscles,
         sets: [{ weight: "", reps: "" }] 
       };
@@ -174,7 +242,7 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
         prevExercises.filter((exercise) => exercise.label !== selectedExercise.label)
       );
       setSelectedExercise(null);  // Reset the selected exercise
-      showSnackbar(`${selectedExercise.label} added successfully.`, 'success');
+      showSnackbar(`${selectedExercise.displayLabel} added successfully.`, 'success');
     } else {
       showSnackbar("Please select an exercise to add.", 'error');;
     }
@@ -192,7 +260,7 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
 
     // Add the removed exercise back to the available options
     setAvailableExercises((prevExercises) => [...prevExercises, exerciseToRemove]);
-    showSnackbar(`${exerciseToRemove.label} removed successfully.`, 'success');
+    showSnackbar(`${exerciseToRemove.displayLabel} removed successfully.`, 'success');
   };
 
   /**
@@ -264,7 +332,9 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
         username: user.username,
         exercises: exercises.map(exercise => ({
           label: exercise.label,
+          displayLabel: exercise.displayLabel,
           bodyPart: exercise.bodyPart,
+          displayBodyPart: exercise.displayBodyPart, 
           muscles: exercise.muscles,
           sets: exercise.sets.map(set => ({ setCount: set.setCount })) // Only include set count
         })),
@@ -277,6 +347,59 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
     }
     onClose();
   };
+
+/**
+ * Maps API muscle names to the acceptable names for react-body-highlighter.
+ *
+ * @function mapMuscleName
+ * @param {string} muscleName - The muscle name from the API.
+ * @returns {string|null} - The mapped muscle name or null if it doesn't match any acceptable name.
+ */
+const mapMuscleName = (muscleName) => {
+  const muscleMapping = {
+    // Chest
+    "pectorals": "chest",
+    "chest": "chest",
+
+    // Back
+    "upper back": "upper-back",
+    "lower back": "lower-back",
+    "trapezius": "trapezius",
+    "traps": "trapezius",
+
+    // Arms
+    "biceps": "biceps",
+    "triceps": "triceps",
+    "forearms": "forearm",
+    "deltoids": "front-deltoids",
+    "rear deltoids": "back-deltoids",
+
+    // Abs
+    "abdominals": "abs",
+    "lower abs": "abs", 
+    "obliques": "obliques",
+
+    // Legs
+    "adductors": "adductor",
+    "inner thighs": "adductor", 
+    "quads": "quadriceps",
+    "quadriceps": "quadriceps",
+    "hamstrings": "hamstring",
+    "calves": "calves",
+    "glutes": "gluteal",
+    "abductors": "abductors",
+    "soleus": "calves", 
+
+    // Head
+    "neck": "neck",
+    "sternocleidomastoid": "neck", 
+    "head": "head",
+  };
+
+  // Return the mapped muscle name if found, otherwise return undefined to discard
+  return muscleMapping[muscleName.toLowerCase()];
+};
+
 
 
   return (
@@ -354,21 +477,23 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
               borderBottom: '1px solid #ccc',
             }}
           >
-            <Autocomplete
-              disablePortal
-              id="combo-box-demo"
-              options={availableExercises}
-              value={selectedExercise}
-              onChange={(event, newValue) => {
-                setSelectedExercise(newValue);
-              }}
-              inputValue={inputValue}
-              onInputChange={(event, newInputValue) => {
-                setInputValue(newInputValue);
-              }}
-              sx={{ width: 300, mr: 2 }} // Adjust width and margin
-              renderInput={(params) => <TextField {...params} label="Exercise" />}
-            />
+          <Autocomplete
+            disablePortal
+            id="combo-box-demo"
+            options={availableExercises}
+            value={selectedExercise}
+            onChange={(event, newValue) => {
+              setSelectedExercise(newValue);
+            }}
+            inputValue={inputValue}
+            onInputChange={(event, newInputValue) => {
+              setInputValue(newInputValue);
+            }}
+            sx={{ width: 300, mr: 2 }} // Adjust width and margin
+            getOptionLabel={(option) => option.displayLabel} // Use displayLabel for the dropdown
+            isOptionEqualToValue={(option, value) => option.label === value.label} // Compare based on the internal label
+            renderInput={(params) => <TextField {...params} label="Exercise" />}
+          />
             <Button onClick={addExercise} variant="contained" color="primary">
               Add Exercise
             </Button>
@@ -380,7 +505,8 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
               {(provided) => (
                 <Box {...provided.droppableProps} ref={provided.innerRef}>
                   {exercises.map((exercise, index) => (
-                    <Draggable key={exercise.label} draggableId={exercise.label} index={index}>
+                    console.log("EXERCISE: ", exercise),
+                    <Draggable key={exercise.displayLabel} draggableId={exercise.displayLabel} index={index}>
                       {(provided) => (
                         <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                           <ExerciseSubcard
@@ -424,47 +550,3 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
 
 export default WorkoutCard;
 
-// List of strength workout exercises for the autocomplete
-const strengthWorkouts = [
-  { label: 'Bench Press', type: 'Strength', bodyPart: 'Chest', muscles: ['chest', 'triceps', 'front-deltoids'] },
-  { label: 'Squat', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'hamstring', 'gluteal', 'calves'] },
-  { label: 'Deadlift', type: 'Strength', bodyPart: 'Back', muscles: ['lower-back', 'hamstring', 'gluteal', 'trapezius'] },
-  { label: 'Overhead Press', type: 'Strength', bodyPart: 'Shoulders', muscles: ['front-deltoids', 'triceps'] },
-  { label: 'Barbell Row', type: 'Strength', bodyPart: 'Back', muscles: ['upper-back', 'biceps', 'lower-back', 'trapezius'] },
-  { label: 'Bicep Curl', type: 'Strength', bodyPart: 'Arms', muscles: ['biceps'] },
-  { label: 'Tricep Extension', type: 'Strength', bodyPart: 'Arms', muscles: ['triceps'] },
-  { label: 'Pull Up', type: 'Strength', bodyPart: 'Back', muscles: ['upper-back', 'biceps', 'trapezius'] },
-  { label: 'Lunge', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'hamstring', 'gluteal', 'calves'] },
-  { label: 'Leg Press', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'gluteal'] },
-  { label: 'Chest Fly', type: 'Strength', bodyPart: 'Chest', muscles: ['chest'] },
-  { label: 'Lat Pulldown', type: 'Strength', bodyPart: 'Back', muscles: ['upper-back', 'biceps', 'trapezius'] },
-  { label: 'Hammer Curl', type: 'Strength', bodyPart: 'Arms', muscles: ['biceps', 'forearm'] },
-  { label: 'Dumbbell Shoulder Press', type: 'Strength', bodyPart: 'Shoulders', muscles: ['front-deltoids', 'triceps'] },
-  { label: 'Leg Curl', type: 'Strength', bodyPart: 'Legs', muscles: ['hamstring'] },
-  { label: 'Leg Extension', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps'] },
-  { label: 'Incline Bench Press', type: 'Strength', bodyPart: 'Chest', muscles: ['chest', 'triceps', 'front-deltoids'] },
-  { label: 'Decline Bench Press', type: 'Strength', bodyPart: 'Chest', muscles: ['chest', 'triceps', 'front-deltoids'] },
-  { label: 'Calf Raise', type: 'Strength', bodyPart: 'Legs', muscles: ['calves'] },
-  { label: 'Front Squat', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'gluteal', 'hamstring'] },
-  { label: 'Reverse Lunge', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'hamstring', 'gluteal'] },
-  { label: 'Goblet Squat', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'gluteal', 'hamstring'] },
-  { label: 'Face Pull', type: 'Strength', bodyPart: 'Back', muscles: ['upper-back', 'trapezius', 'rear-deltoids'] },
-  { label: 'Cable Row', type: 'Strength', bodyPart: 'Back', muscles: ['upper-back', 'biceps', 'trapezius'] },
-  { label: 'Side Lateral Raise', type: 'Strength', bodyPart: 'Shoulders', muscles: ['back-deltoids', 'front-deltoids'] },
-  { label: 'Bulgarian Split Squat', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'hamstring', 'gluteal'] },
-  { label: 'Seated Dumbbell Press', type: 'Strength', bodyPart: 'Shoulders', muscles: ['front-deltoids', 'triceps'] },
-  { label: 'Skull Crusher', type: 'Strength', bodyPart: 'Arms', muscles: ['triceps'] },
-  { label: 'Dips', type: 'Strength', bodyPart: 'Chest', muscles: ['chest', 'triceps', 'front-deltoids'] },
-  { label: 'Single-leg Deadlift', type: 'Strength', bodyPart: 'Legs', muscles: ['hamstring', 'gluteal', 'lower-back'] },
-  { label: 'Russian Twist', type: 'Strength', bodyPart: 'Core', muscles: ['obliques', 'abs'] },
-  { label: 'Hanging Leg Raise', type: 'Strength', bodyPart: 'Core', muscles: ['abs', 'obliques'] },
-  { label: 'Farmers Walk', type: 'Strength', bodyPart: 'Full Body', muscles: ['forearm', 'trapezius', 'abs', 'calves'] },
-  { label: 'Neck Curl', type: 'Strength', bodyPart: 'Neck', muscles: ['neck'] },
-  { label: 'Hip Adduction Machine', type: 'Strength', bodyPart: 'Legs', muscles: ['adductor'] },
-  { label: 'Hip Abduction Machine', type: 'Strength', bodyPart: 'Legs', muscles: ['abductors'] },
-  { label: 'Wrist Curl', type: 'Strength', bodyPart: 'Arms', muscles: ['forearm'] },
-  { label: 'Hanging Oblique Crunch', type: 'Strength', bodyPart: 'Core', muscles: ['obliques'] },
-  { label: 'Landmine Rotation', type: 'Strength', bodyPart: 'Core', muscles: ['obliques', 'abs'] },
-  { label: 'Reverse Hyperextension', type: 'Strength', bodyPart: 'Back', muscles: ['lower-back', 'gluteal', 'hamstring'] },
-  { label: 'Good Morning', type: 'Strength', bodyPart: 'Back', muscles: ['lower-back', 'hamstring', 'gluteal'] }
-];
