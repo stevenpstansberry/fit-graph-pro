@@ -112,9 +112,10 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
         instructions: exercise.instructions,
       }));
   
-      // Filter out preloaded exercises from the available exercises
+      // Filter out exercises with bodyPart equal to 'cardio' and preloaded exercises from the available exercises
       const filteredExercises = transformedExercises.filter(
-        (exercise) => !preloadedExercises.some(preloaded => preloaded.label === exercise.label)
+        (exercise) => exercise.bodyPart.toLowerCase() !== 'cardio' && // Exclude 'cardio' exercises
+          !preloadedExercises.some(preloaded => preloaded.label === exercise.label) // Exclude preloaded exercises
       );
   
       setAvailableExercises(filteredExercises); // Set the filtered exercises
