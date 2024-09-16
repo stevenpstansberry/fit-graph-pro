@@ -616,7 +616,12 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
           {tabIndex === 3 && (
             <Box>
               {/* Heat Map */}
-              <HeatMap workoutHistory={workoutHistory} /> 
+              <HeatMap workoutHistory={workoutHistory}
+                selectedMonth={selectedMonth}
+                setSelectedMonth={setSelectedMonth}
+                selectedYear={selectedYear}
+                setSelectedYear={setSelectedYear}
+               /> 
             </Box>      
           )}
         </>
