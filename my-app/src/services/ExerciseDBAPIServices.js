@@ -61,3 +61,27 @@ export const getExerciseInfo = async (exerciseName) => {
     }
   };
   
+
+/**
+ * Retrieves all exercises from the ExerciseDB API.
+ *
+ * @async
+ * @function getAllExercises
+ * @returns {Promise<Array>} Response data from the ExerciseDB API containing all exercises.
+ * @throws Will throw an error if the request fails.
+ */
+export const getAllExercises = async () => {
+  try {
+    const response = await axios.get(`${exerciseDBBaseURL}/exercises`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com',
+        'X-RapidAPI-Key': exerciseDBApiKey,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching exercises:', error);
+    throw error;
+  }
+};  
