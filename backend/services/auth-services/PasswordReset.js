@@ -75,7 +75,7 @@ async function resetPassword(event) {
 
     // Check if the token is valid
     if (dynamoUser.resetToken !== token || Date.now() > dynamoUser.tokenExpiry) {
-      return util.buildResponse(403, { message: 'Invalid or expired token.' });
+      return util.buildResponse(405, { message: 'Invalid or expired token.' });
     }
 
     // Hash the new password

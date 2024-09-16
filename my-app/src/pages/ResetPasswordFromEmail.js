@@ -47,8 +47,28 @@ function ResetPasswordFromEmail() {
         navigate('/login'); // Redirect to login page after successful password reset
       }, 2000);
     } catch (error) {
+
+      let errorMSG;
+
+      console.log("error status: ", error.response.status);
+
+      switch (error.response.status) {
+        case 404:
+          errorMSG = 'User not found. Please request a new password reset link.';
+          break;
+
+        case 405:
+          errorMSG = 'Invalid token. Please request a new password reset link.';
+          break;
+
+        default:
+          errorMSG = 'Failed to reset password. Please try again.';
+          break;
+
+      }
+
       console.error('Error resetting password:', error);
-      setSnackbarMessage('Failed to reset password. Please try again.');
+      setSnackbarMessage(errorMSG);
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
     }
