@@ -210,11 +210,8 @@ exports.handler = async (event) => {
         // Delete user account route
         case event.httpMethod === 'DELETE' && event.path === deleteAccountPath:
             const deleteAccountBody = JSON.parse(event.body);
-            console.log("EVENT BODY:" + deleteAccount);
             response = await deleteAccountService.deleteAccount(deleteAccountBody);
-            //response = util.buildResponse(200, {message: 'Delete user method reached'});
             break;    
-            
             
         // Default - All other routes
         default:

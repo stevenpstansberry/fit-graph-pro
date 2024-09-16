@@ -19,6 +19,8 @@ const util = require('../../utils/util');
 const bcrypt = require('bcryptjs');
 const auth = require('../../utils/auth');
 const createSplitService = require('../split-services/createSplit');
+const common = require('./common');
+
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const userTable = 'fit-graph-users';
@@ -49,7 +51,7 @@ async function register(userInfo) {
     }
 
     // Check if the username already exists in DynamoDB    
-    const dynamoUser = await getUser(username.toLowerCase().trim());
+    const dynamoUser = await common.getUser(userTable, username.toLowerCase().trim());
     if (dynamoUser && dynamoUser.username) {
         return util.buildResponse(401, {
             message: 'Username already exists in our database. Please choose a different username.'
@@ -138,28 +140,6 @@ async function createDefaultSplits(username) {
   }
 }
 
-/**
- * Retrieves a user from DynamoDB based on the provided username.
- * 
- * @async
- * @function getUser
- * @param {string} username - The username of the user to retrieve.
- * @returns {Promise<Object|null>} The user object if found, otherwise null.
- */
-async function getUser(username) {
-    const params = {
-        TableName: userTable,
-        Key: {
-            username: username
-        }
-    };
-
-    return await dynamodb.get(params).promise().then(response => {
-        return response.Item;
-    }, error => {
-        console.error('There is an error getting user: ', error);
-    });
-}
 
 /**
  * Saves a new user to DynamoDB.
