@@ -26,6 +26,7 @@ import FuturePrediction from '../components/workout-components/FuturePrediction'
 import HeatMap from '../components/workout-components/HeatMap';
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout, updateSplit } from '../services/APIServices';
 import { useSearchParams } from 'react-router-dom';
+import Confetti from 'react-confetti';
 
 
 /**
@@ -47,6 +48,9 @@ const [isCardVisible, setIsCardVisible] = useState(false); // Controls visibilit
 const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Controls visibility of edit dialog for workout splits
 const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false); // Controls visibility of custom split dialog
 const [confirmDialogOpen, setConfirmDialogOpen] = useState(false); // Controls visibility of confirmation dialog
+
+ // ======== Celebration Effect State ========
+ const [showConfetti, setShowConfetti] = useState(false); // Controls the visibility of the confetti effect
 
 // ======== Workout Management States ========
 const [workoutHistory, setWorkoutHistory] = useState([]); // Stores the history of workouts
@@ -96,6 +100,14 @@ const [tabIndex, setTabIndex] = useState(initialTabIndex); // Controls the activ
       fetchWorkoutsAndSplits();
     }
   }, [username]);
+
+  // Add Confetti Effect whenever a Workout is Added
+  useEffect(() => {
+    if (showConfetti) {
+      const timer = setTimeout(() => setShowConfetti(false), 5000); // Show confetti for 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [showConfetti]);
   
   /**
    * Fetches workouts and splits for the user and updates state.
@@ -413,6 +425,10 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
     }
     console.log(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully`);
 
+    if (itemType === 'workout' && action === 'save') {
+      setShowConfetti(true);  // Trigger the confetti effect
+    }
+
     // Show success Snackbar
     showSnackbar(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully!`, 'success');
   } catch (error) {
@@ -500,6 +516,10 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+
+      {/* Confetti Component */}
+      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
+      
       {/* Snackbar for success/error messages */}
       <Snackbar
         key={snackbarKey} // Use the unique key here
