@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TextField, Button, Box, Typography, Snackbar, Alert } from '@mui/material';
 import { requestPasswordReset } from '../services/APIServices';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import fitGraphLogo from '../assets/fit-graph-logo.png';
+
 
 function ResetPasswordFromEmail() {
   const navigate = useNavigate();
@@ -36,7 +40,7 @@ function ResetPasswordFromEmail() {
          newPassword: password },
         'ResetPassword');
 
-      setSnackbarMessage(response.data.message);
+      setSnackbarMessage("Password reset successful. Redirecting to login page...");
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
       setTimeout(() => {
@@ -51,7 +55,25 @@ function ResetPasswordFromEmail() {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: 'auto', mt: 5, p: 3, border: '1px solid #ddd', borderRadius: 2 }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    {/* Navbar Section */}
+      <Box sx={{ width: '100%' }}>
+        <Navbar />
+      </Box>
+    <Box
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          textAlign: 'center',
+          padding: 3,
+        }}
+      >
+      {/* Logo Section */}
+      <img src={fitGraphLogo} alt="Fit Graph Logo" style={{ width: '200px', height: 'auto' }} />
+
       <Typography variant="h5" gutterBottom>
         Reset Your Password
       </Typography>
@@ -90,6 +112,11 @@ function ResetPasswordFromEmail() {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+      </Box>
+      {/* Footer Section */}
+      <Box sx={{ width: '100%' }}>
+        <Footer />
+      </Box>
     </Box>
   );
 }
