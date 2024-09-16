@@ -44,7 +44,7 @@ function ForgotPassword() {
     }
 
     try {
-      await requestPasswordReset({ email });  // Call the requestPasswordReset function
+      await requestPasswordReset({ email: email }, 'ForgotPassword');  // Call the requestPasswordReset function
       setMessage({ type: 'success', text: 'Password reset link sent! Please check your email.' });
       setSnackbarOpen(true);
     } catch (error) {

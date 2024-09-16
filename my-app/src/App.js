@@ -32,6 +32,7 @@ import ResetPassword from './pages/ResetPassword';
 import Account from './pages/Account';
 import Attributions from './pages/Attributions';
 import { verifyToken } from './services/APIServices';  
+import ResetPasswordFromEmail from './pages/ResetPasswordFromEmail';
 
 function App() {
 
@@ -67,6 +68,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/forgot-password" element={<ResetPassword />} />
+          <Route path="/reset-password" element={<ResetPasswordFromEmail />} />
           <Route path="/account" element={<Account />} />
           <Route path="/attributions" element={<Attributions />} />
 

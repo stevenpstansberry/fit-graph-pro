@@ -21,16 +21,20 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 const userTable = 'fit-graph-users';
 
 /**
- * Initiates a password reset by generating a secure reset link and sending it to the user's email.
+ * Handles password reset functionality based on the mode provided in the request body.
+ * 
+ * Modes:
+ * - "ForgotPassword": Generates a secure reset link and sends it to the user's email.
+ * - "ResetPassword": Verifies the reset token and updates the user's password in the database.
  * 
  * @async
  * @function resetPassword
- * @param {Object} event - The event object containing the body with the email.
+ * @param {Object} event - The event object containing the body with the email and mode.
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
 async function resetPassword(event) {
   const body = JSON.parse(event.body);
-  const email = body.email;
+  const { email, mode, token, newPassword } = body;
 
   if (!email) {
     return util.buildResponse(401, {
@@ -44,52 +48,50 @@ async function resetPassword(event) {
     return util.buildResponse(403, { message: 'user does not exist' });
   }
 
-  // Generate a secure token
-  const resetToken = crypto.randomBytes(32).toString('hex');
-  const tokenExpiry = Date.now() + 3600000; // Token expires in 1 hour
+  // Check the mode
+  if (mode === 'ForgotPassword') {
+    // Forgot Password Logic
 
-  // Update the user in DynamoDB with the token and expiry time
-  await updateUserResetToken(dynamoUser.username, resetToken, tokenExpiry);
+    // Generate a secure token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpiry = Date.now() + 3600000; // Token expires in 1 hour
 
-  // Send email with reset link
-  const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}&email=${encodeURIComponent(dynamoUser.email)}`;
-  await sendResetEmail(dynamoUser.email, resetLink);
+    // Update the user in DynamoDB with the token and expiry time
+    await updateUserResetToken(dynamoUser.username, resetToken, tokenExpiry);
 
-  return util.buildResponse(200, { message: `Password reset link sent to ${dynamoUser.email}.` });
-}
+    // Send email with reset link
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}&email=${encodeURIComponent(dynamoUser.email)}`;
+    await sendResetEmail(dynamoUser.email, resetLink);
 
-/**
- * Verifies the reset token and updates the user's password in DynamoDB.
- * 
- * @async
- * @function verifyResetToken
- * @param {Object} event - The event object containing the body with token, email, and new password.
- * @returns {Promise<Object>} Response object indicating success or failure.
- */
-async function verifyResetToken(event) {
-  const body = JSON.parse(event.body);
-  const { email, token, newPassword } = body;
+    return util.buildResponse(200, { message: `Password reset link sent to ${dynamoUser.email}.` });
 
-  // Validate input
-  if (!email || !token || !newPassword) {
-    return util.buildResponse(400, { message: 'Missing parameters.' });
+  } else if (mode === 'ResetPassword') {
+    // Reset Password Logic
+
+    // Validate input
+    if (!token || !newPassword) {
+      return util.buildResponse(400, { message: 'Missing parameters for ResetPassword.' });
+    }
+
+    // Check if the token is valid
+    if (dynamoUser.resetToken !== token || Date.now() > dynamoUser.tokenExpiry) {
+      return util.buildResponse(403, { message: 'Invalid or expired token.' });
+    }
+
+    // Hash the new password
+    const encryptedPW = bcrypt.hashSync(newPassword.trim(), 10);
+
+    // Update password in DynamoDB
+    await updateUserPasswordByUsername(dynamoUser.username, encryptedPW);
+
+    // Clear reset token and expiry
+    await updateUserResetToken(dynamoUser.username, null, null);
+
+    return util.buildResponse(200, { message: 'Password has been reset successfully.' });
+
+  } else {
+    return util.buildResponse(400, { message: 'Invalid mode.' });
   }
-
-  const dynamoUser = await getUserByEmail(email.toLowerCase().trim());
-  if (!dynamoUser || dynamoUser.resetToken !== token || Date.now() > dynamoUser.tokenExpiry) {
-    return util.buildResponse(403, { message: 'Invalid or expired token.' });
-  }
-
-  // Hash the new password
-  const encryptedPW = bcrypt.hashSync(newPassword.trim(), 10);
-
-  // Update password in DynamoDB
-  await updateUserPasswordByUsername(dynamoUser.username, encryptedPW);
-
-  // Clear reset token and expiry
-  await updateUserResetToken(dynamoUser.username, null, null);
-
-  return util.buildResponse(200, { message: 'Password has been reset successfully.' });
 }
 
 /**
@@ -166,7 +168,7 @@ async function updateUserResetToken(username, resetToken, tokenExpiry) {
  * 
  * @async
  * @function updateUserPasswordByUsername
- * @param {string} user - The user
+ * @param {string} username - The username of the user.
  * @param {string} newPassword - The new encrypted password to be set.
  * @returns {Promise<void>}
  */

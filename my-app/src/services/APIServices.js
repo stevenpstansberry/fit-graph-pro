@@ -434,12 +434,20 @@ export const registerUser = async (userDetails) => {
  * 
  * @async
  * @function requestPasswordReset
- * @param {Object} credentials - The user credentials (email) to request a password reset.
+ * @param {Object} credentials - The user credentials to request a password reset.
  * @param {string} credentials.email - The user's email address.
+ * @param {string} mode - The mode for the password reset request ("ForgotPassword" or "ResetPassword").
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
-export const requestPasswordReset = async (credentials) => {
-  return postToAPI('/password-reset', credentials);  
+export const requestPasswordReset = async (credentials, mode) => {
+  // Ensure that the mode is included in the request payload
+  const payload = {
+    ...credentials,
+    mode,  // Include the mode in the payload
+  };
+
+  // Send the request to the API
+  return postToAPI('/password-reset', payload);
 };
 
 /**
