@@ -30,6 +30,7 @@ import ExerciseSubcard from "./ExerciseSubCard";
 import { v4 as uuidv4 } from 'uuid';
 import { getUser } from '../../services/AuthService';
 import { getAllExercises } from "../../services/ExerciseDBAPIServices";
+import { toTitleCase } from "./common/util";
 
 /**
  * WorkoutCard component for managing and creating workouts or workout splits.
@@ -157,20 +158,7 @@ const fetchExercises = async () => {
 };
 
 
-/**
- * Converts a string to title case (capitalizes the first letter of each word).
- *
- * @function toTitleCase
- * @param {string} str - The string to convert.
- * @returns {string} - The title-cased string.
- */
-const toTitleCase = (str) => {
-  return str
-    .toLowerCase()
-    .split(' ')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
+
 
 
   /**

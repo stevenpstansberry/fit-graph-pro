@@ -58,3 +58,19 @@ export const getTitle = (component, timeframe, selectedMonth, selectedYear, sele
     }
   }
 };
+
+
+/**
+ * Converts a string to title case (capitalizes the first letter of each word).
+ *
+ * @function toTitleCase
+ * @param {string} str - The string to convert.
+ * @returns {string} - The title-cased string.
+ */
+export const toTitleCase = (str) => {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
