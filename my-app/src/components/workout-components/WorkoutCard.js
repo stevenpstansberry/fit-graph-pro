@@ -63,6 +63,7 @@ const [loading, setLoading] = useState(true); // Loading state for API call
 const [exercises, setExercises] = useState([]); // List of exercises added to the workout
 const [selectedExercise, setSelectedExercise] = useState(null); // Currently selected exercise from the dropdown
 const [availableExercises, setAvailableExercises] = useState([]); // State for available exercises in the dropdown
+const [exercisesFetched, setExercisesFetched] = useState(false); // State to track if exercises have been fetched
 
 // ======== State for managing workout and split modes ========
 const [isEditMode, setIsEditMode] = useState(editMode || false); // State to determine if editing mode is enabled
@@ -88,44 +89,63 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
         console.log("returned back to normal mode");
       }
   
-      // Fetch exercises from ExerciseDB API and transform the data
-      fetchExercises();
+      // Fetch exercises from ExerciseDB API and transform the data only if not fetched before
+      if (!exercisesFetched) {
+        fetchExercises();
+      }
     }
   }, [open, preloadedExercises, editMode]);
   
-  /**
-   * Fetches all exercises from the ExerciseDB API and transforms them to the required format.
-   * Filters out exercises that are already preloaded and sets the available exercises in state.
-   */
-  const fetchExercises = async () => {
-    setLoading(true);
-    try {
-      const data = await getAllExercises(); // Fetch all exercises
-      console.log("ALL WORKOUTS!!!!!!!", data);
-      const transformedExercises = data.map((exercise) => ({
-        label: exercise.name, // Use 'name' as 'label'
-        bodyPart: exercise.bodyPart,
-        muscles: exercise.secondaryMuscles
-          ? [mapMuscleName(exercise.target), ...exercise.secondaryMuscles.map(mapMuscleName)].filter(Boolean) // Map muscles and filter out undefined values
-          : [mapMuscleName(exercise.target)].filter(Boolean), // Map target muscle and filter out undefined values
-        gifUrl: exercise.gifUrl,
-        instructions: exercise.instructions,
-      }));
-  
-      // Filter out exercises with bodyPart equal to 'cardio' and preloaded exercises from the available exercises
-      const filteredExercises = transformedExercises.filter(
-        (exercise) => exercise.bodyPart.toLowerCase() !== 'cardio' && // Exclude 'cardio' exercises
-          !preloadedExercises.some(preloaded => preloaded.label === exercise.label) // Exclude preloaded exercises
-      );
-  
-      setAvailableExercises(filteredExercises); // Set the filtered exercises
-    } catch (error) {
-      console.error("Failed to fetch exercises:", error);
-      showSnackbar("Failed to load exercises. Please try again later.", 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+/**
+ * Fetches all exercises from the ExerciseDB API and transforms them to the required format.
+ * Filters out exercises that are already preloaded and sets the available exercises in state.
+ */
+const fetchExercises = async () => {
+  if (exercisesFetched) return; // Ensure fetchExercises is called only once
+
+  setLoading(true);
+  try {
+    const data = await getAllExercises(); // Fetch all exercises
+    console.log("ALL WORKOUTS!!!!!!!", data);
+
+    // Use a Map to ensure uniqueness by exercise name
+    const exerciseMap = new Map();
+
+    data.forEach((exercise) => {
+      const label = exercise.name.toLowerCase().trim(); // Normalize the name for uniqueness check
+
+      if (!exerciseMap.has(label)) {
+        exerciseMap.set(label, {
+          label: exercise.name, // Use 'name' as 'label'
+          bodyPart: exercise.bodyPart,
+          muscles: exercise.secondaryMuscles
+            ? [mapMuscleName(exercise.target), ...exercise.secondaryMuscles.map(mapMuscleName)].filter(Boolean) // Map muscles and filter out undefined values
+            : [mapMuscleName(exercise.target)].filter(Boolean), // Map target muscle and filter out undefined values
+          gifUrl: exercise.gifUrl,
+          instructions: exercise.instructions,
+        });
+      }
+    });
+
+    // Convert Map back to an array for setting state
+    const uniqueExercises = Array.from(exerciseMap.values());
+
+    // Filter out exercises with bodyPart equal to 'cardio' and preloaded exercises from the available exercises
+    const filteredExercises = uniqueExercises.filter(
+      (exercise) =>
+        exercise.bodyPart.toLowerCase() !== 'cardio' && // Exclude 'cardio' exercises
+        !preloadedExercises.some((preloaded) => preloaded.label === exercise.label) // Exclude preloaded exercises
+    );
+
+    setAvailableExercises(filteredExercises); // Set the filtered exercises
+    setExercisesFetched(true); 
+  } catch (error) {
+    console.error("Failed to fetch exercises:", error);
+    showSnackbar("Failed to load exercises. Please try again later.", 'error');
+  } finally {
+    setLoading(false);
+  }
+};
 
   /**
   * Handles the end of a drag-and-drop operation to reorder exercises in the workout.
