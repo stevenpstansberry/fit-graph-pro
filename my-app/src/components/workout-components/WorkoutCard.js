@@ -115,9 +115,16 @@ const fetchExercises = async () => {
       const label = exercise.name.toLowerCase().trim(); // Normalize the name for uniqueness check
 
       if (!exerciseMap.has(label)) {
+        const displayLabel = toTitleCase(exercise.name); // Title case for exercise name
+        const displayBodyPart = toTitleCase(exercise.bodyPart); // Title case for body part
+
+        console.log(`Processed Exercise: ${displayLabel}, Display Body Part: ${displayBodyPart}`); // Debugging log
+
         exerciseMap.set(label, {
           label: exercise.name, // Use 'name' as 'label'
+          displayLabel: displayLabel, // Display name with proper capitalization
           bodyPart: exercise.bodyPart,
+          displayBodyPart: displayBodyPart, // Display body part with proper capitalization
           muscles: exercise.secondaryMuscles
             ? [mapMuscleName(exercise.target), ...exercise.secondaryMuscles.map(mapMuscleName)].filter(Boolean) // Map muscles and filter out undefined values
             : [mapMuscleName(exercise.target)].filter(Boolean), // Map target muscle and filter out undefined values
@@ -137,6 +144,8 @@ const fetchExercises = async () => {
         !preloadedExercises.some((preloaded) => preloaded.label === exercise.label) // Exclude preloaded exercises
     );
 
+    console.log("TRANSFORMED EXERCISES: ", filteredExercises); // Log transformed exercises to verify
+
     setAvailableExercises(filteredExercises); // Set the filtered exercises
     setExercisesFetched(true); 
   } catch (error) {
@@ -146,6 +155,23 @@ const fetchExercises = async () => {
     setLoading(false);
   }
 };
+
+
+/**
+ * Converts a string to title case (capitalizes the first letter of each word).
+ *
+ * @function toTitleCase
+ * @param {string} str - The string to convert.
+ * @returns {string} - The title-cased string.
+ */
+const toTitleCase = (str) => {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 
   /**
   * Handles the end of a drag-and-drop operation to reorder exercises in the workout.
@@ -214,7 +240,9 @@ const fetchExercises = async () => {
     if (selectedExercise) {
       const newExercise = { 
         label: selectedExercise.label, 
+        displayLabel: selectedExercise.displayLabel,
         bodyPart: selectedExercise.bodyPart, 
+        displayBodyPart: selectedExercise.displayBodyPart, 
         muscles: selectedExercise.muscles,
         sets: [{ weight: "", reps: "" }] 
       };
@@ -226,7 +254,7 @@ const fetchExercises = async () => {
         prevExercises.filter((exercise) => exercise.label !== selectedExercise.label)
       );
       setSelectedExercise(null);  // Reset the selected exercise
-      showSnackbar(`${selectedExercise.label} added successfully.`, 'success');
+      showSnackbar(`${selectedExercise.displayLabel} added successfully.`, 'success');
     } else {
       showSnackbar("Please select an exercise to add.", 'error');;
     }
@@ -244,7 +272,7 @@ const fetchExercises = async () => {
 
     // Add the removed exercise back to the available options
     setAvailableExercises((prevExercises) => [...prevExercises, exerciseToRemove]);
-    showSnackbar(`${exerciseToRemove.label} removed successfully.`, 'success');
+    showSnackbar(`${exerciseToRemove.displayLabel} removed successfully.`, 'success');
   };
 
   /**
@@ -316,7 +344,9 @@ const fetchExercises = async () => {
         username: user.username,
         exercises: exercises.map(exercise => ({
           label: exercise.label,
+          displayLabel: exercise.displayLabel,
           bodyPart: exercise.bodyPart,
+          displayBodyPart: exercise.displayBodyPart, 
           muscles: exercise.muscles,
           sets: exercise.sets.map(set => ({ setCount: set.setCount })) // Only include set count
         })),
@@ -459,21 +489,23 @@ const mapMuscleName = (muscleName) => {
               borderBottom: '1px solid #ccc',
             }}
           >
-            <Autocomplete
-              disablePortal
-              id="combo-box-demo"
-              options={availableExercises}
-              value={selectedExercise}
-              onChange={(event, newValue) => {
-                setSelectedExercise(newValue);
-              }}
-              inputValue={inputValue}
-              onInputChange={(event, newInputValue) => {
-                setInputValue(newInputValue);
-              }}
-              sx={{ width: 300, mr: 2 }} // Adjust width and margin
-              renderInput={(params) => <TextField {...params} label="Exercise" />}
-            />
+          <Autocomplete
+            disablePortal
+            id="combo-box-demo"
+            options={availableExercises}
+            value={selectedExercise}
+            onChange={(event, newValue) => {
+              setSelectedExercise(newValue);
+            }}
+            inputValue={inputValue}
+            onInputChange={(event, newInputValue) => {
+              setInputValue(newInputValue);
+            }}
+            sx={{ width: 300, mr: 2 }} // Adjust width and margin
+            getOptionLabel={(option) => option.displayLabel} // Use displayLabel for the dropdown
+            isOptionEqualToValue={(option, value) => option.label === value.label} // Compare based on the internal label
+            renderInput={(params) => <TextField {...params} label="Exercise" />}
+          />
             <Button onClick={addExercise} variant="contained" color="primary">
               Add Exercise
             </Button>
@@ -485,7 +517,8 @@ const mapMuscleName = (muscleName) => {
               {(provided) => (
                 <Box {...provided.droppableProps} ref={provided.innerRef}>
                   {exercises.map((exercise, index) => (
-                    <Draggable key={exercise.label} draggableId={exercise.label} index={index}>
+                    console.log("EXERCISE: ", exercise),
+                    <Draggable key={exercise.displayLabel} draggableId={exercise.displayLabel} index={index}>
                       {(provided) => (
                         <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                           <ExerciseSubcard
@@ -529,47 +562,3 @@ const mapMuscleName = (muscleName) => {
 
 export default WorkoutCard;
 
-// List of strength workout exercises for the autocomplete
-const strengthWorkouts = [
-  { label: 'Bench Press', type: 'Strength', bodyPart: 'Chest', muscles: ['chest', 'triceps', 'front-deltoids'] },
-  { label: 'Squat', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'hamstring', 'gluteal', 'calves'] },
-  { label: 'Deadlift', type: 'Strength', bodyPart: 'Back', muscles: ['lower-back', 'hamstring', 'gluteal', 'trapezius'] },
-  { label: 'Overhead Press', type: 'Strength', bodyPart: 'Shoulders', muscles: ['front-deltoids', 'triceps'] },
-  { label: 'Barbell Row', type: 'Strength', bodyPart: 'Back', muscles: ['upper-back', 'biceps', 'lower-back', 'trapezius'] },
-  { label: 'Bicep Curl', type: 'Strength', bodyPart: 'Arms', muscles: ['biceps'] },
-  { label: 'Tricep Extension', type: 'Strength', bodyPart: 'Arms', muscles: ['triceps'] },
-  { label: 'Pull Up', type: 'Strength', bodyPart: 'Back', muscles: ['upper-back', 'biceps', 'trapezius'] },
-  { label: 'Lunge', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'hamstring', 'gluteal', 'calves'] },
-  { label: 'Leg Press', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'gluteal'] },
-  { label: 'Chest Fly', type: 'Strength', bodyPart: 'Chest', muscles: ['chest'] },
-  { label: 'Lat Pulldown', type: 'Strength', bodyPart: 'Back', muscles: ['upper-back', 'biceps', 'trapezius'] },
-  { label: 'Hammer Curl', type: 'Strength', bodyPart: 'Arms', muscles: ['biceps', 'forearm'] },
-  { label: 'Dumbbell Shoulder Press', type: 'Strength', bodyPart: 'Shoulders', muscles: ['front-deltoids', 'triceps'] },
-  { label: 'Leg Curl', type: 'Strength', bodyPart: 'Legs', muscles: ['hamstring'] },
-  { label: 'Leg Extension', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps'] },
-  { label: 'Incline Bench Press', type: 'Strength', bodyPart: 'Chest', muscles: ['chest', 'triceps', 'front-deltoids'] },
-  { label: 'Decline Bench Press', type: 'Strength', bodyPart: 'Chest', muscles: ['chest', 'triceps', 'front-deltoids'] },
-  { label: 'Calf Raise', type: 'Strength', bodyPart: 'Legs', muscles: ['calves'] },
-  { label: 'Front Squat', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'gluteal', 'hamstring'] },
-  { label: 'Reverse Lunge', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'hamstring', 'gluteal'] },
-  { label: 'Goblet Squat', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'gluteal', 'hamstring'] },
-  { label: 'Face Pull', type: 'Strength', bodyPart: 'Back', muscles: ['upper-back', 'trapezius', 'rear-deltoids'] },
-  { label: 'Cable Row', type: 'Strength', bodyPart: 'Back', muscles: ['upper-back', 'biceps', 'trapezius'] },
-  { label: 'Side Lateral Raise', type: 'Strength', bodyPart: 'Shoulders', muscles: ['back-deltoids', 'front-deltoids'] },
-  { label: 'Bulgarian Split Squat', type: 'Strength', bodyPart: 'Legs', muscles: ['quadriceps', 'hamstring', 'gluteal'] },
-  { label: 'Seated Dumbbell Press', type: 'Strength', bodyPart: 'Shoulders', muscles: ['front-deltoids', 'triceps'] },
-  { label: 'Skull Crusher', type: 'Strength', bodyPart: 'Arms', muscles: ['triceps'] },
-  { label: 'Dips', type: 'Strength', bodyPart: 'Chest', muscles: ['chest', 'triceps', 'front-deltoids'] },
-  { label: 'Single-leg Deadlift', type: 'Strength', bodyPart: 'Legs', muscles: ['hamstring', 'gluteal', 'lower-back'] },
-  { label: 'Russian Twist', type: 'Strength', bodyPart: 'Core', muscles: ['obliques', 'abs'] },
-  { label: 'Hanging Leg Raise', type: 'Strength', bodyPart: 'Core', muscles: ['abs', 'obliques'] },
-  { label: 'Farmers Walk', type: 'Strength', bodyPart: 'Full Body', muscles: ['forearm', 'trapezius', 'abs', 'calves'] },
-  { label: 'Neck Curl', type: 'Strength', bodyPart: 'Neck', muscles: ['neck'] },
-  { label: 'Hip Adduction Machine', type: 'Strength', bodyPart: 'Legs', muscles: ['adductor'] },
-  { label: 'Hip Abduction Machine', type: 'Strength', bodyPart: 'Legs', muscles: ['abductors'] },
-  { label: 'Wrist Curl', type: 'Strength', bodyPart: 'Arms', muscles: ['forearm'] },
-  { label: 'Hanging Oblique Crunch', type: 'Strength', bodyPart: 'Core', muscles: ['obliques'] },
-  { label: 'Landmine Rotation', type: 'Strength', bodyPart: 'Core', muscles: ['obliques', 'abs'] },
-  { label: 'Reverse Hyperextension', type: 'Strength', bodyPart: 'Back', muscles: ['lower-back', 'gluteal', 'hamstring'] },
-  { label: 'Good Morning', type: 'Strength', bodyPart: 'Back', muscles: ['lower-back', 'hamstring', 'gluteal'] }
-];

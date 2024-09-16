@@ -47,6 +47,7 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
    * 
    **/
     const handleOpen = () => {
+      console.log("EXERCISE:", exercise)
       setIsInfoCardOpen(true);
     }
 
@@ -111,7 +112,7 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {/* Display the exercise label and body part */}
           <Typography variant="h6" component="div">
-            {exercise.label} - {exercise.bodyPart} - <Button onClick={handleOpen}>Info</Button>
+            {exercise.displayLabel} - {exercise.displayBodyPart} - <Button onClick={handleOpen}>Info</Button>
           </Typography>
 
           {/* Button for adding sets and icon for deleting the exercise */}
