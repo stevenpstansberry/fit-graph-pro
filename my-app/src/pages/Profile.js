@@ -97,10 +97,6 @@ function Profile() {
     fetchWorkouts();
   }, [user.name, fetchProfilePicture]);
 
-  const logoutHandler = () => {
-    resetUserSession();
-    navigate('/Login');
-  };
 
   const handleOpenUploadModal = () => {
     setUploadModalOpen(true);
@@ -190,16 +186,6 @@ function Profile() {
         )}
 
         <Divider sx={{ width: '100%', my: 4 }} />
-
-        {/* Logout Button */}
-        <Button
-          variant="contained"
-          color="secondary"
-          sx={{ mt: 4 }}
-          onClick={logoutHandler}
-        >
-          Logout
-        </Button>
       </Container>
 
       {/* Profile Picture Upload Modal */}
