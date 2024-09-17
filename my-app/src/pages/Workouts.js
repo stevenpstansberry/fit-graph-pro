@@ -769,6 +769,7 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
       open={isCongratsCardVisible}
       onClose={() => setIsCongratsCardVisible(false)}
       workout={completedWorkout}
+      user={user}
     />
     </Box>
   );
