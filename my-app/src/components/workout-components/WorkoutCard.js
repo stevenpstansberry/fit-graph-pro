@@ -135,7 +135,25 @@ const fetchExercises = async () => {
     data.forEach((exercise) => {
       const label = exercise.name.toLowerCase().trim(); // Normalize the name for uniqueness check
 
-      if (!exerciseMap.has(label)) {
+      // Exclude exercises containing "V. 2", "V. 3", or "stretch" in their name
+      if (
+        !label.includes("v. 2") &&
+        !label.includes("v. 3") &&
+        !label.includes("stretch") &&
+        !label.includes("plank") && // Exclude exercises with "plank" in the name
+        !label.includes("Alternate Heel Touchers") &&
+        !label.includes("Russian Twist") &&
+        !label.includes("Ankle Circles") &&         
+        !label.includes("sit") &&         
+        label !== "3/4 sit-up" && // Exclude "3/4 sit-up" specifically
+        label !== "air bike" && // Exclude "air bike" specifically
+        label !== "45° side bend" && // Exclude "45° side bend" specifically
+        label !== "3/4 sit-up" && // Exclude "3/4 sit-up" specifically
+        !exercise.equipment.includes("ball") && // Exclude exercises with equipment containing "ball"
+        !exercise.equipment.includes("hammer") && // Exclude exercises with equipment containing "hammer"
+        !exercise.equipment.includes("sled") && // Exclude exercises with equipment containing "sled"
+        !exerciseMap.has(label)
+      ) {
         const displayLabel = toTitleCase(exercise.name); // Title case for exercise name
         const displayBodyPart = toTitleCase(exercise.bodyPart); // Title case for body part
 
@@ -145,6 +163,7 @@ const fetchExercises = async () => {
           displayLabel: displayLabel, // Display name with proper capitalization
           bodyPart: exercise.bodyPart,
           displayBodyPart: displayBodyPart, // Display body part with proper capitalization
+          equipment: exercise.equipment,
           muscles: exercise.secondaryMuscles
             ? [mapMuscleName(exercise.target), ...exercise.secondaryMuscles.map(mapMuscleName)].filter(Boolean) // Map muscles and filter out undefined values
             : [mapMuscleName(exercise.target)].filter(Boolean), // Map target muscle and filter out undefined values
