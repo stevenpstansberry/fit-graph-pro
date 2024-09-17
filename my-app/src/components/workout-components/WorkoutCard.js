@@ -6,17 +6,6 @@
  * Provides a user interface to add exercises to a workout or split, specify sets, reps, and weights, and save workouts to the backend.
  * Allows users to create custom workout splits and customize individual workouts by selecting exercises and adding details.
  * 
- * @component
- * @param {Object} props - Component props.
- * @param {boolean} props.open - Boolean to control the modal open/close state.
- * @param {function} props.onClose - Function to close the modal.
- * @param {Array} props.preloadedExercises - Array of exercises to preload into the workout or split.
- * @param {string} props.mode - Mode of operation for the component ('createWorkout' or 'addSplit').
- * @param {function} props.saveSplit - Function to save a workout split to the backend.
- * @param {function} props.saveWorkout - Function to save a workout to the backend.
- * @param {string} props.newSplitName - Name of the new workout split.
- * @param {string} props.type - Type of workout.
- * @returns {React.Element} - The rendered Workout_Card component.
  * 
  * @version 1.0.0
  * @author Steven Stansberry
@@ -24,7 +13,7 @@
 
 import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Autocomplete, TextField, IconButton, Box, Modal, Card, CardContent, Button, Typography } from "@mui/material";
+import { Autocomplete, TextField, IconButton, Box, Modal, Card, CardContent, Button, Typography, CircularProgress } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./ExerciseSubCard";
 import { v4 as uuidv4 } from 'uuid';
@@ -79,9 +68,11 @@ const VirtualizedListbox = React.forwardRef(function VirtualizedListbox(props, r
  * @param {string} props.ToEditDate - The date of the workout or split being edited.
  * @param {function} props.manageWorkoutOrSplit - Function to manage (save or update) a workout or split to the backend.
  * @param {function} props.showSnackbar - Function to display a snackbar message in Workout Page.
+ * @param {boolean} props.exercisesFetched - Boolean to determine if exercises have been fetched.
+ * @param {function} props.setExercisesFetched - Function to set the exercisesFetched state.
  * @returns {React.Element} - The rendered WorkoutCard component.
  */
-function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, type, editMode, ToEditId, ToEditDate, manageWorkoutOrSplit, showSnackbar }) {
+function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, type, editMode, ToEditId, ToEditDate, manageWorkoutOrSplit, showSnackbar, exercisesFetched, setExercisesFetched  }) {
   const user = getUser();
 
 // ======== State for managing input and UI interactions ========
@@ -94,7 +85,6 @@ const [loading, setLoading] = useState(true); // Loading state for API call
 const [exercises, setExercises] = useState([]); // List of exercises added to the workout
 const [selectedExercise, setSelectedExercise] = useState(null); // Currently selected exercise from the dropdown
 const [availableExercises, setAvailableExercises] = useState([]); // State for available exercises in the dropdown
-const [exercisesFetched, setExercisesFetched] = useState(false); // State to track if exercises have been fetched
 
 // ======== State for managing workout and split modes ========
 const [isEditMode, setIsEditMode] = useState(editMode || false); // State to determine if editing mode is enabled
@@ -145,17 +135,35 @@ const fetchExercises = async () => {
     data.forEach((exercise) => {
       const label = exercise.name.toLowerCase().trim(); // Normalize the name for uniqueness check
 
-      if (!exerciseMap.has(label)) {
+      // Exclude exercises containing "V. 2", "V. 3", or "stretch" in their name
+      if (
+        !label.includes("v. 2") &&
+        !label.includes("v. 3") &&
+        !label.includes("stretch") &&
+        !label.includes("plank") && // Exclude exercises with "plank" in the name
+        !label.includes("Alternate Heel Touchers") &&
+        !label.includes("Russian Twist") &&
+        !label.includes("Ankle Circles") &&         
+        !label.includes("sit") &&         
+        label !== "3/4 sit-up" && // Exclude "3/4 sit-up" specifically
+        label !== "air bike" && // Exclude "air bike" specifically
+        label !== "45° side bend" && // Exclude "45° side bend" specifically
+        label !== "3/4 sit-up" && // Exclude "3/4 sit-up" specifically
+        !exercise.equipment.includes("ball") && // Exclude exercises with equipment containing "ball"
+        !exercise.equipment.includes("hammer") && // Exclude exercises with equipment containing "hammer"
+        !exercise.equipment.includes("sled") && // Exclude exercises with equipment containing "sled"
+        !exerciseMap.has(label)
+      ) {
         const displayLabel = toTitleCase(exercise.name); // Title case for exercise name
         const displayBodyPart = toTitleCase(exercise.bodyPart); // Title case for body part
 
-        console.log(`Processed Exercise: ${displayLabel}, Display Body Part: ${displayBodyPart}`); // Debugging log
 
         exerciseMap.set(label, {
           label: exercise.name, // Use 'name' as 'label'
           displayLabel: displayLabel, // Display name with proper capitalization
           bodyPart: exercise.bodyPart,
           displayBodyPart: displayBodyPart, // Display body part with proper capitalization
+          equipment: exercise.equipment,
           muscles: exercise.secondaryMuscles
             ? [mapMuscleName(exercise.target), ...exercise.secondaryMuscles.map(mapMuscleName)].filter(Boolean) // Map muscles and filter out undefined values
             : [mapMuscleName(exercise.target)].filter(Boolean), // Map target muscle and filter out undefined values
@@ -432,151 +440,160 @@ const mapMuscleName = (muscleName) => {
 
 
 
-  return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      BackdropProps={{
-        style: { backgroundColor: 'rgba(0,0,0,0.5)' },
+return (
+  <Modal
+    open={open}
+    onClose={onClose}
+    BackdropProps={{
+      style: { backgroundColor: 'rgba(0,0,0,0.5)' },
+    }}
+  >
+    <Card
+      sx={{
+        maxWidth: 1000,
+        minWidth: 1000,
+        maxHeight: 600,
+        minHeight: 600,
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 12,
+        p: 4,
+        overflowY: 'auto',
       }}
     >
-      <Card
+      <IconButton
+        aria-label="close"
+        onClick={onClose}
         sx={{
-          maxWidth: 1000,
-          minWidth: 1000,
-          maxHeight: 600,
-          minHeight: 600,
           position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          bgcolor: 'background.paper',
-          border: '2px solid #000',
-          boxShadow: 12,
-          p: 4,
-          overflowY: 'auto',
+          left: 8,
+          top: 8,
+          color: (theme) => theme.palette.grey[500],
         }}
       >
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: 'absolute',
-            left: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
+        <CloseIcon />
+      </IconButton>
 
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {mode === "addSplit" ? "Create a Workout Split" : (isEditMode ? "Edit Workout" : "Add a Workout")}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            {mode === "addSplit"
-              ? "Define your workout split by adding exercises and specifying the number of sets."
-              : "Add exercises to your workout and customize sets, weights, and reps."}
-          </Typography>
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          {mode === "addSplit" ? "Create a Workout Split" : (isEditMode ? "Edit Workout" : "Add a Workout")}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          {mode === "addSplit"
+            ? "Define your workout split by adding exercises and specifying the number of sets."
+            : "Add exercises to your workout and customize sets, weights, and reps."}
+        </Typography>
 
-          {mode === 'createWorkout' && (
-            <>
-              {/* Date Picker */}
-              <TextField
-                label="Workout Date"
-                type="datetime-local"
-                value={formatDateToDatetimeLocal(new Date(workoutDate))}
-                onChange={handleDateChange}
-                sx={{ width: 300, mr: 2 }}
-              />
-            </>
-          )}
-
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              mb: 2,
-              position: 'sticky',
-              top: 0,
-              zIndex: 10,
-              backgroundColor: 'white',
-              paddingTop: 2,
-              paddingBottom: 2,
-              borderBottom: '1px solid #ccc',
-            }}
-          >
-          <Autocomplete
-            disablePortal
-            id="combo-box-demo"
-            options={availableExercises}
-            value={selectedExercise}
-            onChange={(event, newValue) => {
-              setSelectedExercise(newValue);
-            }}
-            inputValue={inputValue}
-            onInputChange={(event, newInputValue) => {
-              setInputValue(newInputValue);
-            }}
-            sx={{ width: 300, mr: 2 }} // Adjust width and margin
-            getOptionLabel={(option) => option.displayLabel} // Use displayLabel for the dropdown
-            isOptionEqualToValue={(option, value) => option.label === value.label} // Compare based on the internal label
-            ListboxComponent={VirtualizedListbox} // Use virtualized list for better performance
-            renderInput={(params) => <TextField {...params} label="Exercise" />}
-          />
-            <Button onClick={addExercise} variant="contained" color="primary">
-              Add Exercise
-            </Button>
+        {/* Loading Indicator */}
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+            <CircularProgress />
           </Box>
+        ) : (
+          <>
+            {mode === 'createWorkout' && (
+              <>
+                {/* Date Picker */}
+                <TextField
+                  label="Workout Date"
+                  type="datetime-local"
+                  value={formatDateToDatetimeLocal(new Date(workoutDate))}
+                  onChange={handleDateChange}
+                  sx={{ width: 300, mr: 2 }}
+                />
+              </>
+            )}
 
-          {/* List of exercises with drag-and-drop support */}
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="exercises">
-              {(provided) => (
-                <Box {...provided.droppableProps} ref={provided.innerRef}>
-                  {exercises.map((exercise, index) => (
-                    console.log("EXERCISE: ", exercise),
-                    <Draggable key={exercise.displayLabel} draggableId={exercise.displayLabel} index={index}>
-                      {(provided) => (
-                        <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                          <ExerciseSubcard
-                            key={index}
-                            exercise={exercise}
-                            index={index}
-                            removeExercise={removeExercise}
-                            updateExerciseSets={updateExerciseSets}
-                            allowWeightAndReps={mode === "createWorkout"}
-                            showSnackbar={showSnackbar}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </Box>
-              )}
-            </Droppable>
-          </DragDropContext>
-
-          {/* Create Workout button at the bottom */}
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
-            <Button
-              size="large"
-              variant="contained"
-              onClick={createWorkout}
+            <Box
               sx={{
-                boxShadow: 4,
-                marginLeft: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                mb: 2,
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
+                backgroundColor: 'white',
+                paddingTop: 2,
+                paddingBottom: 2,
+                borderBottom: '1px solid #ccc',
               }}
             >
-              {mode === "addSplit" ? "Save Workout Split" : (isEditMode ? "Edit Workout" : "Create Workout")}
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
-    </Modal>
-  );
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                options={availableExercises}
+                value={selectedExercise}
+                onChange={(event, newValue) => {
+                  setSelectedExercise(newValue);
+                }}
+                inputValue={inputValue}
+                onInputChange={(event, newInputValue) => {
+                  setInputValue(newInputValue);
+                }}
+                sx={{ width: 300, mr: 2 }} // Adjust width and margin
+                getOptionLabel={(option) => option.displayLabel} // Use displayLabel for the dropdown
+                isOptionEqualToValue={(option, value) => option.label === value.label} // Compare based on the internal label
+                ListboxComponent={VirtualizedListbox} // Use virtualized list for better performance
+                renderInput={(params) => <TextField {...params} label="Exercise" />}
+              />
+              <Button onClick={addExercise} variant="contained" color="primary">
+                Add Exercise
+              </Button>
+            </Box>
+
+            {/* List of exercises with drag-and-drop support */}
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="exercises">
+                {(provided) => (
+                  <Box {...provided.droppableProps} ref={provided.innerRef}>
+                    {exercises.map((exercise, index) => (
+                      console.log("EXERCISE: ", exercise),
+                      <Draggable key={exercise.displayLabel} draggableId={exercise.displayLabel} index={index}>
+                        {(provided) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <ExerciseSubcard
+                              key={index}
+                              exercise={exercise}
+                              index={index}
+                              removeExercise={removeExercise}
+                              updateExerciseSets={updateExerciseSets}
+                              allowWeightAndReps={mode === "createWorkout"}
+                              showSnackbar={showSnackbar}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </Box>
+                )}
+              </Droppable>
+            </DragDropContext>
+
+            {/* Create Workout button at the bottom */}
+            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
+              <Button
+                size="large"
+                variant="contained"
+                onClick={createWorkout}
+                sx={{
+                  boxShadow: 4,
+                  marginLeft: 'auto',
+                }}
+              >
+                {mode === "addSplit" ? "Save Workout Split" : (isEditMode ? "Edit Workout" : "Create Workout")}
+              </Button>
+            </Box>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  </Modal>
+);
 }
 
 export default WorkoutCard;

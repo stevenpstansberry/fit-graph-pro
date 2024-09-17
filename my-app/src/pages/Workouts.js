@@ -63,6 +63,7 @@ const [editMode, setEditMode] = useState(false); // Determines if the workout is
 const [toEditId, setToEditId] = useState(''); // Stores the ID of the workout being edited
 const [toEditDate, setToEditDate] = useState(''); // Stores the Date of the workout being edited
 const [completedWorkout, setCompletedWorkout] = useState(null); // Stores the completed workout for the congratulatory card
+const [exercisesFetched, setExercisesFetched] = useState(false); // State to track if exercises have been fetched
 
 
 // ======== Split Management States ========
@@ -254,6 +255,7 @@ const fetchWorkouts = async () => {
     setIsCardVisible(false);
     setEditMode(false); // Set edit workout mode back to false.
     setSelectedWorkout([]);
+    setExercisesFetched(false); // Reset exercises fetched state
   };
 
 
@@ -763,6 +765,8 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
       ToEditDate={toEditDate}
       manageWorkoutOrSplit={manageWorkoutOrSplit}
       showSnackbar={showSnackbar}
+      exercisesFetched={exercisesFetched}
+      setExercisesFetched={setExercisesFetched}
     />
 
     <WorkoutCongratsCard
