@@ -6,17 +6,6 @@
  * Provides a user interface to add exercises to a workout or split, specify sets, reps, and weights, and save workouts to the backend.
  * Allows users to create custom workout splits and customize individual workouts by selecting exercises and adding details.
  * 
- * @component
- * @param {Object} props - Component props.
- * @param {boolean} props.open - Boolean to control the modal open/close state.
- * @param {function} props.onClose - Function to close the modal.
- * @param {Array} props.preloadedExercises - Array of exercises to preload into the workout or split.
- * @param {string} props.mode - Mode of operation for the component ('createWorkout' or 'addSplit').
- * @param {function} props.saveSplit - Function to save a workout split to the backend.
- * @param {function} props.saveWorkout - Function to save a workout to the backend.
- * @param {string} props.newSplitName - Name of the new workout split.
- * @param {string} props.type - Type of workout.
- * @returns {React.Element} - The rendered Workout_Card component.
  * 
  * @version 1.0.0
  * @author Steven Stansberry
@@ -79,9 +68,11 @@ const VirtualizedListbox = React.forwardRef(function VirtualizedListbox(props, r
  * @param {string} props.ToEditDate - The date of the workout or split being edited.
  * @param {function} props.manageWorkoutOrSplit - Function to manage (save or update) a workout or split to the backend.
  * @param {function} props.showSnackbar - Function to display a snackbar message in Workout Page.
+ * @param {boolean} props.exercisesFetched - Boolean to determine if exercises have been fetched.
+ * @param {function} props.setExercisesFetched - Function to set the exercisesFetched state.
  * @returns {React.Element} - The rendered WorkoutCard component.
  */
-function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, type, editMode, ToEditId, ToEditDate, manageWorkoutOrSplit, showSnackbar }) {
+function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, type, editMode, ToEditId, ToEditDate, manageWorkoutOrSplit, showSnackbar, exercisesFetched, setExercisesFetched  }) {
   const user = getUser();
 
 // ======== State for managing input and UI interactions ========
@@ -94,7 +85,6 @@ const [loading, setLoading] = useState(true); // Loading state for API call
 const [exercises, setExercises] = useState([]); // List of exercises added to the workout
 const [selectedExercise, setSelectedExercise] = useState(null); // Currently selected exercise from the dropdown
 const [availableExercises, setAvailableExercises] = useState([]); // State for available exercises in the dropdown
-const [exercisesFetched, setExercisesFetched] = useState(false); // State to track if exercises have been fetched
 
 // ======== State for managing workout and split modes ========
 const [isEditMode, setIsEditMode] = useState(editMode || false); // State to determine if editing mode is enabled
@@ -149,7 +139,6 @@ const fetchExercises = async () => {
         const displayLabel = toTitleCase(exercise.name); // Title case for exercise name
         const displayBodyPart = toTitleCase(exercise.bodyPart); // Title case for body part
 
-        console.log(`Processed Exercise: ${displayLabel}, Display Body Part: ${displayBodyPart}`); // Debugging log
 
         exerciseMap.set(label, {
           label: exercise.name, // Use 'name' as 'label'
