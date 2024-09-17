@@ -102,33 +102,114 @@ async function createDefaultSplits(username) {
     {
       name: "Push Day",
       exercises: [
-        { label: "Bench Press", bodyPart: "Chest", muscles: ["chest", "triceps", "front-deltoids"], sets: [{}, {}, {}] },
-        { label: "Overhead Press", bodyPart: "Shoulders", muscles: ["front-deltoids", "triceps"], sets: [{}, {}, {}] },
-        { label: "Dips", bodyPart: "Chest", muscles: ["chest", "triceps", "front-deltoids"], sets: [{}, {}, {}] },
-        { label: "Side Lateral Raise", bodyPart: "Shoulders", muscles: ["back-deltoids", "front-deltoids"], sets: [{}, {}, {}, {}, {}] },
-        { label: "Tricep Extension", bodyPart: "Arms", muscles: ["triceps"], sets: [{}, {}, {}] }
-      ]
+        {
+          displayLabel: "Barbell Bench Press",
+          displayBodyPart: "Chest",
+          label: "barbell bench press",
+          muscles: ["chest", "triceps"],
+          sets: [{}, {}, {}],
+          bodyPart: "chest"
+        },
+        {
+          displayLabel: "Lever Military Press",
+          displayBodyPart: "Shoulders",
+          label: "lever military press",
+          muscles: ["triceps"],
+          sets: [{}, {}, {}],
+          bodyPart: "shoulders"
+        },
+        {
+          displayLabel: "Cable Pushdown",
+          displayBodyPart: "Upper Arms",
+          label: "cable pushdown",
+          muscles: ["triceps", "forearm"],
+          sets: [{}, {}, {}],
+          bodyPart: "upper arms"
+        },
+        {
+          displayLabel: "Dumbbell Lateral Raise",
+          displayBodyPart: "Shoulders",
+          label: "dumbbell lateral raise",
+          muscles: ["trapezius"],
+          sets: [{}, {}, {}],
+          bodyPart: "shoulders"
+        }
+      ]      
     },
     {
       name: "Pull Day",
       exercises: [
-        { label: "Deadlift", bodyPart: "Back", muscles: ["lower-back", "hamstring", "gluteal", "trapezius"], sets: [{}, {}, {}] },
-        { label: "Barbell Row", bodyPart: "Back", muscles: ["upper-back", "biceps", "lower-back", "trapezius"], sets: [{}, {}, {}] },
-        { label: "Face Pull", bodyPart: "Back", muscles: ["upper-back", "trapezius", "rear-deltoids"], sets: [{}, {}, {}] },
-        { label: "Hammer Curl", bodyPart: "Arms", muscles: ["biceps", "forearm"], sets: [{}, {}, {}] },
-        { label: "Bicep Curl", bodyPart: "Arms", muscles: ["biceps"], sets: [{}, {}, {}] },
-        { label: "Pull Up", bodyPart: "Back", muscles: ["upper-back", "biceps", "trapezius"], sets: [{}, {}, {}] }
+        {
+          displayLabel: "Barbell Deadlift",
+          displayBodyPart: "Upper Legs",
+          label: "barbell deadlift",
+          muscles: ["gluteal", "hamstring", "lower-back"],
+          sets: [{}, {}, {}],
+          bodyPart: "upper legs"
+        },
+        {
+          displayLabel: "Pull Up (neutral Grip)",
+          displayBodyPart: "Back",
+          label: "pull up (neutral grip)",
+          muscles: ["biceps", "forearm"],
+          sets: [{}, {}, {}],
+          bodyPart: "back"
+        },
+        {
+          displayLabel: "Barbell Bent Over Row",
+          displayBodyPart: "Back",
+          label: "barbell bent over row",
+          muscles: ["upper-back", "biceps", "forearm"],
+          sets: [{}, {}, {}],
+          bodyPart: "back"
+        },
+        {
+          displayLabel: "Cable Hammer Curl (with Rope)",
+          displayBodyPart: "Upper Arms",
+          label: "cable hammer curl (with rope)",
+          muscles: ["biceps", "forearm"],
+          sets: [{}, {}, {}],
+          bodyPart: "upper arms"
+        }
       ]
     },
     {
       name: "Leg Day",
       exercises: [
-        { label: "Squat", bodyPart: "Legs", muscles: ["quadriceps", "hamstring", "gluteal", "calves"], sets: [{}, {}, {}] },
-        { label: "Bulgarian Split Squat", bodyPart: "Legs", muscles: ["quadriceps", "hamstring", "gluteal"], sets: [{}, {}, {}] },
-        { label: "Leg Curl", bodyPart: "Legs", muscles: ["hamstring"], sets: [{}, {}, {}] },
-        { label: "Calf Raise", bodyPart: "Legs", muscles: ["calves"], sets: [{}, {}, {}, {}] },
-        { label: "Leg Press", bodyPart: "Legs", muscles: ["quadriceps", "gluteal"], sets: [{}, {}, {}] }
+        {
+          displayLabel: "Barbell Full Squat (back Pov)",
+          displayBodyPart: "Upper Legs",
+          label: "barbell full squat (back pov)",
+          muscles: ["gluteal", "quadriceps", "hamstring", "calves"],
+          sets: [{}, {}, {}],
+          bodyPart: "upper legs"
+        },
+        {
+          displayLabel: "Barbell Romanian Deadlift",
+          displayBodyPart: "Upper Legs",
+          label: "barbell romanian deadlift",
+          muscles: ["gluteal", "hamstring", "lower-back"],
+          sets: [{}, {}, {}],
+          bodyPart: "upper legs"
+        },
+        {
+          displayLabel: "Lever Seated Squat Calf Raise On Leg Press Machine",
+          displayBodyPart: "Lower Legs",
+          label: "lever seated squat calf raise on leg press machine",
+          muscles: ["calves", "quadriceps", "hamstring", "gluteal"],
+          sets: [{}, {}, {}],
+          bodyPart: "lower legs"
+        },
+        {
+          displayLabel: "Barbell Floor Calf Raise",
+          displayBodyPart: "Lower Legs",
+          label: "barbell floor calf raise",
+          muscles: ["calves", "hamstring"],
+          sets: [{}, {}, {}],
+          bodyPart: "lower legs"
+        }
       ]
+      
     }
   ];
 
