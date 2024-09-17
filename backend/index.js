@@ -154,10 +154,10 @@ exports.handler = async (event) => {
             response = createSplitService.uploadSplit(createSplitBody);
             break;    
 
-        // Delete a workout by workout ID route
+        // Delete a workout by workout route
         case event.httpMethod === 'DELETE' && event.path.startsWith(deleteWorkoutPath + '/'):
-            const workoutIdToDelete = event.path.split('/').pop(); 
-            response = await deleteWorkoutService.deleteWorkout(workoutIdToDelete);
+            const deleteWorkoutBody = JSON.parse(event.body);
+            response = await deleteWorkoutService.deleteWorkout(deleteWorkoutBody);
             break;
 
         // Delete a split by split ID route

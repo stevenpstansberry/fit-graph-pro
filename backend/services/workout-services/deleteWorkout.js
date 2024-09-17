@@ -26,11 +26,14 @@ const common = require('../auth-services/common');
  * 
  * @async
  * @function deleteWorkout
- * @param {string} workoutId - The unique ID of the workout to delete.
- * @param {string} username - The username associated with the workout.
+ * @param {string} workout - The workout to delete.
+ * @param {string} workoutData.workoutId - The unique ID for the workout.
+ * @param {string} workoutData.username - The username associated with the workout.
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
-async function deleteWorkout(workoutId, username) {
+async function deleteWorkout(workoutData) {
+  const { workoutId, username} = workoutData;
+
   // Retrieve user from the user table
   const dynamoUser = await common.getUser(userTable, username.toLowerCase().trim());
 
