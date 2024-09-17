@@ -18,7 +18,7 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 const workoutTable = 'fit-graph-user-workouts';
 const userTable = 'fit-graph-users';
 const util = require('../../utils/util');
-const common = require('./common'); // Import the common module to access the getUser function : async function getUser(tableName, username)
+const common = require('../auth-services/common'); 
 
 /**
  * Uploads a new workout to DynamoDB.
