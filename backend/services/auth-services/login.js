@@ -50,6 +50,12 @@ async function login(user) {
     return util.buildResponse(403, { message: 'user does not exist'});
   }
 
+  // If workoutCount is not defined, initialize it to 0
+  if (dynamoUser.workoutCount === undefined) {
+    await initializeWorkoutCount(username.toLowerCase().trim());
+    dynamoUser.workoutCount = 0;  
+  }
+
   // Use verifyPassword function to check the password
   const verificationResult = await verifyPasswordService.verifyPassword({
     username: username.toLowerCase().trim(),
@@ -65,7 +71,8 @@ async function login(user) {
   const userInfo = {
     username: dynamoUser.username,
     name: dynamoUser.name,
-    email: dynamoUser.email
+    email: dynamoUser.email,
+    workoutCount: dynamoUser.workoutCount
   }
 
   // Conditionally add the s3ProfileURL if it exists
@@ -81,6 +88,32 @@ async function login(user) {
     token: token
   }
   return util.buildResponse(200, response);
+}
+
+/**
+ * Initializes the workoutCount field to 0 for a user if it doesn't exist.
+ * 
+ * @async
+ * @function initializeWorkoutCount
+ * @param {string} username - The username of the user to update.
+ * @returns {Promise<void>}
+ */
+async function initializeWorkoutCount(username) {
+  const params = {
+    TableName: userTable,
+    Key: { username },
+    UpdateExpression: 'SET workoutCount = :count',
+    ExpressionAttributeValues: {
+      ':count': 0
+    }
+  };
+
+  try {
+    await dynamodb.update(params).promise();
+    console.log(`Initialized workoutCount for user: ${username}`);
+  } catch (error) {
+    console.error('Failed to initialize workoutCount:', error);
+  }
 }
 
 
