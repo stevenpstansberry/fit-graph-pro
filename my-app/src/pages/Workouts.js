@@ -19,7 +19,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import WorkoutCard from '../components/workout-components/WorkoutCard';
-import { getUser,getSessionData, setSessionData } from '../services/AuthService';
+import { getUser,getSessionData, setSessionData, updateWorkoutCount, incrementWorkoutCount, decrementWorkoutCount } from '../services/AuthService';
 import ViewWorkouts from '../components/workout-components/ViewWorkouts';
 import StrengthChart from '../components/workout-components/StrengthChart';
 import FuturePrediction from '../components/workout-components/FuturePrediction';
@@ -27,6 +27,7 @@ import HeatMap from '../components/workout-components/HeatMap';
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout, updateSplit } from '../services/FitGraphAPIServices';
 import { useSearchParams } from 'react-router-dom';
 import Confetti from 'react-confetti';
+import WorkoutCongratsCard from '../components/workout-components/WorkoutCongratsCard';
 
 
 /**
@@ -49,8 +50,9 @@ const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Controls vis
 const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false); // Controls visibility of custom split dialog
 const [confirmDialogOpen, setConfirmDialogOpen] = useState(false); // Controls visibility of confirmation dialog
 
- // ======== Celebration Effect State ========
+ // ======== Celebration UI State ========
  const [showConfetti, setShowConfetti] = useState(false); // Controls the visibility of the confetti effect
+ const [isCongratsCardVisible, setIsCongratsCardVisible] = useState(false); // Controls visibility of the congratulatory card
 
 // ======== Workout Management States ========
 const [workoutHistory, setWorkoutHistory] = useState([]); // Stores the history of workouts
@@ -60,6 +62,7 @@ const [cardMode, setCardMode] = useState('createWorkout'); // Determines the mod
 const [editMode, setEditMode] = useState(false); // Determines if the workout is in edit mode
 const [toEditId, setToEditId] = useState(''); // Stores the ID of the workout being edited
 const [toEditDate, setToEditDate] = useState(''); // Stores the Date of the workout being edited
+const [completedWorkout, setCompletedWorkout] = useState(null); // Stores the completed workout for the congratulatory card
 
 
 // ======== Split Management States ========
@@ -276,6 +279,9 @@ const fetchWorkouts = async () => {
 
         // Show success Snackbar
         showSnackbar('Workout deleted successfully!', 'success');
+
+        // Decrement workout count for the user in session storage
+        decrementWorkoutCount();
       } catch (error) {
         console.error("Failed to delete workout:", error);
 
@@ -309,15 +315,16 @@ const fetchWorkouts = async () => {
 
 
   /**
-   * Deletes a workout by ID.
+   * Deletes a workout
    * 
-   * @param {string} workoutId - The ID of the workout to delete.
+   * @param {string} workoutId - The workout to delete.
    */  
-  const handleDeleteWorkout = (workoutId) => {
-    setItemToDelete(workoutId);
+  const handleDeleteWorkout = (workout) => {  
+    setItemToDelete(workout);
     setDeleteType('workout');
     setConfirmDialogOpen(true);
   };
+  
 
 
     /**
@@ -426,7 +433,12 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
     console.log(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully`);
 
     if (itemType === 'workout' && action === 'save') {
+      // Increment workout count for the user in session storage
+      incrementWorkoutCount();
+
       setShowConfetti(true);  // Trigger the confetti effect
+      setCompletedWorkout(itemWithDate); // Set the completed workout for the congratulatory card
+      setIsCongratsCardVisible(true); // Show the congratulatory card
     }
 
     // Show success Snackbar
@@ -469,8 +481,6 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
   const handleCloseConfirmDialog = () => {
     setConfirmDialogOpen(false);
   };
-
-
 
 
 
@@ -741,20 +751,26 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
       </DialogContent>
     </Dialog>
 
+    <WorkoutCard
+      open={isCardVisible}
+      onClose={handleClose}
+      preloadedExercises={selectedWorkout}
+      mode={cardMode}
+      newSplitName={newSplitName}
+      type={workoutType}
+      {...(editMode && { editMode: editMode })}
+      ToEditId={toEditId}
+      ToEditDate={toEditDate}
+      manageWorkoutOrSplit={manageWorkoutOrSplit}
+      showSnackbar={showSnackbar}
+    />
 
-      <WorkoutCard
-        open={isCardVisible}
-        onClose={handleClose}
-        preloadedExercises={selectedWorkout}
-        mode={cardMode}
-        newSplitName={newSplitName}
-        type={workoutType}
-        {...(editMode && { editMode: editMode })}
-        ToEditId={toEditId}
-        ToEditDate={toEditDate}
-        manageWorkoutOrSplit={manageWorkoutOrSplit}
-        showSnackbar={showSnackbar}
-      />
+    <WorkoutCongratsCard
+      open={isCongratsCardVisible}
+      onClose={() => setIsCongratsCardVisible(false)}
+      workout={completedWorkout}
+      user={user}
+    />
     </Box>
   );
 }

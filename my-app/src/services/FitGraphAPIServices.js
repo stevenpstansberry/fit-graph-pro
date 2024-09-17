@@ -272,12 +272,13 @@ export const uploadSplit = async (split) => {
  * 
  * @async
  * @function deleteWorkout
- * @param {string} workoutId - The ID of the workout to delete.
+ * @param {Object} workout - The workout object to delete, which includes workout details.
  * @returns {Promise<Object>} Response data from the API.
  */
-export const deleteWorkout = async (workoutId) => {
-  return deleteToAPI(`/workouts/delete/${workoutId}`);
+export const deleteWorkout = async (workout) => {
+  return deleteToAPI(`/workouts/delete/${workout.workoutId}`,  workout );
 };
+
 
 /**
  * Deletes a workout split from the API.
