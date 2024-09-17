@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { Modal, Card, CardContent, Typography, Box } from '@mui/material';
+import { Modal, Card, CardContent, Typography, Box, Divider, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 /**
  * WorkoutCongratsCard component for displaying a congratulatory message after a workout is created.
@@ -27,6 +28,19 @@ import { Modal, Card, CardContent, Typography, Box } from '@mui/material';
  * @returns {React.Element} - The rendered WorkoutCongratsCard component.
  */
 const WorkoutCongratsCard = ({open, onClose, workout }) => {
+
+    if (workout) {
+    // Calculate total weight lifted
+  const totalWeightLifted = workout.exercises.reduce((total, exercise) => {
+    return total + exercise.sets.reduce((setTotal, set) => setTotal + parseFloat(set.weight || 0) * parseInt(set.reps || 0), 0);
+  }, 0);
+
+  // Calculate total number of sets and reps
+  const totalSets = workout.exercises.reduce((total, exercise) => total + exercise.sets.length, 0);
+  const totalReps = workout.exercises.reduce((total, exercise) => {
+    return total + exercise.sets.reduce((setTotal, set) => setTotal + parseInt(set.reps || 0), 0);
+  }, 0);
+
   return (
     <Modal
     open={open}
@@ -34,13 +48,13 @@ const WorkoutCongratsCard = ({open, onClose, workout }) => {
     BackdropProps={{
       style: { backgroundColor: 'rgba(0,0,0,0.5)' },
     }}
-  >
+    >
         <Card
         sx={{
-            maxWidth: 500,
-            minWidth: 500,
-            maxHeight: 300,
-            minHeight: 300,
+            maxWidth: 600,
+            minWidth: 600,
+            maxHeight: 400,
+            minHeight: 400,
             position: 'absolute',
             top: '50%',
             left: '50%',
@@ -53,23 +67,73 @@ const WorkoutCongratsCard = ({open, onClose, workout }) => {
             textAlign: 'center',
         }}
         >
-        <CardContent sx={{ padding: '16px' }}>
-            <Typography variant="h5" component="div" sx={{ fontSize: '1.2rem', color: '#388e3c', mb: 1 }}>
-            Congratulations!
-            </Typography>
-            <Typography variant="body1" color="textSecondary" sx={{ fontSize: '0.95rem', mb: 2 }}> 
-            You've completed a {(workout.type) + " workout" || "workout"} on {new Date(workout.date).toDateString()}!
-            </Typography>
-            <Typography variant="body2" sx={{ fontSize: '0.85rem', color: '#2e7d32' }}>
-            Keep up the great work and stay strong!
-            </Typography>
-            <Box sx={{ mt: 2 }}>
-            🎉🏋️‍♂️💪
-            </Box>
-        </CardContent>
+
+            {/* Close Button at the top left corner */}
+            <IconButton
+                aria-label="close"
+                onClick={onClose}
+                sx={{
+                    position: 'absolute',
+                    top: 8,
+                    left: 8,
+                    color: (theme) => theme.palette.grey[500],
+                }}
+                >
+                <CloseIcon />
+            </IconButton>    
+            <CardContent sx={{ padding: '16px' }}>
+                <Typography variant="h5" component="div" sx={{ fontSize: '1.2rem', color: '#388e3c', mb: 1 }}>
+                Congratulations!
+                </Typography>
+                <Typography variant="body1" color="textSecondary" sx={{ fontSize: '0.95rem', mb: 2 }}> 
+                You've completed a {(workout.type) + " workout" || "workout"} on {new Date(workout.date).toDateString()}!
+                </Typography>
+                <Typography variant="body2" sx={{ fontSize: '0.85rem', color: '#2e7d32', mb: 2 }}>
+                Keep up the great work and stay strong!
+                </Typography>
+                <Divider sx={{ my: 2 }} />
+
+                {/* Workout Statistics */}
+                <Typography variant="h6" component="div" sx={{ fontSize: '1rem', color: '#388e3c', mb: 1 }}>
+                Workout Summary
+                </Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ fontSize: '0.9rem', mb: 1 }}>
+                Total Weight Lifted: {totalWeightLifted} lbs
+                </Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ fontSize: '0.9rem', mb: 1 }}>
+                Total Sets: {totalSets}
+                </Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ fontSize: '0.9rem', mb: 1 }}>
+                Total Reps: {totalReps}
+                </Typography>
+
+                {/* List of Exercises */}
+                <Box sx={{ mt: 2, textAlign: 'left' }}>
+                <Typography variant="subtitle1" sx={{ fontSize: '1rem', color: '#2e7d32', mb: 1 }}>
+                    Exercises:
+                </Typography>
+                {workout.exercises.map((exercise, index) => (
+                    <Box key={index} sx={{ mb: 1 }}>
+                    <Typography variant="body2" sx={{ fontSize: '0.85rem', fontWeight: 'bold' }}> 
+                        {exercise.displayLabel} - {exercise.displayBodyPart}
+                    </Typography>
+                    {exercise.sets.map((set, i) => (
+                        <Typography key={i} variant="body2" sx={{ fontSize: '0.8rem' }}> 
+                        Set {i + 1}: {set.weight} lbs x {set.reps} reps
+                        </Typography>
+                    ))}
+                    </Box>
+                ))}
+                </Box>
+
+                <Box sx={{ mt: 2 }}>
+                🎉🏋️‍♂️💪
+                </Box>
+            </CardContent>
         </Card>
     </Modal>
   );
+}
 };
 
 export default WorkoutCongratsCard;

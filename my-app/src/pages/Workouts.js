@@ -429,9 +429,9 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
     console.log(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully`);
 
     if (itemType === 'workout' && action === 'save') {
+      setShowConfetti(true);  // Trigger the confetti effect
       setCompletedWorkout(itemWithDate); // Set the completed workout for the congratulatory card
       setIsCongratsCardVisible(true); // Show the congratulatory card
-      setShowConfetti(true);  // Trigger the confetti effect
     }
 
     // Show success Snackbar
