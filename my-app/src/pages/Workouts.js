@@ -27,6 +27,7 @@ import HeatMap from '../components/workout-components/HeatMap';
 import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout, updateSplit } from '../services/FitGraphAPIServices';
 import { useSearchParams } from 'react-router-dom';
 import Confetti from 'react-confetti';
+import WorkoutCongratsCard from '../components/workout-components/WorkoutCongratsCard';
 
 
 /**
@@ -49,8 +50,9 @@ const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Controls vis
 const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false); // Controls visibility of custom split dialog
 const [confirmDialogOpen, setConfirmDialogOpen] = useState(false); // Controls visibility of confirmation dialog
 
- // ======== Celebration Effect State ========
+ // ======== Celebration UI State ========
  const [showConfetti, setShowConfetti] = useState(false); // Controls the visibility of the confetti effect
+ const [isCongratsCardVisible, setIsCongratsCardVisible] = useState(false); // Controls visibility of the congratulatory card
 
 // ======== Workout Management States ========
 const [workoutHistory, setWorkoutHistory] = useState([]); // Stores the history of workouts
@@ -60,6 +62,7 @@ const [cardMode, setCardMode] = useState('createWorkout'); // Determines the mod
 const [editMode, setEditMode] = useState(false); // Determines if the workout is in edit mode
 const [toEditId, setToEditId] = useState(''); // Stores the ID of the workout being edited
 const [toEditDate, setToEditDate] = useState(''); // Stores the Date of the workout being edited
+const [completedWorkout, setCompletedWorkout] = useState(null); // Stores the completed workout for the congratulatory card
 
 
 // ======== Split Management States ========
@@ -426,6 +429,8 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
     console.log(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully`);
 
     if (itemType === 'workout' && action === 'save') {
+      setCompletedWorkout(itemWithDate); // Set the completed workout for the congratulatory card
+      setIsCongratsCardVisible(true); // Show the congratulatory card
       setShowConfetti(true);  // Trigger the confetti effect
     }
 
@@ -741,20 +746,25 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
       </DialogContent>
     </Dialog>
 
+    <WorkoutCard
+      open={isCardVisible}
+      onClose={handleClose}
+      preloadedExercises={selectedWorkout}
+      mode={cardMode}
+      newSplitName={newSplitName}
+      type={workoutType}
+      {...(editMode && { editMode: editMode })}
+      ToEditId={toEditId}
+      ToEditDate={toEditDate}
+      manageWorkoutOrSplit={manageWorkoutOrSplit}
+      showSnackbar={showSnackbar}
+    />
 
-      <WorkoutCard
-        open={isCardVisible}
-        onClose={handleClose}
-        preloadedExercises={selectedWorkout}
-        mode={cardMode}
-        newSplitName={newSplitName}
-        type={workoutType}
-        {...(editMode && { editMode: editMode })}
-        ToEditId={toEditId}
-        ToEditDate={toEditDate}
-        manageWorkoutOrSplit={manageWorkoutOrSplit}
-        showSnackbar={showSnackbar}
-      />
+    <WorkoutCongratsCard
+      open={isCongratsCardVisible}
+      onClose={() => setIsCongratsCardVisible(false)}
+      workout={completedWorkout}
+    />
     </Box>
   );
 }
