@@ -58,48 +58,44 @@ function Account() {
       <Navbar />
 
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, p: 4 }}>
-        <Grid container spacing={3} justifyContent="center">
-          {/* Account Information */}
-          <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 4 }}>
-              <Typography variant="h5" gutterBottom>
-                Account Information
-              </Typography>
-              <Typography variant="body1">
-                Username: {user.username}
-              </Typography>
-              <Typography variant="body1">
-                Email: {user.email}
-              </Typography>
-            </Paper>
-          </Grid>
+      <Box sx={{ flexGrow: 1, p: 4, display: 'flex', justifyContent: 'left' }}>
+        <Paper sx={{ p: 4, width: '600px' }}>
+          {/* Account Information Section */}
+          <Typography variant="h5" gutterBottom>
+            Account Information
+          </Typography>
+          <Typography variant="body1">
+            Username: {user.username}
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 4 }}>
+            Email: {user.email}
+          </Typography>
 
-          {/* Actions */}
-          <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 4 }}>
-              <Typography variant="h5" gutterBottom>
-                Account Actions
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleOpenResetPassword}
-                sx={{ mt: 2 }}
-              >
-                Reset Password
-              </Button>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={handleOpenDeleteAccount}
-                sx={{ mt: 2 }}
-              >
-                Delete Account
-              </Button>
-            </Paper>
-          </Grid>
-        </Grid>
+          <Box sx={{ borderBottom: '1px solid #ccc', my: 2 }} /> {/* Divider */}
+
+          {/* Account Actions Section */}
+          <Typography variant="h5" gutterBottom>
+            Account Actions
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, alignItems: 'center' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleOpenResetPassword}
+              sx={{ mb: 2, width: '200px' }}
+            >
+              Reset Password
+            </Button>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleOpenDeleteAccount}
+              sx={{ width: '200px' }}
+            >
+              Delete Account
+            </Button>
+          </Box>
+        </Paper>
       </Box>
 
       {/* ConfirmPassword Dialog */}
