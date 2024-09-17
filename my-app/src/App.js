@@ -67,8 +67,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/forgot-password" element={<ResetPassword />} />
-          <Route path="/reset-password" element={<ResetPasswordFromEmail />} />
           <Route path="/account" element={<Account />} />
           <Route path="/attributions" element={<Attributions />} />
 
@@ -104,6 +102,22 @@ function App() {
             element={
               <PublicRoute>
                 <Register />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicRoute>
+                <ResetPassword />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <PublicRoute>
+                <ResetPasswordFromEmail />
               </PublicRoute>
             }
           />
