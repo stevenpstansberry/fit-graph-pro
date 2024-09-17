@@ -26,13 +26,11 @@ const common = require('../auth-services/common');
  * 
  * @async
  * @function deleteWorkout
- * @param {string} workout - The workout to delete.
- * @param {string} workoutData.workoutId - The unique ID for the workout.
- * @param {string} workoutData.username - The username associated with the workout.
+ * @param {Object} workoutData - The workout to delete.
  * @returns {Promise<Object>} Response object indicating success or failure.
  */
 async function deleteWorkout(workoutData) {
-  const { workoutId, username} = workoutData;
+  const { workoutId, username } = workoutData;
 
   // Retrieve user from the user table
   const dynamoUser = await common.getUser(userTable, username.toLowerCase().trim());
@@ -75,14 +73,11 @@ async function decrementWorkoutCount(username) {
     TableName: userTable,
     Key: { username },
     UpdateExpression: 'SET workoutCount = if_not_exists(workoutCount, :start) - :dec',
-    ExpressionAttributeValues: {
-      ':start': 0,
-      ':dec': 1
-    },
     ConditionExpression: 'workoutCount > :min', // Ensure workoutCount does not go below 0
     ExpressionAttributeValues: {
-      ':min': 0,
-      ':dec': 1
+      ':start': 0,
+      ':dec': 1,
+      ':min': 0
     }
   };
 
