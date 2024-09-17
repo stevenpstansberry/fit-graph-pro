@@ -14,14 +14,14 @@
  * @author Steven Stansberry
  */
 
-module.exports = {
+const AuthService = {
   /**
    * Retrieves the user object from session storage.
    * 
    * @function getUser
    * @returns {Object|null} The user object if available, otherwise null.
    */
-  getUser: function () {
+  getUser: () => {
     const user = sessionStorage.getItem('user');
     if (user === 'undefined' || !user) {
       return null;
@@ -37,7 +37,7 @@ module.exports = {
    * @function getToken
    * @returns {string|null} The token string if available, otherwise null.
    */
-  getToken: function() {
+  getToken: () => {
     return sessionStorage.getItem('token');
   },
 
@@ -48,18 +48,18 @@ module.exports = {
    * @param {Object} user - The user object to be saved.
    * @param {string} token - The authentication token to be saved.
    */
-  setUserSession: function (user, token) {
+  setUserSession: (user, token) => {
     sessionStorage.setItem('user', JSON.stringify(user));
     sessionStorage.setItem('token', token);
     console.log(sessionStorage);
   },
 
   /**
-   * Clears the user session by 
+   * Clears the user session by clearing all session storage.
    * 
    * @function resetUserSession
    */
-  resetUserSession: function() {
+  resetUserSession: () => {
     sessionStorage.clear();
   },
 
@@ -69,7 +69,7 @@ module.exports = {
    * @function getProfileImageUrlFromSession
    * @returns {string|null} The profile image URL if available, otherwise null.
    */
-  getProfileImageUrlFromSession: function() {
+  getProfileImageUrlFromSession: () => {
     return sessionStorage.getItem('profileImageUrl');
   },
 
@@ -79,7 +79,7 @@ module.exports = {
    * @function setProfileImageUrlToSession
    * @param {string} url - The URL of the profile image to be saved.
    */
-  setProfileImageUrlToSession: function(url) {
+  setProfileImageUrlToSession: (url) => {
     sessionStorage.setItem('profileImageUrl', url);
   },
 
@@ -90,12 +90,12 @@ module.exports = {
    * @param {string} key - The key for the session storage item.
    * @returns {Object|null} The parsed object from session storage if available, otherwise null.
    */
-   getSessionData : function (key) {
+  getSessionData: (key) => {
     const data = sessionStorage.getItem(key);
     if (data === 'undefined' || !data) {
       return null;
     } else {
-      console.log(data)
+      console.log(data);
       return JSON.parse(data);
     }
   },
@@ -107,9 +107,51 @@ module.exports = {
    * @param {string} key - The key for the session storage item.
    * @param {Object} value - The value to be saved in session storage.
    */
-   setSessionData : function (key, value) {
+  setSessionData: (key, value) => {
     sessionStorage.setItem(key, JSON.stringify(value));
-  }  
+  },
+
+  /**
+   * Updates the workout count for the user in session storage.
+   * 
+   * @function updateWorkoutCount
+   * @param {number} newCount - The new workout count to set.
+   */
+  updateWorkoutCount: (newCount) => {
+    const user = AuthService.getUser();
+    if (user) {
+      user.workoutCount = newCount;
+      AuthService.setUserSession(user, AuthService.getToken());
+    }
+  },
+
+  /**
+   * Increments the workout count for the user in session storage.
+   * 
+   * @function incrementWorkoutCount
+   */
+  incrementWorkoutCount: () => {
+    const user = AuthService.getUser();
+    if (user) {
+      user.workoutCount = (user.workoutCount || 0) + 1;
+      AuthService.setUserSession(user, AuthService.getToken());
+      console.log(`Workout count incremented to: ${user.workoutCount}`);
+    }
+  },
+
+  /**
+   * Decrements the workout count for the user in session storage.
+   * 
+   * @function decrementWorkoutCount
+   */
+  decrementWorkoutCount: () => {
+    const user = AuthService.getUser();
+    if (user && user.workoutCount > 0) {
+      user.workoutCount -= 1;
+      AuthService.setUserSession(user, AuthService.getToken());
+      console.log(`Workout count decremented to: ${user.workoutCount}`);
+    }
+  },
 };
 
-
+module.exports = AuthService;

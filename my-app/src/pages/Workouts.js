@@ -19,7 +19,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import WorkoutCard from '../components/workout-components/WorkoutCard';
-import { getUser,getSessionData, setSessionData } from '../services/AuthService';
+import { getUser,getSessionData, setSessionData, updateWorkoutCount, incrementWorkoutCount, decrementWorkoutCount } from '../services/AuthService';
 import ViewWorkouts from '../components/workout-components/ViewWorkouts';
 import StrengthChart from '../components/workout-components/StrengthChart';
 import FuturePrediction from '../components/workout-components/FuturePrediction';
@@ -279,6 +279,9 @@ const fetchWorkouts = async () => {
 
         // Show success Snackbar
         showSnackbar('Workout deleted successfully!', 'success');
+
+        // Decrement workout count for the user in session storage
+        decrementWorkoutCount();
       } catch (error) {
         console.error("Failed to delete workout:", error);
 
@@ -312,15 +315,16 @@ const fetchWorkouts = async () => {
 
 
   /**
-   * Deletes a workout by ID.
+   * Deletes a workout
    * 
-   * @param {string} workoutId - The ID of the workout to delete.
+   * @param {string} workoutId - The workout to delete.
    */  
-  const handleDeleteWorkout = (workoutId) => {
-    setItemToDelete(workoutId);
+  const handleDeleteWorkout = (workout) => {  
+    setItemToDelete(workout);
     setDeleteType('workout');
     setConfirmDialogOpen(true);
   };
+  
 
 
     /**
@@ -429,6 +433,9 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
     console.log(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully`);
 
     if (itemType === 'workout' && action === 'save') {
+      // Increment workout count for the user in session storage
+      incrementWorkoutCount();
+
       setShowConfetti(true);  // Trigger the confetti effect
       setCompletedWorkout(itemWithDate); // Set the completed workout for the congratulatory card
       setIsCongratsCardVisible(true); // Show the congratulatory card
@@ -474,8 +481,6 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
   const handleCloseConfirmDialog = () => {
     setConfirmDialogOpen(false);
   };
-
-
 
 
 
