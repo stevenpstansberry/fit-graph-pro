@@ -1,19 +1,27 @@
-import React, { useRef, useEffect } from 'react';
+/**
+ * @fileoverview Redesigned Page component for the Home section with scroll-triggered animation using Framer Motion.
+ *
+ * @file src/pages/Home.js
+ *
+ * This page serves as the landing page of the application, redesigned to feature bold sections with unique imagery, typography, and scroll-triggered animations.
+ *
+ * @component
+ * @returns {React.Element} - The rendered Home page component.
+ *
+ * @version 1.0.0
+ *
+ * @author Steven Stansberry
+ */
+
+import React, { useRef } from 'react';
 import Features from '../components/Features';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Typography, Box, Container, Button, Grid } from '@mui/material';
-import { motion, useScroll, useTransform } from 'framer-motion'; // Import Framer Motion
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, useGLTF } from '@react-three/drei';
-import barbellModel from '../assets/dumbell.glb'; 
+import { motion, useScroll, useTransform } from 'framer-motion'; 
+import barbellImage from '../assets/barbell.png';  
+import graphImage from '../assets/graph.png';  
 
-
-
-function BarbellModel(props) {
-  const { scene } = useGLTF(barbellModel); // Use the imported model
-  return <primitive object={scene} {...props} />;
-}
 
 /**
  * Home page component that serves as the landing page for the Fit Graph Pro application.
@@ -28,42 +36,34 @@ function Home() {
       {/* Navbar Component */}
       <Navbar />
 
-      {/* Hero Section with 3D Barbell Animation */}
-      <HeroSectionWith3DAnimation />
+      {/* Hero Section 1 with Barbell Scroll Animation */}
+      <HeroSectionWithBarbellAnimation />
 
       {/* Feature Section 1 */}
       <ContentSection
         backgroundColor="#111"
         textColor="#fff"
         content={
-          <Typography variant="h4" align="center" sx={{ mb: 2 }}>
-            "People are not born to be ordinary; they are born to stand out. Let your style roar with us."
+          <Typography variant="h4" align="center" sx={{ mb: 2, color: '#FFD700' }}> 
+            "Success isn’t always about greatness. It’s about consistency. Consistent hard work gains success. Greatness will come."
           </Typography>
         }
       />
 
-      {/* Partner Spotlight */}
-      <SpotlightSection />
-
       {/* Hero Section 2 */}
-      <HeroSection
-        image="https://via.placeholder.com/1920x1080" // Placeholder image URL
-        title="Discover Powerful Insights"
-        subtitle="Dive deep into data with customizable graphs and analytics."
-        buttonText="Learn More"
-      />
+      <HeroSectionWithFadeInAnimation />
 
       {/* Feature Section 2 */}
       <ContentSection
         backgroundColor="#333"
         textColor="#ffdd57"
-        content={<Features />} // Replace with actual feature content or component
+        content={<Features />} 
       />
 
       {/* Hero Section 3 */}
       <HeroSection
-        image="https://via.placeholder.com/1920x1080" // Placeholder image URL
-        title="Join Our Community"
+        image="https://via.placeholder.com/1920x1080"  // Placeholder image URL
+        title="Join The FitGraph Community"
         subtitle="Connect with other fitness enthusiasts and share your progress."
         buttonText="Sign Up"
       />
@@ -75,23 +75,18 @@ function Home() {
 }
 
 /**
- * HeroSectionWith3DAnimation component for displaying a 3D barbell animation with scroll-triggered effects.
+ * HeroSectionWithBarbellAnimation component for displaying a barbell that scales and spins based on scroll position.
  *
- * @returns {React.Element} - A styled hero section with 3D barbell animation.
+ * @returns {React.Element} - A styled hero section with scroll-based animation for the barbell.
  */
-const HeroSectionWith3DAnimation = () => {
-  const { scrollYProgress } = useScroll(); // Use Framer Motion's useScroll hook
-  const scaleValue = useTransform(scrollYProgress, [0, 1], [1, 1.5]); // Transform scale based on scroll position
-  const meshRef = useRef(); // Reference to the barbell model
+const HeroSectionWithBarbellAnimation = () => {
+  const { scrollYProgress } = useScroll();  // Use Framer Motion's useScroll hook
 
-  // Effect to update the scale of the barbell model as the user scrolls
-  useEffect(() => {
-    return scaleValue.onChange((latestScale) => {
-      if (meshRef.current) {
-        meshRef.current.scale.set(latestScale, latestScale, latestScale); // Apply the scale in x, y, and z axes
-      }
-    });
-  }, [scaleValue]);
+  // Barbell size will grow from 0.5 (small) to 2 times its original size
+  const scale = useTransform(scrollYProgress, [0, 1], [0.5, 2]);
+
+  // Barbell will rotate 0 to 360 degrees as the user scrolls
+  const rotate = useTransform(scrollYProgress, [0, 1], [0, 360]);
 
   return (
     <Box
@@ -103,17 +98,103 @@ const HeroSectionWith3DAnimation = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        textAlign: 'center',
-        backgroundColor: '#222',
+        backgroundColor: '#222', 
       }}
     >
-      <Canvas camera={{ position: [0, 1, 5] }}>
-        <ambientLight />
-        <pointLight position={[10, 10, 10]} />
-        <BarbellModel ref={meshRef} /> {/* Render the barbell model */}
-        <OrbitControls />
-      </Canvas>
+      {/* Barbell Image with Scroll Animation */}
+      <motion.img
+        src={barbellImage}  
+        alt="Barbell Scroll Animation"
+        style={{
+          width: '150px',  // Initial width of the barbell (small size)
+          height: 'auto',
+        }}
+        initial={{ scale: 0.5 }} 
+        style={{ scale, rotate }}  
+      />
+
+      {/* Text content overlaying the barbell */}
+      <Box sx={{ position: 'absolute', top: '20%', zIndex: 2, color: '#fff', textAlign: 'center' }}>
+        <Typography variant="h2" sx={{ mb: 2, fontWeight: 'bold' }}>
+          Welcome to FitGraph Pro
+        </Typography>
+        <Typography variant="h5" sx={{ mb: 4 }}>
+        Empower your body with every rep.
+        </Typography>
+      </Box>
     </Box>
+  );
+};
+
+/**
+ * HeroSectionWithFadeInAnimation component for fading in the entire hero section as the user scrolls.
+ *
+ * @returns {React.Element} - A styled hero section where the whole section fades in based on scroll.
+ */
+const HeroSectionWithFadeInAnimation = () => {
+  // Create a ref for the section we want to track the scroll progress of
+  const ref = useRef(null);
+
+  // Use useScroll with ref to track the scroll progress of this specific section
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],  // Adjusts how the progress is calculated
+  });
+
+  // Create a fade-in effect for the entire section, increasing opacity from 0 to 1 as you scroll
+  const fadeInEffect = useTransform(scrollYProgress, [0, 1], [0, 1]);  // Opacity goes from 0 to 1
+
+  return (
+    <motion.div
+      ref={ref}  
+      style={{
+        opacity: fadeInEffect,  
+        transition: 'opacity 0.5s ease-out', 
+      }}
+    >
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: '80vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f5f5f5', 
+          overflow: 'hidden',
+        }}
+      >
+        {/* Graph Image centered with fade-in effect */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center', 
+            alignItems: 'center',      
+            width: '100%',
+            height: '100%',
+          }}
+        >
+          <motion.img
+            src={graphImage}  
+            alt="Graph Image"
+            style={{
+              width: 'auto',
+              height: '70%',  
+            }}
+          />
+        </Box>
+
+        {/* Text content overlaying the graph */}
+        <Box sx={{ position: 'absolute', top: '20%', zIndex: 2, color: '#333', textAlign: 'center' }}>
+          <Typography variant="h2" sx={{ mb: 2, fontWeight: 'bold' }}>
+            Discover Powerful Insights
+          </Typography>
+          <Typography variant="h5" sx={{ mb: 4 }}>
+            Dive deep into data with customizable graphs and analytics.
+          </Typography>
+        </Box>
+      </Box>
+    </motion.div>
   );
 };
 
@@ -141,37 +222,6 @@ const ContentSection = ({ backgroundColor, textColor, content }) => (
   </Box>
 );
 
-/**
- * SpotlightSection component to showcase partner logos or spotlight content.
- *
- * @returns {React.Element} - A styled section with partner logos or spotlight content.
- */
-const SpotlightSection = () => (
-  <Box
-    sx={{
-      width: '100%',
-      py: 8,
-      backgroundColor: '#fff',
-      textAlign: 'center',
-    }}
-  >
-    <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold' }}>
-      Partner Spotlight
-    </Typography>
-    <Grid container spacing={3} justifyContent="center">
-      <Grid item>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/National_Geographic_logo.svg/1024px-National_Geographic_logo.svg.png" alt="National Geographic" style={{ height: 50 }} />
-      </Grid>
-      <Grid item>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Discovery_Channel_logo.svg" alt="Discovery Channel" style={{ height: 50 }} />
-      </Grid>
-      <Grid item>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Animal_Planet_Logo_2018.png" alt="Animal Planet" style={{ height: 50 }} />
-      </Grid>
-      {/* Add more logos as needed */}
-    </Grid>
-  </Box>
-);
 
 /**
  * HeroSection component for displaying large, full-width hero images with text overlay.
@@ -179,7 +229,7 @@ const SpotlightSection = () => (
  * @param {Object} props - Props containing the image, title, subtitle, and button text.
  * @returns {React.Element} - A styled hero section with background image and overlay text.
  */
-const HeroSection = ({ image, title, subtitle, buttonText }) => (
+const HeroSection = ({ image, title, subtitle}) => (
   <Box
     sx={{
       position: 'relative',
@@ -202,11 +252,8 @@ const HeroSection = ({ image, title, subtitle, buttonText }) => (
       <Typography variant="h5" sx={{ mb: 4 }}>
         {subtitle}
       </Typography>
-      <Button variant="contained" color="secondary" size="large">
-        {buttonText}
-      </Button>
     </Box>
-    {/* Dark overlay for better text contrast */}
+    {/* Optional: Dark overlay for better text contrast */}
     <Box
       sx={{
         position: 'absolute',
