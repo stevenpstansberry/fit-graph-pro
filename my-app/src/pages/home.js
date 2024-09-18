@@ -56,6 +56,8 @@ function Home() {
 
       <HeroSectionWithSlideInAnimationLeft />
 
+      <HeroSectionWithSlideInAnimationRight />
+
 
       {/* Feature Section 2 */}
       <ContentSection
@@ -300,6 +302,72 @@ const HeroSectionWithSlideInAnimationLeft = () => {
   );
 };
 
+const HeroSectionWithSlideInAnimationRight = () => {
+  const ref = useRef(null);
+
+  // Use useScroll with ref to track the scroll progress of this specific section
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start center", "end center"], // Adjusted offsets for smoother in-out animation
+  });
+
+  // Slide the content in from the right and fade in
+  const slideInEffect = useTransform(scrollYProgress, [0, 0.2], [200, 0]); 
+  const fadeInEffect = useTransform(scrollYProgress, [0, 0.2], [0, 1]);  
+
+  return (
+    <motion.div ref={ref} style={{ height: '100vh', backgroundColor: '#f0f0f0' }}>
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#d0d0d0',  // Background for contrast with the content
+          overflow: 'hidden',
+        }}
+      >
+        {/* Flex container to center the card */}
+        <motion.div
+          style={{
+            x: slideInEffect, // Use slideInEffect from useTransform
+            opacity: fadeInEffect, // Use fadeInEffect from useTransform
+          }}
+          transition={{ type: 'spring', stiffness: 50 }}  
+        >
+          <Box
+            sx={{
+              padding: '20px',
+              backgroundColor: '#ffffff',
+              borderRadius: '8px',
+              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+              textAlign: 'left',
+              maxWidth: '400px',
+            }}
+          >
+            <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: '#333' }}>
+              Workout Heatmap
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#555' }}>
+              Visualize your workout intensity with our body heatmap feature.
+              It highlights which areas of your body have been worked the most,
+              helping you balance your workouts and avoid overtraining.
+            </Typography>
+          </Box>
+        </motion.div>
+
+        
+        <Box sx={{ position: 'absolute', bottom: '20%', zIndex: 2, color: '#333', textAlign: 'center' }}>
+          <Button variant="contained" color="primary" size="large">
+            Learn More
+          </Button>
+        </Box>
+      </Box>
+    </motion.div>
+  );
+};
 
 
 
