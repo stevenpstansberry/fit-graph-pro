@@ -202,39 +202,26 @@ const HeroSectionWithFadeInAnimation = () => {
   );
 };
 
-
-/**
- * HeroSectionWithSlideInAnimation component for sliding in the content from the left.
- *
- * @returns {React.Element} - A styled hero section where the placeholder content slides in from the left based on scroll.
- */
 const HeroSectionWithSlideInAnimationLeft = () => {
-  // Create a ref for the section we want to track the scroll progress of
   const ref = useRef(null);
 
   // Use useScroll with ref to track the scroll progress of this specific section
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end", "end start"],  // Adjusts how the progress is calculated
+    offset: ["start center", "end center"], // Adjusted offsets for smoother in-out animation
   });
 
-  // Slide the content in from the left as you scroll
-  const slideInEffect = useTransform(scrollYProgress, [0, 1], ['-100%', '0%']);  // Slide from -100% (off-screen) to 0% (fully visible)
-  const fadeInEffect = useTransform(scrollYProgress, [0, 1], [0, 1]);  // Opacity from 0 to 1 for a smoother appearance
+  // Slide the content in from the left and fade in
+  const slideInEffect = useTransform(scrollYProgress, [0, 0.2], [-200, 0]);  
+  const fadeInEffect = useTransform(scrollYProgress, [0, 0.2], [0, 1]);  
 
   return (
-    <motion.div
-      ref={ref}  // Attach the ref to the container
-      style={{
-        opacity: fadeInEffect,  // Fade in effect as it slides
-        transition: 'opacity 0.5s ease-out',  // Smooth transition for the fade-in effect
-      }}
-    >
+    <motion.div ref={ref} style={{ height: '100vh', backgroundColor: '#f0f0f0' }}>
       <Box
         sx={{
           position: 'relative',
           width: '100%',
-          height: '80vh',
+          height: '100vh',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -245,10 +232,10 @@ const HeroSectionWithSlideInAnimationLeft = () => {
         {/* Placeholder for Estimate Future Prediction feature sliding in */}
         <motion.div
           style={{
-            x: slideInEffect,  // Apply the slide-in effect
-            opacity: fadeInEffect,  // Fade in along with the slide-in
-            transition: 'all 0.5s ease-out',
+            x: slideInEffect, // Use slideInEffect from useTransform
+            opacity: fadeInEffect, // Use fadeInEffect from useTransform
           }}
+          transition={{ type: 'spring', stiffness: 50 }}  
         >
           <Box
             sx={{
@@ -271,7 +258,7 @@ const HeroSectionWithSlideInAnimationLeft = () => {
           </Box>
         </motion.div>
 
-        {/* Optional: Additional text or button */}
+        
         <Box sx={{ position: 'absolute', bottom: '20%', zIndex: 2, color: '#333', textAlign: 'center' }}>
           <Button variant="contained" color="primary" size="large">
             Learn More
@@ -281,6 +268,9 @@ const HeroSectionWithSlideInAnimationLeft = () => {
     </motion.div>
   );
 };
+
+
+
 
 
 
