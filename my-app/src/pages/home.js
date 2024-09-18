@@ -1,25 +1,11 @@
-/**
- * @fileoverview Redesigned Page component for the Home section with distinct visual sections and large hero images.
- *
- * @file src/pages/Home.js
- *
- * This page serves as the landing page of the application, redesigned to feature bold sections with unique imagery and typography.
- *
- * @component
- * @returns {React.Element} - The rendered Home page component.
- *
- * @version 2.0.0
- *
- * @author Steven Stansberry
- */
-
-
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import Features from '../components/Features';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Typography, Box, Container, Button, Grid } from '@mui/material';
-import { motion, useScroll, useTransform } from 'framer-motion';  // Import Framer Motion
+import { motion, useScroll, useTransform } from 'framer-motion'; // Import Framer Motion
+import { Canvas } from '@react-three/fiber'; // Import React Three Fiber
+import { OrbitControls } from '@react-three/drei'; // Drei helper for camera controls
 
 /**
  * Home page component that serves as the landing page for the Fit Graph Pro application.
@@ -34,8 +20,8 @@ function Home() {
       {/* Navbar Component */}
       <Navbar />
 
-      {/*  Section 1 with Scroll Animation */}
-      <HeroSectionWithAnimation />
+      {/* Hero Section with 3D Barbell Animation */}
+      <HeroSectionWith3DAnimation />
 
       {/* Feature Section 1 */}
       <ContentSection
@@ -51,24 +37,24 @@ function Home() {
       {/* Partner Spotlight */}
       <SpotlightSection />
 
-      {/*  Section 2 */}
+      {/* Hero Section 2 */}
       <HeroSection
-        image="https://via.placeholder.com/1920x1080"  // Placeholder image URL
+        image="https://via.placeholder.com/1920x1080" // Placeholder image URL
         title="Discover Powerful Insights"
         subtitle="Dive deep into data with customizable graphs and analytics."
         buttonText="Learn More"
       />
 
-      {/*  Section 2 */}
+      {/* Feature Section 2 */}
       <ContentSection
         backgroundColor="#333"
         textColor="#ffdd57"
         content={<Features />} // Replace with actual feature content or component
       />
 
-      {/*  Section 3 */}
+      {/* Hero Section 3 */}
       <HeroSection
-        image="https://via.placeholder.com/1920x1080"  // Placeholder image URL
+        image="https://via.placeholder.com/1920x1080" // Placeholder image URL
         title="Join Our Community"
         subtitle="Connect with other fitness enthusiasts and share your progress."
         buttonText="Sign Up"
@@ -81,14 +67,13 @@ function Home() {
 }
 
 /**
- * HeroSectionWithAnimation component for displaying a large, full-width hero image with scroll-triggered animation.
+ * HeroSectionWith3DAnimation component for displaying a 3D barbell animation with scroll-triggered effects.
  *
- * @returns {React.Element} - A styled hero section with scroll-based animation.
+ * @returns {React.Element} - A styled hero section with 3D barbell animation.
  */
-const HeroSectionWithAnimation = () => {
-  const { scrollYProgress } = useScroll();  // Use Framer Motion's useScroll hook
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.5]);  // Transform scale based on scroll position
-  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.5, 0]);  // Transform opacity based on scroll position
+const HeroSectionWith3DAnimation = () => {
+  const { scrollYProgress } = useScroll(); // Use Framer Motion's useScroll hook
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.5]); // Transform scale based on scroll position
 
   return (
     <Box
@@ -104,28 +89,35 @@ const HeroSectionWithAnimation = () => {
         backgroundColor: '#222',
       }}
     >
-      <motion.img
-        src="https://via.placeholder.com/1920x1080"  // Placeholder image URL
-        alt="Scroll Animation"
-        style={{
-          width: '100%',
-          height: 'auto',
-        }}
-        initial={{ scale: 1, opacity: 1 }}
-        style={{ scale, opacity }}  // Apply scroll-triggered transforms
-      />
-      <Box sx={{ position: 'absolute', top: '20%', zIndex: 2, color: '#fff' }}>
-        <Typography variant="h2" sx={{ mb: 2, fontWeight: 'bold' }}>
-          Welcome to FitGraphPro
-        </Typography>
-        <Typography variant="h5" sx={{ mb: 4 }}>
-          Track, Analyze, and Transform Your Fitness Journey
-        </Typography>
-        <Button variant="contained" color="secondary" size="large">
-          Explore Now
-        </Button>
-      </Box>
+      <Canvas camera={{ position: [0, 1, 5] }}>
+        <ambientLight />
+        <pointLight position={[10, 10, 10]} />
+        <BarbellModel scale={scale} /> {/* Render the barbell model */}
+        <OrbitControls />
+      </Canvas>
     </Box>
+  );
+};
+
+/**
+ * BarbellModel component for rendering a 3D barbell model.
+ *
+ * @returns {React.Element} - A 3D barbell model in the Three.js scene.
+ */
+const BarbellModel = ({ scale }) => {
+  const meshRef = useRef();
+
+  useEffect(() => {
+    if (meshRef.current) {
+      meshRef.current.scale.set(scale.get(), scale.get(), scale.get());
+    }
+  }, [scale]);
+
+  return (
+    <mesh ref={meshRef}>
+      <boxGeometry args={[1, 1, 1]} /> {/* Replace with actual barbell model */}
+      <meshStandardMaterial color="gray" />
+    </mesh>
   );
 };
 
