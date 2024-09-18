@@ -202,7 +202,7 @@ const HeroSectionWithFadeInAnimation = () => {
   );
 };
 
-const HeroSectionWithSlideInAnimationLeft = () => {
+const HeroSectionWithSlideInAnimationLeft = () => {  
   const ref = useRef(null);
 
   // Use useScroll with ref to track the scroll progress of this specific section
@@ -229,45 +229,78 @@ const HeroSectionWithSlideInAnimationLeft = () => {
           overflow: 'hidden',
         }}
       >
-        {/* Placeholder for Estimate Future Prediction feature sliding in */}
-        <motion.div
-          style={{
-            x: slideInEffect, // Use slideInEffect from useTransform
-            opacity: fadeInEffect, // Use fadeInEffect from useTransform
+        {/* Flex container to align the cards in a row */}
+        <Box
+          sx={{
+            display: 'flex',
+            gap: '20px', // Adds spacing between the two cards
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
-          transition={{ type: 'spring', stiffness: 50 }}  
         >
-          <Box
-            sx={{
-              padding: '20px',
-              backgroundColor: '#ffffff',
-              borderRadius: '8px',
-              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-              textAlign: 'left',
-              maxWidth: '400px',
+          {/* Card for Estimate Future Prediction */}
+          <motion.div
+            style={{
+              x: slideInEffect, // Use slideInEffect from useTransform
+              opacity: fadeInEffect, // Use fadeInEffect from useTransform
             }}
+            transition={{ type: 'spring', stiffness: 50 }}  
           >
-            <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: '#333' }}>
-              Estimate Future Predictions
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#555' }}>
-              Get insights into your future progress based on current data trends.
-              Our predictive models will help you set achievable goals by estimating
-              future fitness performance.
-            </Typography>
-          </Box>
-        </motion.div>
+            <Box
+              sx={{
+                padding: '20px',
+                backgroundColor: '#ffffff',
+                borderRadius: '8px',
+                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                textAlign: 'left',
+                maxWidth: '400px',
+              }}
+            >
+              <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: '#333' }}>
+                Estimate Future Predictions
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#555' }}>
+                Get insights into your future progress based on current data trends.
+                Our predictive models will help you set achievable goals by estimating
+                future fitness performance.
+              </Typography>
+            </Box>
+          </motion.div>
 
-        
-        <Box sx={{ position: 'absolute', bottom: '20%', zIndex: 2, color: '#333', textAlign: 'center' }}>
-          <Button variant="contained" color="primary" size="large">
-            Learn More
-          </Button>
+          {/* New Card for Estimating One Rep Max */}
+          <motion.div
+            style={{
+              x: slideInEffect, // Use slideInEffect from useTransform
+              opacity: fadeInEffect, // Use fadeInEffect from useTransform
+            }}
+            transition={{ type: 'spring', stiffness: 50 }}  
+          >
+            <Box
+              sx={{
+                padding: '20px',
+                backgroundColor: '#ffffff',
+                borderRadius: '8px',
+                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                textAlign: 'left',
+                maxWidth: '400px',
+              }}
+            >
+              <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: '#333' }}>
+                Estimate Your One Rep Max
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#555' }}>
+                Use our One Rep Max calculator to estimate the maximum weight you can lift for a single rep
+                based on your current performance. This helps you track strength gains and set realistic goals.
+              </Typography>
+            </Box>
+          </motion.div>
         </Box>
       </Box>
     </motion.div>
   );
 };
+
+
 
 
 
