@@ -53,6 +53,10 @@ function Home() {
       {/* Hero Section 2 */}
       <HeroSectionWithFadeInAnimation />
 
+
+      <HeroSectionWithSlideInAnimationLeft />
+
+
       {/* Feature Section 2 */}
       <ContentSection
         backgroundColor="#333"
@@ -192,6 +196,86 @@ const HeroSectionWithFadeInAnimation = () => {
           <Typography variant="h5" sx={{ mb: 4 }}>
             Dive deep into data with customizable graphs and analytics.
           </Typography>
+        </Box>
+      </Box>
+    </motion.div>
+  );
+};
+
+
+/**
+ * HeroSectionWithSlideInAnimation component for sliding in the content from the left.
+ *
+ * @returns {React.Element} - A styled hero section where the placeholder content slides in from the left based on scroll.
+ */
+const HeroSectionWithSlideInAnimationLeft = () => {
+  // Create a ref for the section we want to track the scroll progress of
+  const ref = useRef(null);
+
+  // Use useScroll with ref to track the scroll progress of this specific section
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],  // Adjusts how the progress is calculated
+  });
+
+  // Slide the content in from the left as you scroll
+  const slideInEffect = useTransform(scrollYProgress, [0, 1], ['-100%', '0%']);  // Slide from -100% (off-screen) to 0% (fully visible)
+  const fadeInEffect = useTransform(scrollYProgress, [0, 1], [0, 1]);  // Opacity from 0 to 1 for a smoother appearance
+
+  return (
+    <motion.div
+      ref={ref}  // Attach the ref to the container
+      style={{
+        opacity: fadeInEffect,  // Fade in effect as it slides
+        transition: 'opacity 0.5s ease-out',  // Smooth transition for the fade-in effect
+      }}
+    >
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: '80vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#e0e0e0',  // Background for contrast with the graph
+          overflow: 'hidden',
+        }}
+      >
+        {/* Placeholder for Estimate Future Prediction feature sliding in */}
+        <motion.div
+          style={{
+            x: slideInEffect,  // Apply the slide-in effect
+            opacity: fadeInEffect,  // Fade in along with the slide-in
+            transition: 'all 0.5s ease-out',
+          }}
+        >
+          <Box
+            sx={{
+              padding: '20px',
+              backgroundColor: '#ffffff',
+              borderRadius: '8px',
+              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+              textAlign: 'left',
+              maxWidth: '400px',
+            }}
+          >
+            <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: '#333' }}>
+              Estimate Future Predictions
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#555' }}>
+              Get insights into your future progress based on current data trends.
+              Our predictive models will help you set achievable goals by estimating
+              future fitness performance.
+            </Typography>
+          </Box>
+        </motion.div>
+
+        {/* Optional: Additional text or button */}
+        <Box sx={{ position: 'absolute', bottom: '20%', zIndex: 2, color: '#333', textAlign: 'center' }}>
+          <Button variant="contained" color="primary" size="large">
+            Learn More
+          </Button>
         </Box>
       </Box>
     </motion.div>
