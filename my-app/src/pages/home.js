@@ -4,8 +4,16 @@ import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Typography, Box, Container, Button, Grid } from '@mui/material';
 import { motion, useScroll, useTransform } from 'framer-motion'; // Import Framer Motion
-import { Canvas } from '@react-three/fiber'; // Import React Three Fiber
-import { OrbitControls } from '@react-three/drei'; // Drei helper for camera controls
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, useGLTF } from '@react-three/drei';
+import barbellModel from '../assets/dumbell.glb'; 
+
+
+
+function BarbellModel(props) {
+  const { scene } = useGLTF(barbellModel); // Use the imported model
+  return <primitive object={scene} {...props} />;
+}
 
 /**
  * Home page component that serves as the landing page for the Fit Graph Pro application.
@@ -73,7 +81,17 @@ function Home() {
  */
 const HeroSectionWith3DAnimation = () => {
   const { scrollYProgress } = useScroll(); // Use Framer Motion's useScroll hook
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.5]); // Transform scale based on scroll position
+  const scaleValue = useTransform(scrollYProgress, [0, 1], [1, 1.5]); // Transform scale based on scroll position
+  const meshRef = useRef(); // Reference to the barbell model
+
+  // Effect to update the scale of the barbell model as the user scrolls
+  useEffect(() => {
+    return scaleValue.onChange((latestScale) => {
+      if (meshRef.current) {
+        meshRef.current.scale.set(latestScale, latestScale, latestScale); // Apply the scale in x, y, and z axes
+      }
+    });
+  }, [scaleValue]);
 
   return (
     <Box
@@ -92,34 +110,15 @@ const HeroSectionWith3DAnimation = () => {
       <Canvas camera={{ position: [0, 1, 5] }}>
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
-        <BarbellModel scale={scale} /> {/* Render the barbell model */}
+        <BarbellModel ref={meshRef} /> {/* Render the barbell model */}
         <OrbitControls />
       </Canvas>
     </Box>
   );
 };
 
-/**
- * BarbellModel component for rendering a 3D barbell model.
- *
- * @returns {React.Element} - A 3D barbell model in the Three.js scene.
- */
-const BarbellModel = ({ scale }) => {
-  const meshRef = useRef();
 
-  useEffect(() => {
-    if (meshRef.current) {
-      meshRef.current.scale.set(scale.get(), scale.get(), scale.get());
-    }
-  }, [scale]);
 
-  return (
-    <mesh ref={meshRef}>
-      <boxGeometry args={[1, 1, 1]} /> {/* Replace with actual barbell model */}
-      <meshStandardMaterial color="gray" />
-    </mesh>
-  );
-};
 
 /**
  * ContentSection component for showcasing different features or text content in a distinct section.
