@@ -306,18 +306,16 @@ const HeroSectionWithSlideInAnimationLeft = () => {
 const HeroSectionWithSlideInAnimationRight = () => {
   const ref = useRef(null);
 
-  // Use useScroll with ref to track the scroll progress of this specific section
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start center", "end center"], // Adjusted offsets for smoother in-out animation
+    offset: ["start center", "end center"],
   });
 
-  // Slide the content in from the right and fade in
-  const slideInEffect = useTransform(scrollYProgress, [0, 0.2], [200, 0]); // Slide from off-screen right (200) to 0 (on-screen)
-  const fadeInEffect = useTransform(scrollYProgress, [0, 0.2], [0, 1]);  // Fade from invisible (0) to visible (1)
+  const slideInEffect = useTransform(scrollYProgress, [0, 0.2], [200, 0]); 
+  const fadeInEffect = useTransform(scrollYProgress, [0, 0.2], [0, 1]);  
 
   return (
-    <motion.div ref={ref} style={{ height: '100vh', backgroundColor: '#f0f0f0' }}>
+    <motion.div ref={ref} style={{ height: '100vh', backgroundColor: '#f0f0f0', background: 'linear-gradient(180deg, #f4f4f4 0%, #e0e0e0 100%)' }}>
       <Box
         sx={{
           position: 'relative',
@@ -326,7 +324,6 @@ const HeroSectionWithSlideInAnimationRight = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#d0d0d0',  // Background for contrast with the content
           overflow: 'hidden',
         }}
       >
@@ -334,60 +331,50 @@ const HeroSectionWithSlideInAnimationRight = () => {
         <Box
           sx={{
             display: 'flex',
-            gap: '20px',  // Adds space between image and text
             alignItems: 'center',
             justifyContent: 'center',
-            flexDirection: { xs: 'column', md: 'row' },  // Stack on small screens, row on larger screens
+            flexDirection: 'column',  
           }}
         >
-          {/* Heatmap Image */}
+          {/* Large Heatmap Image */}
           <motion.img
             src={heatmapImage}
             alt="Workout Heatmap"
             style={{
-              x: slideInEffect, // Use slideInEffect from useTransform
-              opacity: fadeInEffect, // Use fadeInEffect from useTransform
-              width: '300px',
+              x: slideInEffect, 
+              opacity: fadeInEffect, 
+              width: '600px', 
               height: 'auto',
+              borderRadius: '10%', 
             }}
             transition={{ type: 'spring', stiffness: 50 }}
           />
 
-          {/* Text content */}
+          {/* Text content below the heatmap */}
           <motion.div
             style={{
-              x: slideInEffect, // Use slideInEffect from useTransform
-              opacity: fadeInEffect, // Use fadeInEffect from useTransform
+              x: slideInEffect, 
+              opacity: fadeInEffect,
+              marginTop: '20px',
             }}
             transition={{ type: 'spring', stiffness: 50 }}  
           >
             <Box
               sx={{
-                padding: '20px',
-                backgroundColor: '#ffffff',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-                textAlign: 'left',
-                maxWidth: '400px',
+                textAlign: 'center', 
+                maxWidth: '800px',
               }}
             >
-              <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: '#333' }}>
+              <Typography variant="h3" sx={{ mb: 2, fontWeight: 'bold', fontSize: '2.5rem', color: '#333' }}>
                 Workout Heatmap
               </Typography>
-              <Typography variant="body1" sx={{ color: '#555' }}>
+              <Typography variant="h6" sx={{ color: '#555', lineHeight: '1.6', fontSize: '1.2rem' }}>
                 Visualize your workout intensity with our body heatmap feature. 
                 It highlights which areas of your body have been worked the most, 
                 helping you balance your workouts and avoid overtraining.
               </Typography>
             </Box>
           </motion.div>
-        </Box>
-
-        {/* Optional: Additional text or button */}
-        <Box sx={{ position: 'absolute', bottom: '20%', zIndex: 2, color: '#333', textAlign: 'center' }}>
-          <Button variant="contained" color="primary" size="large">
-            Learn More
-          </Button>
         </Box>
       </Box>
     </motion.div>
