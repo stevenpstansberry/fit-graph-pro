@@ -246,6 +246,7 @@ const HeroSectionWithSlideInAnimationLeft = () => {
             style={{
               x: slideInEffect, // Use slideInEffect from useTransform
               opacity: fadeInEffect, // Use fadeInEffect from useTransform
+              
             }}
             transition={{ type: 'spring', stiffness: 50 }}  
           >
@@ -253,8 +254,8 @@ const HeroSectionWithSlideInAnimationLeft = () => {
               sx={{
                 padding: '20px',
                 backgroundColor: '#ffffff',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                borderRadius: '16px', 
+                boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)', // Enhanced box-shadow for depth
                 textAlign: 'left',
                 maxWidth: '400px',
               }}
@@ -282,8 +283,8 @@ const HeroSectionWithSlideInAnimationLeft = () => {
               sx={{
                 padding: '20px',
                 backgroundColor: '#ffffff',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                borderRadius: '16px',
+                boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)',
                 textAlign: 'left',
                 maxWidth: '400px',
               }}
@@ -302,6 +303,7 @@ const HeroSectionWithSlideInAnimationLeft = () => {
     </motion.div>
   );
 };
+
 
 const HeroSectionWithSlideInAnimationRight = () => {
   const ref = useRef(null);
