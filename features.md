@@ -2,6 +2,8 @@ Project: Serverless Fitness Tracker with Social Features
 Project Overview:
 Build a serverless web or mobile application that allows users to track their fitness activities, set goals, and share their progress with friends. The app will include real-time data processing, activity logging, and social features like friend connections and leaderboard rankings. OAuth will be used for authentication, allowing users to sign in with their existing social accounts.
 
+meow
+
 Technologies and AWS Services:
 Frontend: HTML, CSS, JavaScript, React.js, React Native (for mobile)
 Backend: AWS Lambda, API Gateway, DynamoDB, S3
