@@ -354,22 +354,37 @@ const HeroSectionWithSlideInAnimationRight = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            flexDirection: 'column',  
+            flexDirection: 'column',
           }}
         >
-          {/* Large Heatmap Image */}
-          <motion.img
-            src={heatmapImage}
-            alt="Workout Heatmap"
-            style={{
-              x: slideInEffect, 
-              opacity: fadeInEffect, 
-              width: '600px', 
-              height: 'auto',
-              borderRadius: '10%', 
+          {/* Large Heatmap Card with Hover Effect */}
+          <Box
+            sx={{
+              width: '600px',
+              backgroundColor: '#ffffff',
+              borderRadius: '16px',
+              boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden', 
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.05)', 
+                boxShadow: '0px 12px 30px rgba(0, 0, 0, 0.2)',
+              },
             }}
-            transition={{ type: 'spring', stiffness: 50 }}
-          />
+          >
+            <motion.img
+              src={heatmapImage}
+              alt="Workout Heatmap"
+              style={{
+                width: '100%', 
+                height: 'auto',
+                display: 'block', 
+              }}
+              transition={{ type: 'spring', stiffness: 50 }}
+              initial={{ x: 200, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+            />
+          </Box>
 
           {/* Text content below the heatmap */}
           <motion.div
@@ -401,6 +416,8 @@ const HeroSectionWithSlideInAnimationRight = () => {
     </motion.div>
   );
 };
+
+
 
 
 
