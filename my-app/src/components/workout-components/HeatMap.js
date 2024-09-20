@@ -1,31 +1,39 @@
 /**
  * @fileoverview Component for visualizing the user's workout history in a heat map format.
- * 
+ *
  * @file src/components/workout-components/HeatMap.js
- * 
+ *
  * Provides a user interface to visualize workout frequency and intensity over time using a heat map.
- * 
+ *
  * @component
  * @param {Object} props - Component props.
  * @param {Array} props.workoutHistory - The complete workout history of the user.
  * @returns {React.Element} - The rendered HeatMap component.
- * 
+ *
  * @version 1.0.0
  * @author Steven Stansberry
- * 
+ *
  * The HeatMap component is designed to give users a visual overview of their workout habits
  * and trends over a selected period. It uses color intensity to represent the frequency or
  * intensity of workouts, helping users quickly identify periods of high or low activity.
  */
 
-import React, { useMemo, useState, useEffect } from 'react';
-import { Box, Typography, Container, Snackbar, Alert, Tooltip, IconButton } from '@mui/material';
-import Model from 'react-body-highlighter';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import TimeframeSelector from './TimeframeSelector'; 
-import DateSelector from './DateSelector'; 
-import {getTitle} from './common/util';
-import '../../index.css';
+import React, { useMemo, useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  Container,
+  Snackbar,
+  Alert,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
+import Model from "react-body-highlighter";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import TimeframeSelector from "./TimeframeSelector";
+import DateSelector from "./DateSelector";
+import { getTitle } from "./shared-workout-components/util";
+import "../../index.css";
 
 /**
  * Converts workout history data into the format required by react-body-highlighter.
@@ -86,7 +94,10 @@ const calculateMuscleGroupPercentages = (workoutHistory) => {
   const musclePercentages = {};
   Object.keys(muscleFrequency).forEach((muscle) => {
     // Handle the case when there are no workouts to avoid NaN
-    musclePercentages[muscle] = totalExercises > 0 ? ((muscleFrequency[muscle] / totalExercises) * 100).toFixed(2) : "0.00";
+    musclePercentages[muscle] =
+      totalExercises > 0
+        ? ((muscleFrequency[muscle] / totalExercises) * 100).toFixed(2)
+        : "0.00";
   });
 
   return musclePercentages;
@@ -100,34 +111,52 @@ const calculateMuscleGroupPercentages = (workoutHistory) => {
  */
 const GradientLegend = () => {
   return (
-    <Box sx={{ mt: 4, width: '100%', display: 'flex', justifyContent: 'center' }}>
-      <Box sx={{ maxWidth: '1200px', width: '100%' }}>  {/* Limit maxWidth and center content */}
+    <Box
+      sx={{ mt: 4, width: "100%", display: "flex", justifyContent: "center" }}
+    >
+      <Box sx={{ maxWidth: "1200px", width: "100%" }}>
+        {" "}
+        {/* Limit maxWidth and center content */}
         <Typography variant="h6" gutterBottom>
           Workout Intensity Legend
         </Typography>
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
             mt: 1,
-            position: 'relative',
+            position: "relative",
           }}
         >
           {/* Gradient Slider */}
           <Box
             sx={{
               height: 20,
-              width: '100%',
+              width: "100%",
               background: `linear-gradient(to right, #81d4fa, #4fc3f7, #29b6f6, #03a9f4, #039be5, #0288d1, #0277bd, #e57373, #ef5350, #f44336, #e53935, #d32f2f, #c62828, #b71c1c, #e65a5a)`,
               borderRadius: 10,
             }}
           />
 
           {/* Labels for Gradient */}
-          <Typography variant="body2" sx={{ position: 'absolute', left: 0, transform: 'translateY(30px)' }}>
+          <Typography
+            variant="body2"
+            sx={{
+              position: "absolute",
+              left: 0,
+              transform: "translateY(30px)",
+            }}
+          >
             Least Worked
           </Typography>
-          <Typography variant="body2" sx={{ position: 'absolute', right: 0, transform: 'translateY(30px)' }}>
+          <Typography
+            variant="body2"
+            sx={{
+              position: "absolute",
+              right: 0,
+              transform: "translateY(30px)",
+            }}
+          >
             Highly Worked
           </Typography>
         </Box>
@@ -139,49 +168,55 @@ const GradientLegend = () => {
 /**
  * HeatMap component for displaying a heat map of workout history.
  * Allows users to visualize their workout activity intensity and frequency over time.
- * 
+ *
  * @component
  * @param {Object} props - Component props.
  * @param {Array} props.workoutHistory - Full workout data of the user.
  * @returns {React.Element} - The rendered HeatMap component.
  */
-const HeatMap = ({ workoutHistory, selectedMonth, setSelectedMonth, selectedYear, setSelectedYear }) => {
-
+const HeatMap = ({
+  workoutHistory,
+  selectedMonth,
+  setSelectedMonth,
+  selectedYear,
+  setSelectedYear,
+}) => {
   const [filteredWorkouts, setFilteredWorkouts] = useState(workoutHistory); // State to manage filtered workouts
-  const [timeframe, setTimeframe] = useState('currentMonth'); // State for selected timeframe
-
+  const [timeframe, setTimeframe] = useState("currentMonth"); // State for selected timeframe
 
   // Memoized data for filtered workouts
-  const filteredData = useMemo(() => convertWorkoutHistoryToHeatmapData(filteredWorkouts), [filteredWorkouts]);
-  const musclePercentages = useMemo(() => calculateMuscleGroupPercentages(filteredWorkouts), [filteredWorkouts]);
-
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-
-  const handleClick = React.useCallback(
-    ({ muscle, data }) => {
-      const { exercises, frequency } = data;
-  
-      const message =
-        frequency > 0
-          ? `You clicked the ${muscle}! You've worked out this muscle ${frequency} times through the following exercises: ${JSON.stringify(exercises)}`
-          : `You clicked the ${muscle}, but you haven't worked out this muscle yet.`;
-  
-      setSnackbarMessage(message);
-      setSnackbarOpen(true);
-    },
-    []
+  const filteredData = useMemo(
+    () => convertWorkoutHistoryToHeatmapData(filteredWorkouts),
+    [filteredWorkouts]
+  );
+  const musclePercentages = useMemo(
+    () => calculateMuscleGroupPercentages(filteredWorkouts),
+    [filteredWorkouts]
   );
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  
+  const handleClick = React.useCallback(({ muscle, data }) => {
+    const { exercises, frequency } = data;
+
+    const message =
+      frequency > 0
+        ? `You clicked the ${muscle}! You've worked out this muscle ${frequency} times through the following exercises: ${JSON.stringify(
+            exercises
+          )}`
+        : `You clicked the ${muscle}, but you haven't worked out this muscle yet.`;
+
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  }, []);
 
   const handleCloseSnackbar = (event, reason) => {
     // Ignore "clickaway" reason to prevent snackbar from closing when clicking on the heatmap model
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
-  
+
     setSnackbarOpen(false);
   };
 
@@ -189,31 +224,33 @@ const HeatMap = ({ workoutHistory, selectedMonth, setSelectedMonth, selectedYear
   useEffect(() => {
     let filtered = workoutHistory;
 
-    if (timeframe === 'currentMonth') {
-      filtered = workoutHistory.filter(workout =>
-        new Date(workout.date).getFullYear() === selectedYear &&
-        new Date(workout.date).getMonth() + 1 === selectedMonth
+    if (timeframe === "currentMonth") {
+      filtered = workoutHistory.filter(
+        (workout) =>
+          new Date(workout.date).getFullYear() === selectedYear &&
+          new Date(workout.date).getMonth() + 1 === selectedMonth
       );
-    } else if (timeframe === 'ytd') {
-      filtered = workoutHistory.filter(workout => new Date(workout.date).getFullYear() === selectedYear);
+    } else if (timeframe === "ytd") {
+      filtered = workoutHistory.filter(
+        (workout) => new Date(workout.date).getFullYear() === selectedYear
+      );
     }
 
     setFilteredWorkouts(filtered);
   }, [workoutHistory, timeframe, selectedMonth, selectedYear]);
 
-
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
         flexGrow: 1,
-        minHeight: '100vh',
+        minHeight: "100vh",
         padding: 4,
       }}
     >
       {/* Title at the top */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
         <Typography variant="h4" gutterBottom>
           Workout Heat Map
         </Typography>
@@ -225,40 +262,51 @@ const HeatMap = ({ workoutHistory, selectedMonth, setSelectedMonth, selectedYear
           componentsProps={{
             tooltip: {
               sx: {
-                bgcolor: 'rgba(2, 136, 209, 0.8)',
+                bgcolor: "rgba(2, 136, 209, 0.8)",
               },
             },
           }}
         >
           <IconButton>
-            <HelpOutlineIcon sx={{ color: '#4fc3f7' }} /> {/* Light blue color for the tooltip icon */}
+            <HelpOutlineIcon sx={{ color: "#4fc3f7" }} />{" "}
+            {/* Light blue color for the tooltip icon */}
           </IconButton>
         </Tooltip>
       </Box>
 
-        <Typography
-          variant="h5"
-          sx={{
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center', 
-            marginBottom: 2,
-            color: '#4A4A4A', 
-            fontWeight: 'bold',
-            backgroundColor: '#e0e0e0', 
-            padding: '8px 16px',
-            borderRadius: '8px',
-            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-            marginBottom: 2, 
-          }}
-        >
-          {getTitle("heatmap",timeframe, selectedMonth, selectedYear)}
-        </Typography>
+      <Typography
+        variant="h5"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginBottom: 2,
+          color: "#4A4A4A",
+          fontWeight: "bold",
+          backgroundColor: "#e0e0e0",
+          padding: "8px 16px",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+          marginBottom: 2,
+        }}
+      >
+        {getTitle("heatmap", timeframe, selectedMonth, selectedYear)}
+      </Typography>
 
       {/* Timeframe and Date Selectors */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 2 }}>
-        <TimeframeSelector timeframe={timeframe} onChange={(event) => setTimeframe(event.target.value)} />
-        {timeframe === 'currentMonth' && (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginBottom: 2,
+        }}
+      >
+        <TimeframeSelector
+          timeframe={timeframe}
+          onChange={(event) => setTimeframe(event.target.value)}
+        />
+        {timeframe === "currentMonth" && (
           <DateSelector
             selectedMonth={selectedMonth}
             selectedYear={selectedYear}
@@ -269,28 +317,35 @@ const HeatMap = ({ workoutHistory, selectedMonth, setSelectedMonth, selectedYear
       </Box>
 
       {/* Main Content Container */}
-      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', gap: 4 }}>
+      <Container
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          gap: 4,
+        }}
+      >
         {/* Heat Map Models Side by Side */}
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
+        <Box sx={{ display: "flex", flexDirection: "row", gap: 4 }}>
           {/* Front View Model */}
           <Model
-            data={filteredData}  
-            style={{ width: '20rem', padding: '2rem' }}
+            data={filteredData}
+            style={{ width: "20rem", padding: "2rem" }}
             onClick={handleClick}
             highlightedColors={highlightedColors}
           />
           {/* Posterior View Model */}
           <Model
-            type='posterior'
-            data={filteredData}  
-            style={{ width: '20rem', padding: '2rem' }}
+            type="posterior"
+            data={filteredData}
+            style={{ width: "20rem", padding: "2rem" }}
             onClick={handleClick}
             highlightedColors={highlightedColors}
           />
         </Box>
 
         {/* Workout Statistics to the Right of Models */}
-        <Box sx={{ flex: 1, paddingLeft: 4, maxWidth: '20rem' }}>
+        <Box sx={{ flex: 1, paddingLeft: 4, maxWidth: "20rem" }}>
           <Typography variant="h5" gutterBottom>
             Workout Statistics (% by Muscle Group)
           </Typography>
@@ -303,7 +358,14 @@ const HeatMap = ({ workoutHistory, selectedMonth, setSelectedMonth, selectedYear
       </Container>
 
       {/* Gradient Legend and Snackbar for Muscle Click Information */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          mt: 4,
+        }}
+      >
         <GradientLegend />
       </Box>
 
@@ -311,9 +373,13 @@ const HeatMap = ({ workoutHistory, selectedMonth, setSelectedMonth, selectedYear
         open={snackbarOpen}
         autoHideDuration={4000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="info" sx={{ width: '100%' }}>
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="info"
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

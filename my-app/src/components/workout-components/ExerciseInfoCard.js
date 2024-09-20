@@ -10,14 +10,24 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Card, Modal, Typography, CircularProgress, Box, List, ListItem, ListItemText, IconButton} from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+import {
+  Card,
+  Modal,
+  Typography,
+  CircularProgress,
+  Box,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { getExerciseInfo } from "../../services/ExerciseDBAPIServices";
-import { toTitleCase } from "./common/util";
+import { toTitleCase } from "./shared-workout-components/util";
 
 /**
  * Component for rendering and managing an exercise card within a workout.
- * 
+ *
  * @component
  * @param {Object} props - The properties passed to the component.
  * @param {boolean} props.open - Flag indicating whether the modal is open.
@@ -57,7 +67,7 @@ function ExerciseInfoCard({ open, onClose, exercise }) {
       open={open}
       onClose={onClose}
       BackdropProps={{
-        style: { backgroundColor: 'rgba(0,0,0,0.5)' },
+        style: { backgroundColor: "rgba(0,0,0,0.5)" },
       }}
     >
       <Card
@@ -66,29 +76,32 @@ function ExerciseInfoCard({ open, onClose, exercise }) {
           minWidth: 750,
           maxHeight: 500,
           minHeight: 500,
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          bgcolor: 'background.paper',
-          border: '2px solid #000',
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          bgcolor: "background.paper",
+          border: "2px solid #000",
           boxShadow: 12,
           p: 4,
-          overflowY: 'auto',
+          overflowY: "auto",
         }}
       >
         {/* Close Button at the top left corner */}
         <IconButton
           aria-label="close"
           onClick={onClose}
-          sx={{ position: 'absolute', top: 8, left: 8 }}
+          sx={{ position: "absolute", top: 8, left: 8 }}
         >
           <CloseIcon />
         </IconButton>
-  
+
         {loading ? (
           <Box
-            display="flex" justifyContent="center" alignItems="center" sx={{ height: '100vh' }} 
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            sx={{ height: "100vh" }}
           >
             <CircularProgress />
           </Box>
@@ -107,23 +120,26 @@ function ExerciseInfoCard({ open, onClose, exercise }) {
             <Typography variant="body1" gutterBottom>
               <strong>Equipment:</strong> {toTitleCase(exerciseData.equipment)}
             </Typography>
-            {exerciseData.secondaryMuscles && exerciseData.secondaryMuscles.length > 0 && (
-              <Typography variant="body1" gutterBottom>
-                <strong>Secondary Muscles:</strong> {exerciseData.secondaryMuscles.map(toTitleCase).join(', ')}
-              </Typography>
-            )}
-  
+            {exerciseData.secondaryMuscles &&
+              exerciseData.secondaryMuscles.length > 0 && (
+                <Typography variant="body1" gutterBottom>
+                  <strong>Secondary Muscles:</strong>{" "}
+                  {exerciseData.secondaryMuscles.map(toTitleCase).join(", ")}
+                </Typography>
+              )}
+
             {/* Exercise GIF centered */}
             <Box display="flex" justifyContent="center" my={2}>
               <img
                 src={exerciseData.gifUrl}
                 alt={exerciseData.name}
-                style={{ maxWidth: '100%', height: 'auto' }}
+                style={{ maxWidth: "100%", height: "auto" }}
               />
             </Box>
-  
+
             {/* How to Perform Section */}
-            {exerciseData.instructions && exerciseData.instructions.length > 0 ? (
+            {exerciseData.instructions &&
+            exerciseData.instructions.length > 0 ? (
               <>
                 <Typography variant="h5" gutterBottom>
                   How to Perform:
@@ -150,7 +166,6 @@ function ExerciseInfoCard({ open, onClose, exercise }) {
       </Card>
     </Modal>
   );
-  
 }
 
 export default ExerciseInfoCard;

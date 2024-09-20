@@ -10,14 +10,36 @@
  * @author Steven Stansberry
  */
 
-import React, {useState, useEffect} from 'react';
-import { Typography, Box, Button, IconButton, Select, MenuItem, Tooltip, Pagination } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import WorkoutCardPreview from './WorkoutCardPreview';
-import fitnessImage from '../../assets/fitnessImage.png';
-import { getTitle } from './common/util';
+import React, { useState, useEffect } from "react";
+import {
+  Typography,
+  Box,
+  Button,
+  IconButton,
+  Select,
+  MenuItem,
+  Tooltip,
+  Pagination,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import WorkoutCardPreview from "./WorkoutCardPreview";
+import fitnessImage from "../../assets/fitnessImage.png";
+import { getTitle } from "./shared-workout-components/util";
 
-const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 /**
  * Component for viewing workouts, including filtering by month and year, and adding workouts.
@@ -37,96 +59,100 @@ const monthNames = ["January", "February", "March", "April", "May", "June", "Jul
  * @param {Array} props.workoutHistory - The complete workout history of the user.
  * @returns {React.Element} - The rendered component.
  */
-const ViewWorkouts = ({ 
-  name, 
-  filteredWorkouts, 
-  selectedMonth, 
-  setSelectedMonth, 
-  selectedYear, 
-  setSelectedYear, 
-  toggleAddWorkoutCard, 
-  userSplits, 
-  handleDeleteWorkout, 
+const ViewWorkouts = ({
+  name,
+  filteredWorkouts,
+  selectedMonth,
+  setSelectedMonth,
+  selectedYear,
+  setSelectedYear,
+  toggleAddWorkoutCard,
+  userSplits,
+  handleDeleteWorkout,
   handleOpenEditDialog,
   workoutHistory,
-  handleEditWorkout  
+  handleEditWorkout,
 }) => {
-  const hasWorkoutsInHistory = workoutHistory.length > 0;  // Check if there are any workouts at all
-  const hasWorkoutsForSelectedDate = filteredWorkouts.length > 0;  // Check if there are workouts for the selected month/year
+  const hasWorkoutsInHistory = workoutHistory.length > 0; // Check if there are any workouts at all
+  const hasWorkoutsForSelectedDate = filteredWorkouts.length > 0; // Check if there are workouts for the selected month/year
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const workoutsPerPage = 25;
 
-  console.log("workout history:" , workoutHistory)
+  console.log("workout history:", workoutHistory);
 
   // Sort the workouts by date and time in ascending order
-  const sortedFilteredWorkouts = [...filteredWorkouts].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const sortedFilteredWorkouts = [...filteredWorkouts].sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
 
   const totalPages = Math.ceil(sortedFilteredWorkouts.length / workoutsPerPage);
-  const currentWorkouts = sortedFilteredWorkouts.slice((currentPage - 1) * workoutsPerPage, currentPage * workoutsPerPage);
+  const currentWorkouts = sortedFilteredWorkouts.slice(
+    (currentPage - 1) * workoutsPerPage,
+    currentPage * workoutsPerPage
+  );
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-
   useEffect(() => {
     const img = new Image();
     img.src = fitnessImage;
     img.onload = () => setImageLoaded(true);
-  },[])
+  }, []);
   return (
     <Box
       sx={{
         flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        justifyContent: 'flex-start',  // Align content to the top
-        pt: 8,  // Add padding to the top
-        pb: 8,  // Add padding to the bottom
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        justifyContent: "flex-start", // Align content to the top
+        pt: 8, // Add padding to the top
+        pb: 8, // Add padding to the bottom
       }}
     >
-        <Typography
-          variant="h5"
-          sx={{
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center', 
-            marginBottom: 2,
-            color: '#4A4A4A', 
-            fontWeight: 'bold',
-            backgroundColor: '#e0e0e0', 
-            padding: '8px 16px',
-            borderRadius: '8px',
-            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-            marginBottom: 2, 
-          }}
-        >
-          {getTitle('viewWorkouts', 'currentMonth', selectedMonth, selectedYear)}
-        </Typography>
+      <Typography
+        variant="h5"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginBottom: 2,
+          color: "#4A4A4A",
+          fontWeight: "bold",
+          backgroundColor: "#e0e0e0",
+          padding: "8px 16px",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+          marginBottom: 2,
+        }}
+      >
+        {getTitle("viewWorkouts", "currentMonth", selectedMonth, selectedYear)}
+      </Typography>
       {/* Conditionally render workout cards or show a message if none exist */}
-      {hasWorkoutsInHistory ? (  // Check if there are any workouts at all
+      {hasWorkoutsInHistory ? ( // Check if there are any workouts at all
         <>
           {/* Calendar selectors for filtering by date */}
           <Box
             sx={{
-              position: 'sticky',
+              position: "sticky",
               top: 0,
               zIndex: 100,
-              backgroundColor: 'white',
-              padding: '10px 0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              backgroundColor: "white",
+              padding: "10px 0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               gap: 2,
               mb: 4,
-              width: '100%',
+              width: "100%",
             }}
           >
             <Select
@@ -154,7 +180,14 @@ const ViewWorkouts = ({
           {/* Check if there are workouts for the selected date */}
           {hasWorkoutsForSelectedDate ? (
             <>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  gap: 2,
+                }}
+              >
                 {currentWorkouts.map((workout, index) => (
                   <WorkoutCardPreview
                     key={workout.workoutId || index}
@@ -178,13 +211,23 @@ const ViewWorkouts = ({
           )}
 
           {/* Workout creation buttons and edit icon - Always show */}
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 4, gap: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mt: 4,
+              gap: 2,
+            }}
+          >
             {/* Default Workout Button */}
             <Button
               variant="contained"
               color="primary"
-              onClick={() => toggleAddWorkoutCard([], 'createWorkout', "Default")}
-              sx={{ padding: '10px 20px', fontSize: '16px' }}
+              onClick={() =>
+                toggleAddWorkoutCard([], "createWorkout", "Default")
+              }
+              sx={{ padding: "10px 20px", fontSize: "16px" }}
             >
               Add Default Workout
             </Button>
@@ -195,18 +238,24 @@ const ViewWorkouts = ({
                 key={index}
                 variant="contained"
                 color="primary"
-                onClick={() => toggleAddWorkoutCard(workout.exercises, 'createWorkout', workout.name)}
-                sx={{ padding: '10px 20px', fontSize: '16px' }}
+                onClick={() =>
+                  toggleAddWorkoutCard(
+                    workout.exercises,
+                    "createWorkout",
+                    workout.name
+                  )
+                }
+                sx={{ padding: "10px 20px", fontSize: "16px" }}
               >
                 Add {workout.name}
               </Button>
             ))}
-            
+
             {/* Edit Icon*/}
             <Tooltip title="Add/Edit your splits here">
-              <IconButton 
+              <IconButton
                 onClick={handleOpenEditDialog}
-                sx={{ color: '#64b5f6' }} 
+                sx={{ color: "#64b5f6" }}
               >
                 <EditIcon />
               </IconButton>
@@ -216,12 +265,12 @@ const ViewWorkouts = ({
       ) : (
         <Box
           sx={{
-            textAlign: 'center',
-            mt: 8,  
+            textAlign: "center",
+            mt: 8,
             mb: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
           {/* Background Image */}
@@ -229,27 +278,41 @@ const ViewWorkouts = ({
             <img
               src={fitnessImage}
               alt="Fitness Background"
-              style={{ width: '100%', maxWidth: '400px', marginBottom: '16px' }}  
+              style={{ width: "100%", maxWidth: "400px", marginBottom: "16px" }}
             />
           ) : (
-            <Typography variant="h6" color="textSecondary" sx={{ mb: 8 }}>
-
-            </Typography>
+            <Typography
+              variant="h6"
+              color="textSecondary"
+              sx={{ mb: 8 }}
+            ></Typography>
           )}
 
           {/* Message encouraging the user to add their first workout */}
           <Typography variant="h6" color="textSecondary" sx={{ mb: 8 }}>
-            Let's get started with your first workout! You can either add a custom split via the edit icon or get started with logging a workout right now!
+            Let's get started with your first workout! You can either add a
+            custom split via the edit icon or get started with logging a workout
+            right now!
           </Typography>
 
           {/* Workout creation buttons and edit icon */}
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 4, gap: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mt: 4,
+              gap: 2,
+            }}
+          >
             {/* Default Workout Button */}
             <Button
               variant="contained"
               color="primary"
-              onClick={() => toggleAddWorkoutCard([], 'createWorkout', "Default")}
-              sx={{ padding: '10px 20px', fontSize: '16px' }}
+              onClick={() =>
+                toggleAddWorkoutCard([], "createWorkout", "Default")
+              }
+              sx={{ padding: "10px 20px", fontSize: "16px" }}
             >
               Add Default Workout
             </Button>
@@ -260,8 +323,14 @@ const ViewWorkouts = ({
                 key={index}
                 variant="contained"
                 color="primary"
-                onClick={() => toggleAddWorkoutCard(workout.exercises, 'createWorkout', workout.name)}
-                sx={{ padding: '10px 20px', fontSize: '16px' }}
+                onClick={() =>
+                  toggleAddWorkoutCard(
+                    workout.exercises,
+                    "createWorkout",
+                    workout.name
+                  )
+                }
+                sx={{ padding: "10px 20px", fontSize: "16px" }}
               >
                 Add {workout.name}
               </Button>
@@ -269,9 +338,9 @@ const ViewWorkouts = ({
 
             {/* Edit Icon with Tooltip */}
             <Tooltip title="Add/Edit your splits here">
-              <IconButton 
+              <IconButton
                 onClick={handleOpenEditDialog}
-                sx={{ color: '#64b5f6' }}  
+                sx={{ color: "#64b5f6" }}
               >
                 <EditIcon />
               </IconButton>

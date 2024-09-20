@@ -1,27 +1,37 @@
 /**
  * @fileoverview Component for creating and managing workouts and workout splits.
- * 
+ *
  * @file src/components/workout-components/WorkoutCard.js
- * 
+ *
  * Provides a user interface to add exercises to a workout or split, specify sets, reps, and weights, and save workouts to the backend.
  * Allows users to create custom workout splits and customize individual workouts by selecting exercises and adding details.
- * 
- * 
+ *
+ *
  * @version 1.0.0
  * @author Steven Stansberry
  */
 
 import React, { useState, useEffect } from "react";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Autocomplete, TextField, IconButton, Box, Modal, Card, CardContent, Button, Typography, CircularProgress } from "@mui/material";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {
+  Autocomplete,
+  TextField,
+  IconButton,
+  Box,
+  Modal,
+  Card,
+  CardContent,
+  Button,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ExerciseSubcard from "./ExerciseSubCard";
-import { v4 as uuidv4 } from 'uuid';
-import { getUser } from '../../services/AuthService';
+import { v4 as uuidv4 } from "uuid";
+import { getUser } from "../../services/AuthService";
 import { getAllExercises } from "../../services/ExerciseDBAPIServices";
-import { toTitleCase } from "./common/util";
-import { FixedSizeList } from "react-window"; 
-
+import { toTitleCase } from "./shared-workout-components/util";
+import { FixedSizeList } from "react-window";
 
 /**
  * VirtualizedListbox component for rendering a virtualized list of options
@@ -35,7 +45,10 @@ import { FixedSizeList } from "react-window";
  * @param {React.Ref} ref - A ref that is forwarded to the root div of the Listbox component.
  * @returns {React.Element} - The rendered VirtualizedListbox component.
  */
-const VirtualizedListbox = React.forwardRef(function VirtualizedListbox(props, ref) {
+const VirtualizedListbox = React.forwardRef(function VirtualizedListbox(
+  props,
+  ref
+) {
   const { children, ...other } = props;
   const itemData = React.Children.toArray(children);
 
@@ -44,7 +57,13 @@ const VirtualizedListbox = React.forwardRef(function VirtualizedListbox(props, r
 
   return (
     <div ref={ref} {...other}>
-      <FixedSizeList height={300} width="100%" itemSize={46} itemCount={itemData.length} overscanCount={5}>
+      <FixedSizeList
+        height={300}
+        width="100%"
+        itemSize={46}
+        itemCount={itemData.length}
+        overscanCount={5}
+      >
         {Row}
       </FixedSizeList>
     </div>
@@ -54,7 +73,7 @@ const VirtualizedListbox = React.forwardRef(function VirtualizedListbox(props, r
 /**
  * WorkoutCard component for managing and creating workouts or workout splits.
  * Provides a modal interface to add exercises, specify sets, weights, and reps, and save or update the data.
- * 
+ *
  * @component
  * @param {Object} props - Component props.
  * @param {boolean} props.open - Boolean to control the modal open/close state.
@@ -72,32 +91,43 @@ const VirtualizedListbox = React.forwardRef(function VirtualizedListbox(props, r
  * @param {function} props.setExercisesFetched - Function to set the exercisesFetched state.
  * @returns {React.Element} - The rendered WorkoutCard component.
  */
-function WorkoutCard({ open, onClose, preloadedExercises, mode, newSplitName, type, editMode, ToEditId, ToEditDate, manageWorkoutOrSplit, showSnackbar, exercisesFetched, setExercisesFetched  }) {
+function WorkoutCard({
+  open,
+  onClose,
+  preloadedExercises,
+  mode,
+  newSplitName,
+  type,
+  editMode,
+  ToEditId,
+  ToEditDate,
+  manageWorkoutOrSplit,
+  showSnackbar,
+  exercisesFetched,
+  setExercisesFetched,
+}) {
   const user = getUser();
 
-// ======== State for managing input and UI interactions ========
-const [inputValue, setInputValue] = useState(''); // Input value for the exercise search
-const [loading, setLoading] = useState(true); // Loading state for API call
+  // ======== State for managing input and UI interactions ========
+  const [inputValue, setInputValue] = useState(""); // Input value for the exercise search
+  const [loading, setLoading] = useState(true); // Loading state for API call
 
+  // ======== State for managing exercises and workout data ========
+  const [exercises, setExercises] = useState([]); // List of exercises added to the workout
+  const [selectedExercise, setSelectedExercise] = useState(null); // Currently selected exercise from the dropdown
+  const [availableExercises, setAvailableExercises] = useState([]); // State for available exercises in the dropdown
 
-
-// ======== State for managing exercises and workout data ========
-const [exercises, setExercises] = useState([]); // List of exercises added to the workout
-const [selectedExercise, setSelectedExercise] = useState(null); // Currently selected exercise from the dropdown
-const [availableExercises, setAvailableExercises] = useState([]); // State for available exercises in the dropdown
-
-// ======== State for managing workout and split modes ========
-const [isEditMode, setIsEditMode] = useState(editMode || false); // State to determine if editing mode is enabled
-const [uniqueId, setUniqueId] = useState(''); // Unique ID for the workout or split
-const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
-
+  // ======== State for managing workout and split modes ========
+  const [isEditMode, setIsEditMode] = useState(editMode || false); // State to determine if editing mode is enabled
+  const [uniqueId, setUniqueId] = useState(""); // Unique ID for the workout or split
+  const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
 
   // Initialize workout metadata and preload exercises when the modal opens
   useEffect(() => {
     if (open) {
       setExercises(preloadedExercises); // Set the preloaded exercises
       setUniqueId(uuidv4()); // Generate a unique ID for the workout
-  
+
       // Set edit mode if passed in
       if (editMode) {
         setIsEditMode(true);
@@ -105,115 +135,123 @@ const [workoutDate, setWorkoutDate] = useState(null); // Date of the workout
         setWorkoutDate(ToEditDate);
       } else {
         console.log(mode);
-        setWorkoutDate(new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })); // Set today's date with time for the workout
+        setWorkoutDate(
+          new Date().toLocaleString("en-US", {
+            dateStyle: "short",
+            timeStyle: "short",
+          })
+        ); // Set today's date with time for the workout
         setIsEditMode(false);
         console.log("returned back to normal mode");
       }
-  
+
       // Fetch exercises from ExerciseDB API and transform the data only if not fetched before
       if (!exercisesFetched) {
         fetchExercises();
       }
     }
   }, [open, preloadedExercises, editMode]);
-  
-/**
- * Fetches all exercises from the ExerciseDB API and transforms them to the required format.
- * Filters out exercises that are already preloaded and sets the available exercises in state.
- */
-const fetchExercises = async () => {
-  if (exercisesFetched) return; // Ensure fetchExercises is called only once
-
-  setLoading(true);
-  try {
-    const data = await getAllExercises(); // Fetch all exercises
-    console.log("ALL WORKOUTS!!!!!!!", data);
-
-    // Use a Map to ensure uniqueness by exercise name
-    const exerciseMap = new Map();
-
-    data.forEach((exercise) => {
-      const label = exercise.name.toLowerCase().trim(); // Normalize the name for uniqueness check
-
-      // Exclude exercises containing "V. 2", "V. 3", or "stretch" in their name
-      if (
-        !label.includes("v. 2") &&
-        !label.includes("v. 3") &&
-        !label.includes("stretch") &&
-        !label.includes("plank") && // Exclude exercises with "plank" in the name
-        !label.includes("Alternate Heel Touchers") &&
-        !label.includes("Russian Twist") &&
-        !label.includes("Ankle Circles") &&         
-        !label.includes("sit") &&         
-        label !== "3/4 sit-up" && // Exclude "3/4 sit-up" specifically
-        label !== "air bike" && // Exclude "air bike" specifically
-        label !== "45° side bend" && // Exclude "45° side bend" specifically
-        label !== "3/4 sit-up" && // Exclude "3/4 sit-up" specifically
-        !exercise.equipment.includes("ball") && // Exclude exercises with equipment containing "ball"
-        !exercise.equipment.includes("hammer") && // Exclude exercises with equipment containing "hammer"
-        !exercise.equipment.includes("sled") && // Exclude exercises with equipment containing "sled"
-        !exerciseMap.has(label)
-      ) {
-        const displayLabel = toTitleCase(exercise.name); // Title case for exercise name
-        const displayBodyPart = toTitleCase(exercise.bodyPart); // Title case for body part
-
-
-        exerciseMap.set(label, {
-          label: exercise.name, // Use 'name' as 'label'
-          displayLabel: displayLabel, // Display name with proper capitalization
-          bodyPart: exercise.bodyPart,
-          displayBodyPart: displayBodyPart, // Display body part with proper capitalization
-          equipment: exercise.equipment,
-          muscles: exercise.secondaryMuscles
-            ? [mapMuscleName(exercise.target), ...exercise.secondaryMuscles.map(mapMuscleName)].filter(Boolean) // Map muscles and filter out undefined values
-            : [mapMuscleName(exercise.target)].filter(Boolean), // Map target muscle and filter out undefined values
-          gifUrl: exercise.gifUrl,
-          instructions: exercise.instructions,
-        });
-      }
-    });
-
-    // Convert Map back to an array for setting state
-    const uniqueExercises = Array.from(exerciseMap.values());
-
-    // Filter out exercises with bodyPart equal to 'cardio' and preloaded exercises from the available exercises
-    const filteredExercises = uniqueExercises.filter(
-      (exercise) =>
-        exercise.bodyPart.toLowerCase() !== 'cardio' && // Exclude 'cardio' exercises
-        !preloadedExercises.some((preloaded) => preloaded.label === exercise.label) // Exclude preloaded exercises
-    );
-
-    console.log("TRANSFORMED EXERCISES: ", filteredExercises); // Log transformed exercises to verify
-
-    setAvailableExercises(filteredExercises); // Set the filtered exercises
-    setExercisesFetched(true); 
-  } catch (error) {
-    console.error("Failed to fetch exercises:", error);
-    showSnackbar("Failed to load exercises. Please try again later.", 'error');
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-
-
 
   /**
-  * Handles the end of a drag-and-drop operation to reorder exercises in the workout.
-  *
-  * If the dragged item is dropped outside a valid droppable area, the function exits early without making changes.
-  * Otherwise, it creates a new reordered list of exercises by removing the dragged exercise from its
-  * original position and inserting it at the new destination.
-  *
-  * @function onDragEnd
-  * @param {Object} result - The result object provided by `react-beautiful-dnd` after a drag event.
-  * @param {Object} result.source - The source object containing information about the starting point of the dragged item.
-  * @param {number} result.source.index - The index of the exercise in the original list.
-  * @param {Object} result.destination - The destination object containing information about where the dragged item is dropped.
-  * @param {number} result.destination.index - The index where the exercise should be moved to in the new list.
-  * @returns {void} Updates the state of exercises to reflect the new order after drag-and-drop.
-  */
+   * Fetches all exercises from the ExerciseDB API and transforms them to the required format.
+   * Filters out exercises that are already preloaded and sets the available exercises in state.
+   */
+  const fetchExercises = async () => {
+    if (exercisesFetched) return; // Ensure fetchExercises is called only once
+
+    setLoading(true);
+    try {
+      const data = await getAllExercises(); // Fetch all exercises
+      console.log("ALL WORKOUTS!!!!!!!", data);
+
+      // Use a Map to ensure uniqueness by exercise name
+      const exerciseMap = new Map();
+
+      data.forEach((exercise) => {
+        const label = exercise.name.toLowerCase().trim(); // Normalize the name for uniqueness check
+
+        // Exclude exercises containing "V. 2", "V. 3", or "stretch" in their name
+        if (
+          !label.includes("v. 2") &&
+          !label.includes("v. 3") &&
+          !label.includes("stretch") &&
+          !label.includes("plank") && // Exclude exercises with "plank" in the name
+          !label.includes("Alternate Heel Touchers") &&
+          !label.includes("Russian Twist") &&
+          !label.includes("Ankle Circles") &&
+          !label.includes("sit") &&
+          label !== "3/4 sit-up" && // Exclude "3/4 sit-up" specifically
+          label !== "air bike" && // Exclude "air bike" specifically
+          label !== "45° side bend" && // Exclude "45° side bend" specifically
+          label !== "3/4 sit-up" && // Exclude "3/4 sit-up" specifically
+          !exercise.equipment.includes("ball") && // Exclude exercises with equipment containing "ball"
+          !exercise.equipment.includes("hammer") && // Exclude exercises with equipment containing "hammer"
+          !exercise.equipment.includes("sled") && // Exclude exercises with equipment containing "sled"
+          !exerciseMap.has(label)
+        ) {
+          const displayLabel = toTitleCase(exercise.name); // Title case for exercise name
+          const displayBodyPart = toTitleCase(exercise.bodyPart); // Title case for body part
+
+          exerciseMap.set(label, {
+            label: exercise.name, // Use 'name' as 'label'
+            displayLabel: displayLabel, // Display name with proper capitalization
+            bodyPart: exercise.bodyPart,
+            displayBodyPart: displayBodyPart, // Display body part with proper capitalization
+            equipment: exercise.equipment,
+            muscles: exercise.secondaryMuscles
+              ? [
+                  mapMuscleName(exercise.target),
+                  ...exercise.secondaryMuscles.map(mapMuscleName),
+                ].filter(Boolean) // Map muscles and filter out undefined values
+              : [mapMuscleName(exercise.target)].filter(Boolean), // Map target muscle and filter out undefined values
+            gifUrl: exercise.gifUrl,
+            instructions: exercise.instructions,
+          });
+        }
+      });
+
+      // Convert Map back to an array for setting state
+      const uniqueExercises = Array.from(exerciseMap.values());
+
+      // Filter out exercises with bodyPart equal to 'cardio' and preloaded exercises from the available exercises
+      const filteredExercises = uniqueExercises.filter(
+        (exercise) =>
+          exercise.bodyPart.toLowerCase() !== "cardio" && // Exclude 'cardio' exercises
+          !preloadedExercises.some(
+            (preloaded) => preloaded.label === exercise.label
+          ) // Exclude preloaded exercises
+      );
+
+      console.log("TRANSFORMED EXERCISES: ", filteredExercises); // Log transformed exercises to verify
+
+      setAvailableExercises(filteredExercises); // Set the filtered exercises
+      setExercisesFetched(true);
+    } catch (error) {
+      console.error("Failed to fetch exercises:", error);
+      showSnackbar(
+        "Failed to load exercises. Please try again later.",
+        "error"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Handles the end of a drag-and-drop operation to reorder exercises in the workout.
+   *
+   * If the dragged item is dropped outside a valid droppable area, the function exits early without making changes.
+   * Otherwise, it creates a new reordered list of exercises by removing the dragged exercise from its
+   * original position and inserting it at the new destination.
+   *
+   * @function onDragEnd
+   * @param {Object} result - The result object provided by `react-beautiful-dnd` after a drag event.
+   * @param {Object} result.source - The source object containing information about the starting point of the dragged item.
+   * @param {number} result.source.index - The index of the exercise in the original list.
+   * @param {Object} result.destination - The destination object containing information about where the dragged item is dropped.
+   * @param {number} result.destination.index - The index where the exercise should be moved to in the new list.
+   * @returns {void} Updates the state of exercises to reflect the new order after drag-and-drop.
+   */
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -225,12 +263,11 @@ const fetchExercises = async () => {
     setExercises(reorderedExercises);
   };
 
-
   /**
    * Formats a Date object to a string in the format "YYYY-MM-DDTHH:mm",
    * suitable for use with <input type="datetime-local"> HTML elements.
    * Adjusts the date to the local timezone offset.
-   * 
+   *
    * @function formatDateToDatetimeLocal
    * @param {Date} date - The Date object to format.
    * @returns {string} A formatted date string in "YYYY-MM-DDTHH:mm" format.
@@ -247,7 +284,7 @@ const fetchExercises = async () => {
   /**
    * Handles the change event for a date input field.
    * Converts the selected date to an ISO string format and updates the workout date state.
-   * 
+   *
    * @function handleDateChange
    * @param {Object} e - The event object from the date input field.
    * @param {string} e.target.value - The selected date value from the input field.
@@ -264,31 +301,36 @@ const fetchExercises = async () => {
    */
   const addExercise = () => {
     if (selectedExercise) {
-      const newExercise = { 
-        label: selectedExercise.label, 
+      const newExercise = {
+        label: selectedExercise.label,
         displayLabel: selectedExercise.displayLabel,
-        bodyPart: selectedExercise.bodyPart, 
-        displayBodyPart: selectedExercise.displayBodyPart, 
+        bodyPart: selectedExercise.bodyPart,
+        displayBodyPart: selectedExercise.displayBodyPart,
         muscles: selectedExercise.muscles,
-        sets: [{ weight: "", reps: "" }] 
+        sets: [{ weight: "", reps: "" }],
       };
 
       setExercises([...exercises, newExercise]);
 
       // Remove the selected exercise from the dropdown options
       setAvailableExercises((prevExercises) =>
-        prevExercises.filter((exercise) => exercise.label !== selectedExercise.label)
+        prevExercises.filter(
+          (exercise) => exercise.label !== selectedExercise.label
+        )
       );
-      setSelectedExercise(null);  // Reset the selected exercise
-      showSnackbar(`${selectedExercise.displayLabel} added successfully.`, 'success');
+      setSelectedExercise(null); // Reset the selected exercise
+      showSnackbar(
+        `${selectedExercise.displayLabel} added successfully.`,
+        "success"
+      );
     } else {
-      showSnackbar("Please select an exercise to add.", 'error');;
+      showSnackbar("Please select an exercise to add.", "error");
     }
   };
 
   /**
    * Removes an exercise from the exercises list.
-   * 
+   *
    * @param {number} index - Index of the exercise to remove.
    */
   const removeExercise = (index) => {
@@ -297,13 +339,19 @@ const fetchExercises = async () => {
     setExercises(newExercises);
 
     // Add the removed exercise back to the available options
-    setAvailableExercises((prevExercises) => [...prevExercises, exerciseToRemove]);
-    showSnackbar(`${exerciseToRemove.displayLabel} removed successfully.`, 'success');
+    setAvailableExercises((prevExercises) => [
+      ...prevExercises,
+      exerciseToRemove,
+    ]);
+    showSnackbar(
+      `${exerciseToRemove.displayLabel} removed successfully.`,
+      "success"
+    );
   };
 
   /**
    * Updates the sets of an exercise.
-   * 
+   *
    * @param {number} index - Index of the exercise to update.
    * @param {Array} sets - New sets array for the exercise.
    */
@@ -317,7 +365,7 @@ const fetchExercises = async () => {
   /**
    * Creates the workout or split and validates inputs.
    * Handles both 'createWorkout' and 'addSplit' modes.
-   * 
+   *
    * @param {Object} event - Event object.
    */
   const createWorkout = (event) => {
@@ -325,18 +373,23 @@ const fetchExercises = async () => {
 
     // Check to see if any exercises have been added
     if (exercises.length === 0) {
-      showSnackbar("Workout is empty, add sets.", 'error');
+      showSnackbar("Workout is empty, add sets.", "error");
       return;
     }
 
     if (mode === "createWorkout") {
       // Check to see if any of the reps or weights are empty
-      const isAnyExerciseEmpty = exercises.some(exercise => 
-        exercise.sets.length === 0 || exercise.sets.some(set => set.weight === '' || set.reps === '')
+      const isAnyExerciseEmpty = exercises.some(
+        (exercise) =>
+          exercise.sets.length === 0 ||
+          exercise.sets.some((set) => set.weight === "" || set.reps === "")
       );
 
       if (isAnyExerciseEmpty) {
-        showSnackbar("One or more exercises have empty sets, please fill them in.", 'error');
+        showSnackbar(
+          "One or more exercises have empty sets, please fill them in.",
+          "error"
+        );
         return;
       }
 
@@ -347,254 +400,297 @@ const fetchExercises = async () => {
         type: type,
         exercises: exercises,
       };
-      if (!isEditMode){
-        manageWorkoutOrSplit(workout, 'workout', 'save');
+      if (!isEditMode) {
+        manageWorkoutOrSplit(workout, "workout", "save");
       } else {
-        manageWorkoutOrSplit(workout, 'workout', 'update');
+        manageWorkoutOrSplit(workout, "workout", "update");
       }
     }
 
     // Logic for "addSplit" mode
     if (mode === "addSplit") {
       // Only check that exercises and set counts are provided (no weights/reps validation)
-      const isAnySetEmpty = exercises.some(exercise => exercise.sets.length === 0);
+      const isAnySetEmpty = exercises.some(
+        (exercise) => exercise.sets.length === 0
+      );
 
       if (isAnySetEmpty) {
-        showSnackbar("One or more exercises have empty sets.", 'error');
+        showSnackbar("One or more exercises have empty sets.", "error");
         return;
       }
 
       const workoutSplit = {
         splitId: uniqueId,
-        name: newSplitName, 
+        name: newSplitName,
         username: user.username,
-        exercises: exercises.map(exercise => ({
+        exercises: exercises.map((exercise) => ({
           label: exercise.label,
           displayLabel: exercise.displayLabel,
           bodyPart: exercise.bodyPart,
-          displayBodyPart: exercise.displayBodyPart, 
+          displayBodyPart: exercise.displayBodyPart,
           muscles: exercise.muscles,
-          sets: exercise.sets.map(set => ({ setCount: set.setCount })) // Only include set count
+          sets: exercise.sets.map((set) => ({ setCount: set.setCount })), // Only include set count
         })),
       };
-      if (!isEditMode){
-        manageWorkoutOrSplit(workoutSplit, 'split', 'save');
+      if (!isEditMode) {
+        manageWorkoutOrSplit(workoutSplit, "split", "save");
       } else {
-        manageWorkoutOrSplit(workoutSplit, 'split', 'update');
+        manageWorkoutOrSplit(workoutSplit, "split", "update");
       }
     }
     onClose();
   };
 
-/**
- * Maps API muscle names to the acceptable names for react-body-highlighter.
- *
- * @function mapMuscleName
- * @param {string} muscleName - The muscle name from the API.
- * @returns {string|null} - The mapped muscle name or null if it doesn't match any acceptable name.
- */
-const mapMuscleName = (muscleName) => {
-  const muscleMapping = {
-    // Chest
-    "pectorals": "chest",
-    "chest": "chest",
+  /**
+   * Maps API muscle names to the acceptable names for react-body-highlighter.
+   *
+   * @function mapMuscleName
+   * @param {string} muscleName - The muscle name from the API.
+   * @returns {string|null} - The mapped muscle name or null if it doesn't match any acceptable name.
+   */
+  const mapMuscleName = (muscleName) => {
+    const muscleMapping = {
+      // Chest
+      pectorals: "chest",
+      chest: "chest",
 
-    // Back
-    "upper back": "upper-back",
-    "lower back": "lower-back",
-    "trapezius": "trapezius",
-    "traps": "trapezius",
+      // Back
+      "upper back": "upper-back",
+      "lower back": "lower-back",
+      trapezius: "trapezius",
+      traps: "trapezius",
 
-    // Arms
-    "biceps": "biceps",
-    "triceps": "triceps",
-    "forearms": "forearm",
-    "deltoids": "front-deltoids",
-    "rear deltoids": "back-deltoids",
+      // Arms
+      biceps: "biceps",
+      triceps: "triceps",
+      forearms: "forearm",
+      deltoids: "front-deltoids",
+      "rear deltoids": "back-deltoids",
 
-    // Abs
-    "abdominals": "abs",
-    "lower abs": "abs", 
-    "obliques": "obliques",
+      // Abs
+      abdominals: "abs",
+      "lower abs": "abs",
+      obliques: "obliques",
 
-    // Legs
-    "adductors": "adductor",
-    "inner thighs": "adductor", 
-    "quads": "quadriceps",
-    "quadriceps": "quadriceps",
-    "hamstrings": "hamstring",
-    "calves": "calves",
-    "glutes": "gluteal",
-    "abductors": "abductors",
-    "soleus": "calves", 
+      // Legs
+      adductors: "adductor",
+      "inner thighs": "adductor",
+      quads: "quadriceps",
+      quadriceps: "quadriceps",
+      hamstrings: "hamstring",
+      calves: "calves",
+      glutes: "gluteal",
+      abductors: "abductors",
+      soleus: "calves",
 
-    // Head
-    "neck": "neck",
-    "sternocleidomastoid": "neck", 
-    "head": "head",
+      // Head
+      neck: "neck",
+      sternocleidomastoid: "neck",
+      head: "head",
+    };
+
+    // Return the mapped muscle name if found, otherwise return undefined to discard
+    return muscleMapping[muscleName.toLowerCase()];
   };
 
-  // Return the mapped muscle name if found, otherwise return undefined to discard
-  return muscleMapping[muscleName.toLowerCase()];
-};
-
-
-
-return (
-  <Modal
-    open={open}
-    onClose={onClose}
-    BackdropProps={{
-      style: { backgroundColor: 'rgba(0,0,0,0.5)' },
-    }}
-  >
-    <Card
-      sx={{
-        maxWidth: 1000,
-        minWidth: 1000,
-        maxHeight: 600,
-        minHeight: 600,
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 12,
-        p: 4,
-        overflowY: 'auto',
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      BackdropProps={{
+        style: { backgroundColor: "rgba(0,0,0,0.5)" },
       }}
     >
-      <IconButton
-        aria-label="close"
-        onClick={onClose}
+      <Card
         sx={{
-          position: 'absolute',
-          left: 8,
-          top: 8,
-          color: (theme) => theme.palette.grey[500],
+          maxWidth: 1000,
+          minWidth: 1000,
+          maxHeight: 600,
+          minHeight: 600,
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          bgcolor: "background.paper",
+          border: "2px solid #000",
+          boxShadow: 12,
+          p: 4,
+          overflowY: "auto",
         }}
       >
-        <CloseIcon />
-      </IconButton>
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            left: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
 
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          {mode === "addSplit" ? "Create a Workout Split" : (isEditMode ? "Edit Workout" : "Add a Workout")}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          {mode === "addSplit"
-            ? "Define your workout split by adding exercises and specifying the number of sets."
-            : "Add exercises to your workout and customize sets, weights, and reps."}
-        </Typography>
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="div">
+            {mode === "addSplit"
+              ? "Create a Workout Split"
+              : isEditMode
+              ? "Edit Workout"
+              : "Add a Workout"}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {mode === "addSplit"
+              ? "Define your workout split by adding exercises and specifying the number of sets."
+              : "Add exercises to your workout and customize sets, weights, and reps."}
+          </Typography>
 
-        {/* Loading Indicator */}
-        {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <>
-            {mode === 'createWorkout' && (
-              <>
-                {/* Date Picker */}
-                <TextField
-                  label="Workout Date"
-                  type="datetime-local"
-                  value={formatDateToDatetimeLocal(new Date(workoutDate))}
-                  onChange={handleDateChange}
-                  sx={{ width: 300, mr: 2 }}
-                />
-              </>
-            )}
-
+          {/* Loading Indicator */}
+          {loading ? (
             <Box
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                mb: 2,
-                position: 'sticky',
-                top: 0,
-                zIndex: 10,
-                backgroundColor: 'white',
-                paddingTop: 2,
-                paddingBottom: 2,
-                borderBottom: '1px solid #ccc',
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
               }}
             >
-              <Autocomplete
-                disablePortal
-                id="combo-box-demo"
-                options={availableExercises}
-                value={selectedExercise}
-                onChange={(event, newValue) => {
-                  setSelectedExercise(newValue);
-                }}
-                inputValue={inputValue}
-                onInputChange={(event, newInputValue) => {
-                  setInputValue(newInputValue);
-                }}
-                sx={{ width: 300, mr: 2 }} // Adjust width and margin
-                getOptionLabel={(option) => option.displayLabel} // Use displayLabel for the dropdown
-                isOptionEqualToValue={(option, value) => option.label === value.label} // Compare based on the internal label
-                ListboxComponent={VirtualizedListbox} // Use virtualized list for better performance
-                renderInput={(params) => <TextField {...params} label="Exercise" />}
-              />
-              <Button onClick={addExercise} variant="contained" color="primary">
-                Add Exercise
-              </Button>
+              <CircularProgress />
             </Box>
+          ) : (
+            <>
+              {mode === "createWorkout" && (
+                <>
+                  {/* Date Picker */}
+                  <TextField
+                    label="Workout Date"
+                    type="datetime-local"
+                    value={formatDateToDatetimeLocal(new Date(workoutDate))}
+                    onChange={handleDateChange}
+                    sx={{ width: 300, mr: 2 }}
+                  />
+                </>
+              )}
 
-            {/* List of exercises with drag-and-drop support */}
-            <DragDropContext onDragEnd={onDragEnd}>
-              <Droppable droppableId="exercises">
-                {(provided) => (
-                  <Box {...provided.droppableProps} ref={provided.innerRef}>
-                    {exercises.map((exercise, index) => (
-                      console.log("EXERCISE: ", exercise),
-                      <Draggable key={exercise.displayLabel} draggableId={exercise.displayLabel} index={index}>
-                        {(provided) => (
-                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                            <ExerciseSubcard
-                              key={index}
-                              exercise={exercise}
-                              index={index}
-                              removeExercise={removeExercise}
-                              updateExerciseSets={updateExerciseSets}
-                              allowWeightAndReps={mode === "createWorkout"}
-                              showSnackbar={showSnackbar}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </Box>
-                )}
-              </Droppable>
-            </DragDropContext>
-
-            {/* Create Workout button at the bottom */}
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
-              <Button
-                size="large"
-                variant="contained"
-                onClick={createWorkout}
+              <Box
                 sx={{
-                  boxShadow: 4,
-                  marginLeft: 'auto',
+                  display: "flex",
+                  alignItems: "center",
+                  mb: 2,
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 10,
+                  backgroundColor: "white",
+                  paddingTop: 2,
+                  paddingBottom: 2,
+                  borderBottom: "1px solid #ccc",
                 }}
               >
-                {mode === "addSplit" ? "Save Workout Split" : (isEditMode ? "Edit Workout" : "Create Workout")}
-              </Button>
-            </Box>
-          </>
-        )}
-      </CardContent>
-    </Card>
-  </Modal>
-);
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  options={availableExercises}
+                  value={selectedExercise}
+                  onChange={(event, newValue) => {
+                    setSelectedExercise(newValue);
+                  }}
+                  inputValue={inputValue}
+                  onInputChange={(event, newInputValue) => {
+                    setInputValue(newInputValue);
+                  }}
+                  sx={{ width: 300, mr: 2 }} // Adjust width and margin
+                  getOptionLabel={(option) => option.displayLabel} // Use displayLabel for the dropdown
+                  isOptionEqualToValue={(option, value) =>
+                    option.label === value.label
+                  } // Compare based on the internal label
+                  ListboxComponent={VirtualizedListbox} // Use virtualized list for better performance
+                  renderInput={(params) => (
+                    <TextField {...params} label="Exercise" />
+                  )}
+                />
+                <Button
+                  onClick={addExercise}
+                  variant="contained"
+                  color="primary"
+                >
+                  Add Exercise
+                </Button>
+              </Box>
+
+              {/* List of exercises with drag-and-drop support */}
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="exercises">
+                  {(provided) => (
+                    <Box {...provided.droppableProps} ref={provided.innerRef}>
+                      {exercises.map(
+                        (exercise, index) => (
+                          console.log("EXERCISE: ", exercise),
+                          (
+                            <Draggable
+                              key={exercise.displayLabel}
+                              draggableId={exercise.displayLabel}
+                              index={index}
+                            >
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                >
+                                  <ExerciseSubcard
+                                    key={index}
+                                    exercise={exercise}
+                                    index={index}
+                                    removeExercise={removeExercise}
+                                    updateExerciseSets={updateExerciseSets}
+                                    allowWeightAndReps={
+                                      mode === "createWorkout"
+                                    }
+                                    showSnackbar={showSnackbar}
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          )
+                        )
+                      )}
+                      {provided.placeholder}
+                    </Box>
+                  )}
+                </Droppable>
+              </DragDropContext>
+
+              {/* Create Workout button at the bottom */}
+              <Box
+                sx={{
+                  mt: 4,
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  position: "relative",
+                }}
+              >
+                <Button
+                  size="large"
+                  variant="contained"
+                  onClick={createWorkout}
+                  sx={{
+                    boxShadow: 4,
+                    marginLeft: "auto",
+                  }}
+                >
+                  {mode === "addSplit"
+                    ? "Save Workout Split"
+                    : isEditMode
+                    ? "Edit Workout"
+                    : "Create Workout"}
+                </Button>
+              </Box>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </Modal>
+  );
 }
 
 export default WorkoutCard;
-
