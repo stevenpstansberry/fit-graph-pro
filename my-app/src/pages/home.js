@@ -44,11 +44,7 @@ function Home() {
       <ContentSection
         backgroundColor="#111"
         textColor="#fff"
-        content={
-          <Typography variant="h4" align="center" sx={{ mb: 2, color: '#FFD700' }}> 
-            "Success isn’t always about greatness. It’s about consistency. Consistent hard work gains success. Greatness will come."
-          </Typography>
-        }
+        content={<ShimmerTypography />}
       />
 
       {/* Hero Section 2 */}
@@ -522,5 +518,40 @@ const HeroSection = ({ image, title, subtitle}) => (
     />
   </Box>
 );
+
+const ShimmerTypography = () => {
+  const ref = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"], 
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+
+  const shimmerEffect = useTransform(scrollYProgress, [0, 0.2], [-200, 0]);
+
+  return (
+    <motion.div
+      ref={ref}
+      style={{
+        opacity, 
+        background: 'linear-gradient(90deg, #FFD700 25%, #fff 50%, #FFD700 75%)',
+        backgroundSize: '200% 100%',
+        backgroundPositionX: shimmerEffect,
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        animation: 'shimmer 3s infinite linear',
+        fontSize: '2rem',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        display: 'inline-block',
+      }}
+    >
+      "Success isn’t always about greatness. It’s about consistency. Consistent hard work gains success. Greatness will come."
+    </motion.div>
+  );
+};
+
 
 export default Home;
