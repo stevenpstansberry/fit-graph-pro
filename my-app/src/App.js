@@ -31,7 +31,8 @@ import Workouts from './pages/Workouts';
 import ResetPassword from './pages/ResetPassword';
 import Account from './pages/Account';
 import Attributions from './pages/Attributions';
-import { verifyToken } from './services/APIServices';  
+import { verifyToken } from './services/FitGraphAPIServices';  
+import ResetPasswordFromEmail from './pages/ResetPasswordFromEmail';
 
 function App() {
 
@@ -66,7 +67,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/forgot-password" element={<ResetPassword />} />
           <Route path="/account" element={<Account />} />
           <Route path="/attributions" element={<Attributions />} />
 
@@ -102,6 +102,22 @@ function App() {
             element={
               <PublicRoute>
                 <Register />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicRoute>
+                <ResetPassword />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <PublicRoute>
+                <ResetPasswordFromEmail />
               </PublicRoute>
             }
           />

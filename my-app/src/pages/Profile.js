@@ -24,7 +24,7 @@ import { Container, Typography, Box, Button, Avatar, Divider, CircularProgress }
 import WorkoutsPerWeekChart from '../components/profile-components/WorkoutsPerWeekChart';
 import ProfilePictureUpload from '../components/profile-components/ProfilePictureUpload'; 
 import RecentWorkouts from '../components/profile-components/RecentWorkouts'; 
-import { getAllWorkouts, getProfilePicture } from '../services/APIServices';
+import { getAllWorkouts, getProfilePicture } from '../services/FitGraphAPIServices';
 
 /**
  * Profile page component for displaying user information and managing profile-related actions.
@@ -97,10 +97,6 @@ function Profile() {
     fetchWorkouts();
   }, [user.name, fetchProfilePicture]);
 
-  const logoutHandler = () => {
-    resetUserSession();
-    navigate('/Login');
-  };
 
   const handleOpenUploadModal = () => {
     setUploadModalOpen(true);
@@ -146,7 +142,7 @@ function Profile() {
             src={profileImageUrl ? profileImageUrl : undefined}
             onClick={handleOpenUploadModal}
           >
-            {!profileImageUrl && name.charAt(0).toUpperCase()}
+           
           </Avatar>
           <Typography variant="h4" component="h1" gutterBottom>
             {name}
@@ -190,16 +186,6 @@ function Profile() {
         )}
 
         <Divider sx={{ width: '100%', my: 4 }} />
-
-        {/* Logout Button */}
-        <Button
-          variant="contained"
-          color="secondary"
-          sx={{ mt: 4 }}
-          onClick={logoutHandler}
-        >
-          Logout
-        </Button>
       </Container>
 
       {/* Profile Picture Upload Modal */}

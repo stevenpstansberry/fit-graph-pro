@@ -18,27 +18,38 @@ import React, { useState } from 'react';
 import { Box, Typography, Button, Grid, Paper } from '@mui/material';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import ManualPasswordReset from '../components/auth-components/ManualPasswordReset';
+import ConfirmPassword from '../components/auth-components/ConfirmPassword';
 import { getUser } from '../services/AuthService';
 
 function Account() {
   const user = getUser();
-  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
+  const [confirmPasswordOpen, setConfirmPasswordOpen] = useState(false);
+  const [mode, setMode] = useState('ResetPassword');
 
   /**
    * Opens the password reset dialog.
    * @function handleOpenResetPassword
    */
   const handleOpenResetPassword = () => {
-    setResetPasswordOpen(true);
+    setMode('ResetPassword');
+    setConfirmPasswordOpen(true);
   };
 
   /**
-   * Closes the password reset dialog.
-   * @function handleCloseResetPassword
+   * Opens the delete account dialog.
+   * @function handleOpenDeleteAccount
    */
-  const handleCloseResetPassword = () => {
-    setResetPasswordOpen(false);
+  const handleOpenDeleteAccount = () => {
+    setMode('DeleteUser');
+    setConfirmPasswordOpen(true);
+  };
+
+  /**
+   * Closes the confirmation dialog.
+   * @function handleCloseConfirmPassword
+   */
+  const handleCloseConfirmPassword = () => {
+    setConfirmPasswordOpen(false);
   };
 
   return (
@@ -47,45 +58,48 @@ function Account() {
       <Navbar />
 
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, p: 4 }}>
-        <Grid container spacing={3} justifyContent="center">
-          {/* Account Information */}
-          <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 4 }}>
-              <Typography variant="h5" gutterBottom>
-                Account Information
-              </Typography>
-              <Typography variant="body1">
-                Username: {user.username}
-              </Typography>
-              <Typography variant="body1">
-                Email: {user.email}
-              </Typography>
-            </Paper>
-          </Grid>
+      <Box sx={{ flexGrow: 1, p: 4, display: 'flex', justifyContent: 'left' }}>
+        <Paper sx={{ p: 4, width: '600px' }}>
+          {/* Account Information Section */}
+          <Typography variant="h5" gutterBottom>
+            Account Information
+          </Typography>
+          <Typography variant="body1">
+            Username: {user.username}
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 4 }}>
+            Email: {user.email}
+          </Typography>
 
-          {/* Actions */}
-          <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 4 }}>
-              <Typography variant="h5" gutterBottom>
-                Account Actions
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleOpenResetPassword}
-                sx={{ mt: 2 }}
-              >
-                Reset Password
-              </Button>
-              {/* Add more account-related actions as needed */}
-            </Paper>
-          </Grid>
-        </Grid>
+          <Box sx={{ borderBottom: '1px solid #ccc', my: 2 }} /> {/* Divider */}
+
+          {/* Account Actions Section */}
+          <Typography variant="h5" gutterBottom>
+            Account Actions
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, alignItems: 'center' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleOpenResetPassword}
+              sx={{ mb: 2, width: '200px' }}
+            >
+              Reset Password
+            </Button>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleOpenDeleteAccount}
+              sx={{ width: '200px' }}
+            >
+              Delete Account
+            </Button>
+          </Box>
+        </Paper>
       </Box>
 
-      {/* ManualPasswordReset Dialog */}
-      <ManualPasswordReset open={resetPasswordOpen} onClose={handleCloseResetPassword} user ={user}/>
+      {/* ConfirmPassword Dialog */}
+      <ConfirmPassword open={confirmPasswordOpen} onClose={handleCloseConfirmPassword} user={user} mode={mode} />
 
       {/* Footer Section */}
       <Footer />

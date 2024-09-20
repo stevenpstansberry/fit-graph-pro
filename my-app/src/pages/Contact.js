@@ -15,7 +15,7 @@ import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Typography, Box, TextField, Button, Alert } from '@mui/material'; 
-import { submitContactForm } from '../services/APIServices';
+import { submitContactForm } from '../services/FitGraphAPIServices';
 
 /**
  * Contact page component for handling user inquiries.

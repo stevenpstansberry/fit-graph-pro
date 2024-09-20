@@ -15,6 +15,8 @@ AWS.config.update({
 });
 const util = require('../../utils/util');
 const bcrypt = require('bcryptjs');
+const common = require('./common');
+
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const userTable = 'fit-graph-users';
@@ -41,7 +43,7 @@ async function manualPasswordReset(event) {
   }
 
   // Get user from DynamoDB or return error if user not found
-  const dynamoUser = await getUserByUsername(username.toLowerCase().trim());
+  const dynamoUser = await common.getUser(userTable, username.toLowerCase().trim());
   if (!dynamoUser || !dynamoUser.username) {
     return util.buildResponse(403, { message: 'user does not exist' });
   }
@@ -57,28 +59,6 @@ async function manualPasswordReset(event) {
   return util.buildResponse(200, { message: 'Password reset successful' });
 }
 
-/**
- * Retrieves a user from DynamoDB based on the provided username (Primary Key).
- * 
- * @async
- * @function getUserByUsername
- * @param {string} username - The username of the user to retrieve.
- * @returns {Promise<Object|null>} The user object if found, otherwise null.
- */
-async function getUserByUsername(username) {
-  const params = {
-    TableName: userTable,
-    Key: {
-      username: username
-    }
-  };
-
-  return await dynamodb.get(params).promise().then(response => {
-    return response.Item; // Return the user object if found
-  }, error => {
-    console.error('There is an error getting user by username: ', error);
-  });
-}
 
 /**
  * Updates the user's password in DynamoDB using their username.

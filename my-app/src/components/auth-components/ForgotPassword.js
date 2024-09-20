@@ -15,7 +15,7 @@
 
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Container, Snackbar, Alert } from '@mui/material';
-import { requestPasswordReset } from '../../services/APIServices'; 
+import { requestPasswordReset } from '../../services/FitGraphAPIServices'; 
 
 /**
  * ForgotPassword component for requesting a password reset link.
@@ -44,7 +44,7 @@ function ForgotPassword() {
     }
 
     try {
-      await requestPasswordReset({ email });  // Call the requestPasswordReset function
+      await requestPasswordReset({ email: email }, 'ForgotPassword');  // Call the requestPasswordReset function
       setMessage({ type: 'success', text: 'Password reset link sent! Please check your email.' });
       setSnackbarOpen(true);
     } catch (error) {

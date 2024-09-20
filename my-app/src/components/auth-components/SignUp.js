@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import { Container, Typography, Box, TextField, Grid, Button, Snackbar, Alert, Link } from '@mui/material';
 import { setUserSession } from "../../services/AuthService";
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from "../../services/APIServices"; 
+import { registerUser } from "../../services/FitGraphAPIServices"; 
 
 /**
  * 
@@ -95,12 +95,12 @@ function SignUp() {
       
       let errorMSG;
 
-      switch(true) {
-        case error.response.status === 401:
+      switch(error.response.status) {
+        case 401:
           errorMSG = 'Username already exists, please select a different username';
           break;
 
-        case error.response.status === 503:
+        case 503:
           errorMSG = 'Server is offline, please try again later.';
           break;
 

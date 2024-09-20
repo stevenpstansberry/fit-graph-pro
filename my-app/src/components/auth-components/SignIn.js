@@ -17,7 +17,7 @@ import { Alert, Button, TextField, Link, Grid, Box, Typography, Container, Snack
 import React, { useState, } from 'react';
 import { setUserSession } from "../../services/AuthService";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { loginUser } from "../../services/APIServices";  // Import the loginUser function from APIServices
+import { loginUser } from "../../services/FitGraphAPIServices";  // Import the loginUser function from APIServices
 
 /**
  * 
@@ -60,35 +60,35 @@ function SignIn() {
       const response = await loginUser(credentials);  // Use the loginUser function
       setUserSession(response.user, response.token); // Set the user session
       showSnackbar('Login successful!', 'success');  // Show success message
-
+    
       // Redirect to the original requested page or to the profile page
       const redirectTo = location.state?.from?.pathname || '/profile';
       navigate(redirectTo, { replace: true });
     } catch (error) {
       console.log(error.response.status);
-
+    
       let errorMSG;
-
-      switch(error.response.status) {
-        case error.response.status === 403:
-          errorMSG = "Incorrect Password";
+    
+      switch (error.response.status) {
+        case 403:
+          errorMSG = "User does not exist";
           break;
-
-        case error.response.status === 405:
+    
+        case 405:
           errorMSG = "Incorrect Password";
           break;  
-
-        case error.response.status === 503:
-          errorMSG ='Server is offline, please try again later.';
+    
+        case 503:
+          errorMSG = 'Server is offline, please try again later.';
           break;
-
+    
         default:
-          errorMSG = 'Unknown error occured, please try again later.'
+          errorMSG = 'Unknown error occurred, please try again later.';
           break;
       }
-
+    
       showSnackbar(`Login failed. ${errorMSG}`, 'error');  // Show error message on login failure
-    }
+    }    
   };
 
   /**

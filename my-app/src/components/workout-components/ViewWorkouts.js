@@ -159,7 +159,7 @@ const ViewWorkouts = ({
                   <WorkoutCardPreview
                     key={workout.workoutId || index}
                     workout={workout}
-                    onDelete={() => handleDeleteWorkout(workout.workoutId)}
+                    onDelete={() => handleDeleteWorkout(workout)}
                     onEdit={() => handleEditWorkout(workout)}
                   />
                 ))}

@@ -12,7 +12,7 @@
  */
 
 import { getUser, resetUserSession, getProfileImageUrlFromSession, setProfileImageUrlToSession } from '../services/AuthService';
-import { getProfilePicture } from '../services/APIServices';
+import { getProfilePicture } from '../services/FitGraphAPIServices';
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -45,8 +45,7 @@ function Navbar({ profileImageUrl }) {
   const user = getUser(); // Retrieve the authenticated user's information
   const navigate = useNavigate(); // Hook for navigation
 
-  // State for managing the mobile navigation menu anchor element
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+
   // State for managing the user settings menu anchor element
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [userProfileImageUrl, setUserProfileImageUrl] = React.useState(profileImageUrl || getProfileImageUrlFromSession()); // State for profile image URL
@@ -85,15 +84,6 @@ function Navbar({ profileImageUrl }) {
     }
   };
 
-  /**
-   * Handles the opening of the mobile navigation menu.
-   * 
-   * @function handleOpenNavMenu
-   * @param {Object} event - The event object from the menu button click.
-   */
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
 
   /**
    * Handles the opening of the user settings menu.
@@ -105,14 +95,6 @@ function Navbar({ profileImageUrl }) {
     setAnchorElUser(event.currentTarget);
   };
 
-  /**
-   * Closes the mobile navigation menu.
-   * 
-   * @function handleCloseNavMenu
-   */
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
 
   /**
    * Closes the user settings menu.
@@ -148,8 +130,6 @@ function Navbar({ profileImageUrl }) {
     }
   };
 
-  // Extract the first letter of the user's name for the avatar
-  const userInitial = user && user.name ? user.name.charAt(0).toUpperCase() : 'A';
 
   return (
     <AppBar
@@ -177,7 +157,6 @@ function Navbar({ profileImageUrl }) {
               {pages.map((page) => (
                 <Button
                   key={page}
-                  onClick={handleCloseNavMenu}
                   href={`/${page.toLowerCase()}`}
                   sx={{ color: 'white', mx: 1 }} 
                 >
@@ -206,7 +185,7 @@ function Navbar({ profileImageUrl }) {
                   {userProfileImageUrl ? (
                     <Avatar src={userProfileImageUrl} /> // If user has a profile picture, show it
                   ) : (
-                    <Avatar>{userInitial}</Avatar> // Otherwise, show the user's initial
+                    <Avatar></Avatar> 
                   )}
                 </IconButton>
               </Tooltip>

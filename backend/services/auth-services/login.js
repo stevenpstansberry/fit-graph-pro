@@ -17,6 +17,7 @@ const util = require('../../utils/util');
 const bcrypt = require('bcryptjs');
 const auth = require('../../utils/auth');
 const verifyPasswordService = require('./VerifyPassword');  
+const common = require('./common');
 
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -44,9 +45,15 @@ async function login(user) {
   }
 
   // Get user from DynamoDB or return error if user not found
-  const dynamoUser = await getUser(username.toLowerCase().trim());
+  const dynamoUser = await common.getUser(userTable, username.toLowerCase().trim());
   if (!dynamoUser || !dynamoUser.username) {
     return util.buildResponse(403, { message: 'user does not exist'});
+  }
+
+  // If workoutCount is not defined, initialize it to 0
+  if (dynamoUser.workoutCount === undefined) {
+    await initializeWorkoutCount(username.toLowerCase().trim());
+    dynamoUser.workoutCount = 0;  
   }
 
   // Use verifyPassword function to check the password
@@ -64,7 +71,8 @@ async function login(user) {
   const userInfo = {
     username: dynamoUser.username,
     name: dynamoUser.name,
-    email: dynamoUser.email
+    email: dynamoUser.email,
+    workoutCount: dynamoUser.workoutCount
   }
 
   // Conditionally add the s3ProfileURL if it exists
@@ -83,26 +91,30 @@ async function login(user) {
 }
 
 /**
- * Retrieves a user from DynamoDB based on the provided username.
+ * Initializes the workoutCount field to 0 for a user if it doesn't exist.
  * 
  * @async
- * @function getUser
- * @param {string} username - The username of the user to retrieve.
- * @returns {Promise<Object|null>} The user object if found, otherwise null.
+ * @function initializeWorkoutCount
+ * @param {string} username - The username of the user to update.
+ * @returns {Promise<void>}
  */
-async function getUser(username) {
+async function initializeWorkoutCount(username) {
   const params = {
     TableName: userTable,
-    Key: {
-      username: username
+    Key: { username },
+    UpdateExpression: 'SET workoutCount = :count',
+    ExpressionAttributeValues: {
+      ':count': 0
     }
-  }
+  };
 
-  return await dynamodb.get(params).promise().then(response => {
-    return response.Item;
-  }, error => {
-    console.error('There is an error getting user: ', error);
-  })
+  try {
+    await dynamodb.update(params).promise();
+    console.log(`Initialized workoutCount for user: ${username}`);
+  } catch (error) {
+    console.error('Failed to initialize workoutCount:', error);
+  }
 }
+
 
 module.exports.login = login;

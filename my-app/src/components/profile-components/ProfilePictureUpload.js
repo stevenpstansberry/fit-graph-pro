@@ -21,7 +21,7 @@
 
 import React, { useState } from 'react';
 import { Box, Button, Modal, Typography, Card, CardContent, CardActions, LinearProgress, Snackbar, Alert } from '@mui/material';
-import { uploadProfilePicture, getProfilePicture } from '../../services/APIServices';
+import { uploadProfilePicture, getProfilePicture } from '../../services/FitGraphAPIServices';
 import { getUser } from '../../services/AuthService';
 
 /**

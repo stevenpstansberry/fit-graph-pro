@@ -30,6 +30,7 @@ const ManualPasswordResetService = require ('./services/auth-services/ManualPass
 const VerifyPasswordService = require ('./services/auth-services/VerifyPassword');
 const EditWorkoutService = require ('./services/workout-services/editWorkout');
 const EditSplitService = require ('./services/split-services/editSplit');
+const deleteAccountService = require ('./services/auth-services/deleteAccount');
 const util = require('./utils/util');
 
 // Define API paths
@@ -51,6 +52,7 @@ const ManualPasswordResetPath = '/password-reset/manual';
 const VerifyPasswordPath = '/verify-password';
 const editWorkoutPath = '/workouts/edit';
 const editSplitsPath = '/splits/edit'
+const deleteAccountPath = '/delete';
 
 
 
@@ -152,10 +154,10 @@ exports.handler = async (event) => {
             response = createSplitService.uploadSplit(createSplitBody);
             break;    
 
-        // Delete a workout by workout ID route
+        // Delete a workout by workout route
         case event.httpMethod === 'DELETE' && event.path.startsWith(deleteWorkoutPath + '/'):
-            const workoutIdToDelete = event.path.split('/').pop(); 
-            response = await deleteWorkoutService.deleteWorkout(workoutIdToDelete);
+            const deleteWorkoutBody = JSON.parse(event.body);
+            response = await deleteWorkoutService.deleteWorkout(deleteWorkoutBody);
             break;
 
         // Delete a split by split ID route
@@ -204,7 +206,12 @@ exports.handler = async (event) => {
             const editSplitBody = JSON.parse(event.body)
             response = await EditSplitService.editSplit(editSplitBody);
             break;    
-            
+
+        // Delete user account route
+        case event.httpMethod === 'DELETE' && event.path === deleteAccountPath:
+            const deleteAccountBody = JSON.parse(event.body);
+            response = await deleteAccountService.deleteAccount(deleteAccountBody);
+            break;    
             
         // Default - All other routes
         default:

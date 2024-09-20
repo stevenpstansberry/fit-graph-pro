@@ -189,29 +189,7 @@ const StrengthChart = ({ workoutHistory, filteredWorkouts, selectedMonth, select
   // Function to handle the change of selected exercise
   const handleExerciseChange = (event) => {
     setSelectedExercise(event.target.value);
-  };
-
-
-  if (workoutHistory.length === 0) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-          textAlign: 'center',
-          flexDirection: 'column'
-        }}
-      >
-        <Typography variant="h6" >
-          No workouts found in history. Get started by adding one!
-        </Typography>
-      </Box>
-    );
-  }
-
-  
+  };  
 
   return (
     <Box

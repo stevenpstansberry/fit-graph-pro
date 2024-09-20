@@ -1,26 +1,29 @@
 /**
- * @fileoverview Component for resetting the user's password through a dialog interface.
+ * @fileoverview Component for confirming user actions by verifying their password through a dialog interface.
  * 
- * @file src/components/auth-components/ManualPasswordReset.js
+ * @file src/components/auth-components/ConfirmPassword.js
  * 
- * This component provides a dialog (modal) interface for users to reset their password. The process is divided into
- * two steps: confirming the current password by entering it twice, and then entering a new password. Validation is 
- * performed on the client side to ensure that the passwords match and meet the required criteria.
+ * This component provides a dialog (modal) interface for users to confirm a sensitive action by verifying their password.
  * 
  * @component
- * @param {Object} props - The props for the PasswordResetDialog component.
+ * @param {Object} props - The props for the ConfirmPassword component.
  * @param {boolean} props.open - Determines whether the dialog is open.
  * @param {Function} props.onClose - Function to close the dialog.
- * @returns {React.Element} The rendered PasswordResetDialog component.
+ * @param {Object} props.user - The user object containing the user's email and username.
+ * @param {String} props.mode - The mode of the confirm password dialog. Can be 'ResetPassword' or 'DeleteUser'.
+ * @returns {React.Element} The rendered ConfirmPassword component.
  * 
  * @version 1.0.0
- * @author Steven Stansberry
+ * @author Steven
  */
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, Alert, Snackbar } from '@mui/material';
-import { verifyPassword, UserPasswordReset } from '../../services/APIServices';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Alert, Snackbar } from '@mui/material';
+import { verifyPassword, UserPasswordReset, deleteUser } from '../../services/FitGraphAPIServices';
+import { resetUserSession } from '../../services/AuthService';
+import { useNavigate } from 'react-router-dom';
 
-function ManualPasswordReset({ open, onClose, user }) {
+
+function ConfirmPassword({ open, onClose, user, mode }) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -28,6 +31,9 @@ function ManualPasswordReset({ open, onClose, user }) {
   const [message, setMessage] = useState('');
   const [alertType, setAlertType] = useState('info'); // 'info', 'error', 'success'
   const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar visibility
+
+  const navigate = useNavigate(); 
+
 
   /**
    * Handles changes to the current password input field.
@@ -68,8 +74,12 @@ function ManualPasswordReset({ open, onClose, user }) {
       });
 
       if (response.message === 'Password verified successfully') {
-        setStep(2);  // Move to the next step
-        setMessage('');
+        if (mode === 'ResetPassword') {
+          setStep(2);  // Move to the next step for password reset
+          setMessage('');
+        } else if (mode === 'DeleteUser') {
+          handleDeleteUser();  // Proceed with user deletion
+        }
       } else {
         setMessage('Incorrect current password.');
         setAlertType('error');
@@ -94,7 +104,7 @@ function ManualPasswordReset({ open, onClose, user }) {
   };
 
   /**
-   * Handles the password reset action by calling the ManualPasswordReset API.
+   * Handles the password reset action by calling the UserPasswordReset API.
    * @function handlePasswordReset
    */
   const handlePasswordReset = async () => {
@@ -127,6 +137,28 @@ function ManualPasswordReset({ open, onClose, user }) {
     }
   };
 
+  const handleDeleteUser = async () => {
+    try {
+      const response = await deleteUser({ username: user.username, password: currentPassword });
+
+      if (response.message === 'Account successfully deleted.') {
+        setMessage('User deleted successfully.');
+        setAlertType('success');
+        setSnackbarOpen(true); // Show Snackbar on success
+        onClose();
+        resetState();
+        navigate('/');
+        resetUserSession(); // Clear the user session
+      } else {
+        setMessage('Failed to delete the user.');
+        setAlertType('error');
+      }
+    } catch (error) {
+      setMessage('An error occurred while deleting the user.');
+      setAlertType('error');
+    }
+  };
+
   /**
    * Resets the component state to initial values.
    * @function resetState
@@ -149,7 +181,7 @@ function ManualPasswordReset({ open, onClose, user }) {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>Reset Password</DialogTitle>
+      <DialogTitle>{mode === 'ResetPassword' ? 'Reset Password' : 'Confirm Account Deletion'}</DialogTitle>
       <DialogContent>
         {step === 1 ? (
           <>
@@ -192,13 +224,13 @@ function ManualPasswordReset({ open, onClose, user }) {
         )}
       </DialogContent>
       <DialogActions>
-        {step === 1 ? (
-          <Button variant="contained" color="primary" onClick={handleNextStep}>
-            Next
-          </Button>
-        ) : (
+        {mode === 'ResetPassword' && step === 2 ? (
           <Button variant="contained" color="primary" onClick={handlePasswordReset}>
             Reset Password
+          </Button>
+        ) : (
+          <Button variant="contained" color="primary" onClick={handleNextStep}>
+            {mode === 'ResetPassword' ? 'Next' : 'Confirm'}
           </Button>
         )}
         <Button onClick={onClose} color="secondary">
@@ -211,7 +243,7 @@ function ManualPasswordReset({ open, onClose, user }) {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        message="Password reset successful!"
+        message={mode === 'ResetPassword' ? 'Password reset successful!' : 'User deleted successfully!'}
         action={
           <Button color="inherit" size="small" onClick={handleSnackbarClose}>
             Close
@@ -222,4 +254,4 @@ function ManualPasswordReset({ open, onClose, user }) {
   );
 }
 
-export default ManualPasswordReset;
+export default ConfirmPassword;

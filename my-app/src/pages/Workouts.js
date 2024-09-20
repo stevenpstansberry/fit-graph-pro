@@ -19,13 +19,15 @@ import AddIcon from '@mui/icons-material/Add';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import WorkoutCard from '../components/workout-components/WorkoutCard';
-import { getUser,getSessionData, setSessionData } from '../services/AuthService';
+import { getUser,getSessionData, setSessionData, updateWorkoutCount, incrementWorkoutCount, decrementWorkoutCount } from '../services/AuthService';
 import ViewWorkouts from '../components/workout-components/ViewWorkouts';
 import StrengthChart from '../components/workout-components/StrengthChart';
 import FuturePrediction from '../components/workout-components/FuturePrediction';
 import HeatMap from '../components/workout-components/HeatMap';
-import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout, updateSplit } from '../services/APIServices';
+import { uploadWorkout, uploadSplit, deleteWorkout, deleteSplit, getAllWorkouts, getAllSplits, updateWorkout, updateSplit } from '../services/FitGraphAPIServices';
 import { useSearchParams } from 'react-router-dom';
+import Confetti from 'react-confetti';
+import WorkoutCongratsCard from '../components/workout-components/WorkoutCongratsCard';
 
 
 /**
@@ -48,6 +50,10 @@ const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Controls vis
 const [isCustomSplitDialogOpen, setIsCustomSplitDialogOpen] = useState(false); // Controls visibility of custom split dialog
 const [confirmDialogOpen, setConfirmDialogOpen] = useState(false); // Controls visibility of confirmation dialog
 
+ // ======== Celebration UI State ========
+ const [showConfetti, setShowConfetti] = useState(false); // Controls the visibility of the confetti effect
+ const [isCongratsCardVisible, setIsCongratsCardVisible] = useState(false); // Controls visibility of the congratulatory card
+
 // ======== Workout Management States ========
 const [workoutHistory, setWorkoutHistory] = useState([]); // Stores the history of workouts
 const [selectedWorkout, setSelectedWorkout] = useState([]); // Stores the currently selected workout for editing or viewing
@@ -56,6 +62,8 @@ const [cardMode, setCardMode] = useState('createWorkout'); // Determines the mod
 const [editMode, setEditMode] = useState(false); // Determines if the workout is in edit mode
 const [toEditId, setToEditId] = useState(''); // Stores the ID of the workout being edited
 const [toEditDate, setToEditDate] = useState(''); // Stores the Date of the workout being edited
+const [completedWorkout, setCompletedWorkout] = useState(null); // Stores the completed workout for the congratulatory card
+const [exercisesFetched, setExercisesFetched] = useState(false); // State to track if exercises have been fetched
 
 
 // ======== Split Management States ========
@@ -69,6 +77,8 @@ const [tempSplitName, setTempSplitName] = useState({}); // Temporary storage for
 const [snackbarOpen, setSnackbarOpen] = useState(false); // Controls visibility of snackbar notifications
 const [snackbarMessage, setSnackbarMessage] = useState(''); // Stores the message to be displayed in the snackbar
 const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // Stores the severity level of the snackbar (success, error, etc.)
+const [snackbarKey, setSnackbarKey] = useState(0); // Unique key for Snackbar
+
 
 // ======== Deletion States ========
 const [itemToDelete, setItemToDelete] = useState(null); // Stores the ID of the item to be deleted (workout or split)
@@ -94,6 +104,14 @@ const [tabIndex, setTabIndex] = useState(initialTabIndex); // Controls the activ
       fetchWorkoutsAndSplits();
     }
   }, [username]);
+
+  // Add Confetti Effect whenever a Workout is Added
+  useEffect(() => {
+    if (showConfetti) {
+      const timer = setTimeout(() => setShowConfetti(false), 5000); // Show confetti for 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [showConfetti]);
   
   /**
    * Fetches workouts and splits for the user and updates state.
@@ -237,6 +255,7 @@ const fetchWorkouts = async () => {
     setIsCardVisible(false);
     setEditMode(false); // Set edit workout mode back to false.
     setSelectedWorkout([]);
+    setExercisesFetched(false); // Reset exercises fetched state
   };
 
 
@@ -261,16 +280,15 @@ const fetchWorkouts = async () => {
         setSessionData('workouts', workoutsToStore); // Save to session storage
 
         // Show success Snackbar
-        setSnackbarMessage('Workout deleted successfully!');
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
+        showSnackbar('Workout deleted successfully!', 'success');
+
+        // Decrement workout count for the user in session storage
+        decrementWorkoutCount();
       } catch (error) {
         console.error("Failed to delete workout:", error);
 
         // Show error Snackbar
-        setSnackbarMessage('Failed to delete workout.');
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
+        showSnackbar('Failed to delete workout.', 'error');
       }
     } else if (deleteType === 'split') {
       try {
@@ -285,16 +303,12 @@ const fetchWorkouts = async () => {
         setSessionData('splits', updatedSplits); // Save to session storage
 
         // Show success Snackbar
-        setSnackbarMessage('Split deleted successfully!');
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
+        showSnackbar('Split deleted successfully!', 'success');
       } catch (error) {
         console.error("Failed to delete split:", error);
 
         // Show error Snackbar
-        setSnackbarMessage('Failed to delete split.');
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
+        showSnackbar('Failed to delete split.', 'error');
       }
     }
 
@@ -303,15 +317,16 @@ const fetchWorkouts = async () => {
 
 
   /**
-   * Deletes a workout by ID.
+   * Deletes a workout
    * 
-   * @param {string} workoutId - The ID of the workout to delete.
+   * @param {string} workoutId - The workout to delete.
    */  
-  const handleDeleteWorkout = (workoutId) => {
-    setItemToDelete(workoutId);
+  const handleDeleteWorkout = (workout) => {  
+    setItemToDelete(workout);
     setDeleteType('workout');
     setConfirmDialogOpen(true);
   };
+  
 
 
     /**
@@ -419,17 +434,22 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
     }
     console.log(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully`);
 
+    if (itemType === 'workout' && action === 'save') {
+      // Increment workout count for the user in session storage
+      incrementWorkoutCount();
+
+      setShowConfetti(true);  // Trigger the confetti effect
+      setCompletedWorkout(itemWithDate); // Set the completed workout for the congratulatory card
+      setIsCongratsCardVisible(true); // Show the congratulatory card
+    }
+
     // Show success Snackbar
-    setSnackbarMessage(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully!`);
-    setSnackbarSeverity('success');
-    setSnackbarOpen(true);
+    showSnackbar(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${messageAction} successfully!`, 'success');
   } catch (error) {
     console.error(`Failed to ${action} ${itemType}: `, error);
 
     // Show error Snackbar
-    setSnackbarMessage(`Failed to ${action} ${itemType}.`);
-    setSnackbarSeverity('error');
-    setSnackbarOpen(true);
+    showSnackbar(`Failed to ${action} ${itemType}.`, 'error');
   }
 };
   
@@ -441,14 +461,28 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
     setSnackbarOpen(false);
   };
 
+    /**
+   * Displays a Snackbar notification with a specified message and severity level.
+   * This function updates the state variables required to show a Snackbar notification.
+   *
+   * @function showSnackbar
+   * @param {string} message - The message to display in the Snackbar.
+   * @param {'success' | 'error' | 'warning' | 'info'} severity - The severity level of the Snackbar, which determines its visual style and icon.
+   * @returns {void} This function does not return a value; it updates the state to display the Snackbar.
+   */
+  const showSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarKey(prevKey => prevKey + 1);  // Increment key to ensure the Snackbar appears correctly
+    setSnackbarOpen(true);
+  };
+
   /**
    * Closes confirm dialog alert
    */
   const handleCloseConfirmDialog = () => {
     setConfirmDialogOpen(false);
   };
-
-
 
 
 
@@ -494,8 +528,13 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+
+      {/* Confetti Component */}
+      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
+      
       {/* Snackbar for success/error messages */}
       <Snackbar
+        key={snackbarKey} // Use the unique key here
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
@@ -589,7 +628,12 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
           {tabIndex === 3 && (
             <Box>
               {/* Heat Map */}
-              <HeatMap workoutHistory={workoutHistory} /> 
+              <HeatMap workoutHistory={workoutHistory}
+                selectedMonth={selectedMonth}
+                setSelectedMonth={setSelectedMonth}
+                selectedYear={selectedYear}
+                setSelectedYear={setSelectedYear}
+               /> 
             </Box>      
           )}
         </>
@@ -657,9 +701,7 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
             onClick={() => {
               if (userSplits.length >= 8) {
                 // Show error Snackbar if there are already 9 splits
-                setSnackbarMessage('You cannot have more than 9 splits.');
-                setSnackbarSeverity('error');
-                setSnackbarOpen(true);
+                showSnackbar('You cannot have more than 9 splits.', 'error');
               } else {
                 // Open the dialog to add a new custom split
                 setIsCustomSplitDialogOpen(true);
@@ -676,47 +718,63 @@ const manageWorkoutOrSplit = async (item, itemType, action) => {
     </Dialog>
 
 
-      <Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
-        <DialogTitle sx={{ pb: 2 }}>Name Your Custom Split</DialogTitle>
-        <DialogContent sx={{ minWidth: 500, minHeight: 200 }}>
-          <TextField
-            label="Split Name"
-            value={customSplitName}
-            onChange={(e) => setCustomSplitName(e.target.value)}
-            sx={{
-              width: 500,
-              mb: 2,
-              '& .MuiInputLabel-root': { fontSize: '1rem' },
-              '& .MuiInputBase-root': { paddingRight: 2 },
-            }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              setNewSplitName(customSplitName);
-              setIsCardVisible(true);
-              setCardMode("addSplit");
-              setIsCustomSplitDialogOpen(false);
-            }}
-          >
-            Create Split
-          </Button>
-        </DialogContent>
-      </Dialog>
+    <Dialog open={isCustomSplitDialogOpen} onClose={() => setIsCustomSplitDialogOpen(false)}>
+      <DialogTitle sx={{ pb: 2 }}>Name Your Custom Split</DialogTitle>
+      <DialogContent sx={{ minWidth: 500, minHeight: 200 }}>
+        <TextField
+          label="Split Name"
+          value={customSplitName}
+          onChange={(e) => setCustomSplitName(e.target.value)}
+          sx={{
+            width: 500,
+            mb: 2,
+            '& .MuiInputLabel-root': { fontSize: '1rem' },
+            '& .MuiInputBase-root': { paddingRight: 2 },
+          }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            if (!customSplitName.trim()) {  // Check if the customSplitName is empty or only contains spaces
+              showSnackbar('Split name cannot be empty.', 'error');
+              return;
+            }
 
-      <WorkoutCard
-        open={isCardVisible}
-        onClose={handleClose}
-        preloadedExercises={selectedWorkout}
-        mode={cardMode}
-        newSplitName={newSplitName}
-        type={workoutType}
-        {...(editMode && { editMode: editMode })}
-        ToEditId={toEditId}
-        ToEditDate={toEditDate}
-        manageWorkoutOrSplit={manageWorkoutOrSplit}
-      />
+            // If not empty, proceed with creating the split
+            setNewSplitName(customSplitName);
+            setIsCardVisible(true);
+            setCardMode("addSplit");
+            setIsCustomSplitDialogOpen(false);
+          }}
+        >
+          Create Split
+        </Button>
+      </DialogContent>
+    </Dialog>
+
+    <WorkoutCard
+      open={isCardVisible}
+      onClose={handleClose}
+      preloadedExercises={selectedWorkout}
+      mode={cardMode}
+      newSplitName={newSplitName}
+      type={workoutType}
+      {...(editMode && { editMode: editMode })}
+      ToEditId={toEditId}
+      ToEditDate={toEditDate}
+      manageWorkoutOrSplit={manageWorkoutOrSplit}
+      showSnackbar={showSnackbar}
+      exercisesFetched={exercisesFetched}
+      setExercisesFetched={setExercisesFetched}
+    />
+
+    <WorkoutCongratsCard
+      open={isCongratsCardVisible}
+      onClose={() => setIsCongratsCardVisible(false)}
+      workout={completedWorkout}
+      user={user}
+    />
     </Box>
   );
 }

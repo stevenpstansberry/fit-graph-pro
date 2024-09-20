@@ -11,9 +11,10 @@
  */
 
 import React, { useState } from "react";
-import { Card, CardContent, Box, TextField, Button, Typography, IconButton, Snackbar, Alert } from "@mui/material";
+import { Card, CardContent, Box, TextField, Button, Typography, IconButton} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import ExerciseInfoCard from "./ExerciseInfoCard";
 
 /**
  * Component for rendering and managing an exercise card within a workout.
@@ -26,9 +27,30 @@ import AddIcon from "@mui/icons-material/Add";
  * @param {function} props.updateExerciseSets - Function to update the sets of an exercise in the parent component's state.
  * @param {boolean} props.allowWeightAndReps - Flag indicating whether to show weight and reps input fields.
  * @param {string} props.mode - Mode indicating how the component should behave (e.g., "addSplit").
+ * @param {function} props.showSnackbar - Function to display a snackbar message in Workout Page.
  * @returns {React.Element} - The rendered ExerciseSubcard component.
  */
-function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode, snackbarMessage, setSnackbarMessage, snackbarOpen, setSnackbarOpen }) {
+function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, allowWeightAndReps, mode, showSnackbar }) {
+
+  const [isInfoCardOpen, setIsInfoCardOpen] = useState(false);
+  
+
+  /**
+   * Closes the exercise info card modal.
+   */
+    const handleClose = () => {
+      setIsInfoCardOpen(false);
+    };
+
+  /**
+   * Opens the exercise info card modal.
+   * 
+   **/
+    const handleOpen = () => {
+      console.log("EXERCISE:", exercise)
+      setIsInfoCardOpen(true);
+    }
+
 
   /**
    * Handles the change in input for weight or reps in a specific set.
@@ -49,12 +71,10 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
     } else {
       // Set specific error messages based on the validation failure
       if (value.length > 4) {
-        setSnackbarMessage('No more than 4 digits allowed.');
+        showSnackbar('No more than 4 digits allowed.', 'error');
       } else {
-        setSnackbarMessage('Only positive values greater than 0 are accepted.');
-      }
-      // Show snackbar notification
-      setSnackbarOpen(true);
+        showSnackbar('Only positive values greater than 0 are accepted.', 'error');
+        }
     }
   };
 
@@ -65,12 +85,12 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
    */
   const addSet = () => {
     if (exercise.sets.length >= 9) {
-      setSnackbarMessage('You cannot add more than 9 sets.');
-      setSnackbarOpen(true);
+      showSnackbar('You cannot add more than 9 sets.', 'error');
       return;
     }
     const newSets = [...exercise.sets, { weight: "", reps: "" }];
     updateExerciseSets(index, newSets); // Add new set to the sets array
+    showSnackbar('Set added successfully.', 'success');
   };
 
   /**
@@ -82,16 +102,9 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
   const handleRemoveSet = (setIndex) => {
     const newSets = exercise.sets.filter((_, i) => i !== setIndex);
     updateExerciseSets(index, newSets); // Remove the set from the sets array
+    showSnackbar('Set removed successfully.', 'success');
   };
 
-  /**
-   * Closes the snackbar notification.
-   * 
-   * @function handleCloseSnackbar
-   */
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
 
   return (
     <Card sx={{ mb: 2 }}>
@@ -99,7 +112,7 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {/* Display the exercise label and body part */}
           <Typography variant="h6" component="div">
-            {exercise.label} - {exercise.bodyPart}
+            {exercise.displayLabel} - {exercise.displayBodyPart} - <Button onClick={handleOpen}>Info</Button>
           </Typography>
 
           {/* Button for adding sets and icon for deleting the exercise */}
@@ -159,6 +172,7 @@ function ExerciseSubCard({ exercise, index, removeExercise, updateExerciseSets, 
           </Box>
         ))}
       </CardContent>
+      <ExerciseInfoCard open={isInfoCardOpen} onClose={handleClose} exercise={exercise} />
     </Card>
   );
 }
