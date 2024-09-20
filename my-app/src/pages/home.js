@@ -57,18 +57,13 @@ function Home() {
 
 
       {/* Feature Section 2 */}
-      <ContentSection
-        backgroundColor="#333"
-        textColor="#ffdd57"
-        content={<Features />} 
-      />
+      <FeatureSectionWithFadeIn/>
 
       {/* Hero Section 3 */}
       <HeroSection
         image="https://via.placeholder.com/1920x1080"  // Placeholder image URL
         title="Join The FitGraph Community"
         subtitle="Connect with other fitness enthusiasts and share your progress."
-        buttonText="Sign Up"
       />
 
       {/* Footer Component */}
@@ -552,6 +547,30 @@ const ShimmerTypography = () => {
     </motion.div>
   );
 };
+
+const FeatureSectionWithFadeIn = () => {
+  const ref = useRef(null);
+
+  // Track the scroll position for this section
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],  
+  });
+
+  // Transform scroll progress to opacity value (0 to 1)
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+
+  return (
+    <motion.div ref={ref} style={{ opacity }}>
+      <ContentSection
+        backgroundColor="#333"
+        textColor="#ffdd57"
+        content={<Features />}  
+      />
+    </motion.div>
+  );
+};
+
 
 
 export default Home;
