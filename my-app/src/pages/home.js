@@ -236,17 +236,16 @@ const HeroSectionWithSlideInAnimationLeft = () => {
         <Box
           sx={{
             display: 'flex',
-            gap: '20px', // Adds spacing between the two cards
+            gap: '20px', // Adds spacing between the two sections
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          {/* Card for Estimate Future Prediction */}
+          {/* Updated Card for Future Performance Prediction */}
           <motion.div
             style={{
               x: slideInEffect, // Use slideInEffect from useTransform
               opacity: fadeInEffect, // Use fadeInEffect from useTransform
-              
             }}
             transition={{ type: 'spring', stiffness: 50 }}  
           >
@@ -255,23 +254,22 @@ const HeroSectionWithSlideInAnimationLeft = () => {
                 padding: '20px',
                 backgroundColor: '#ffffff',
                 borderRadius: '16px', 
-                boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)', // Enhanced box-shadow for depth
+                boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)', 
                 textAlign: 'left',
                 maxWidth: '400px',
+                minHeight: '300px', // Set the minimum height to ensure consistent size
               }}
             >
               <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: '#333' }}>
-                Estimate Future Predictions
+                Predict Your Progress
               </Typography>
               <Typography variant="body1" sx={{ color: '#555' }}>
-                Get insights into your future progress based on current data trends.
-                Our predictive models will help you set achievable goals by estimating
-                future fitness performance.
+                Enter your goal weight and let our advanced regression models analyze your workout data to forecast when you’ll hit your next PR. Track your progress with precision and see results in real-time.
               </Typography>
             </Box>
           </motion.div>
 
-          {/* New Card for Estimating One Rep Max */}
+          {/* Updated Card for Estimating One Rep Max */}
           <motion.div
             style={{
               x: slideInEffect, // Use slideInEffect from useTransform
@@ -287,14 +285,17 @@ const HeroSectionWithSlideInAnimationLeft = () => {
                 boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)',
                 textAlign: 'left',
                 maxWidth: '400px',
+                minHeight: '300px', // Set the minimum height to ensure consistent size
               }}
             >
               <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: '#333' }}>
-                Estimate Your One Rep Max
+                Calculate Your 1RM
               </Typography>
               <Typography variant="body1" sx={{ color: '#555' }}>
-                Use our One Rep Max calculator to estimate the maximum weight you can lift for a single rep
-                based on your current performance. This helps you track strength gains and set realistic goals.
+                Easily estimate your 1-rep max (1RM) using our advanced algorithm. We analyze your heaviest sets and reps to calculate your maximum strength potential.
+              </Typography>
+              <Typography variant="body1" sx={{ mt: 2, color: '#555' }}>
+                Powered by Epley’s formula, we give you accurate 1RM predictions based on your workout history, helping you plan your next big lift with confidence.
               </Typography>
             </Box>
           </motion.div>
@@ -303,6 +304,10 @@ const HeroSectionWithSlideInAnimationLeft = () => {
     </motion.div>
   );
 };
+
+
+
+
 
 
 const HeroSectionWithSlideInAnimationRight = () => {
