@@ -25,7 +25,7 @@ import Features from './Features';
  *
  * @returns {React.Element} - A styled hero section with scroll-based animation for the barbell.
  */
-export const HeroSectionWithBarbellAnimation = () => {
+export const BarbellScrollAnimationSection  = () => {
     const { scrollYProgress } = useScroll();  // Use Framer Motion's useScroll hook
   
     // Barbell size will grow from 0.5 (small) to 2 times its original size
@@ -78,17 +78,14 @@ export const HeroSectionWithBarbellAnimation = () => {
    * @returns {React.Element} - A styled hero section where the whole section fades in based on scroll.
    */
   export const HeroSectionWithFadeInAnimation = () => {
-    // Create a ref for the section we want to track the scroll progress of
     const ref = useRef(null);
   
-    // Use useScroll with ref to track the scroll progress of this specific section
     const { scrollYProgress } = useScroll({
       target: ref,
-      offset: ["start end", "end start"],  // Adjusts how the progress is calculated
+      offset: ["start end", "end start"],  
     });
   
-    // Create a fade-in effect for the entire section, increasing opacity from 0 to 1 as you scroll
-    const fadeInEffect = useTransform(scrollYProgress, [0, 1], [0, 1]);  // Opacity goes from 0 to 1
+    const fadeInEffect = useTransform(scrollYProgress, [0, 1], [0, 1]);  
   
     return (
       <motion.div
@@ -143,7 +140,12 @@ export const HeroSectionWithBarbellAnimation = () => {
       </motion.div>
     );
   };
-  
+
+   /**
+   * HeroSectionWithSlideInAnimationLeft component for fading and sliding in the hero section from the left.
+   *
+   * @returns {React.Element} - A styled hero section where the whole section fades in based on scroll.
+   */
   export const HeroSectionWithSlideInAnimationLeft = () => {  
     const ref = useRef(null);
   
@@ -178,7 +180,7 @@ export const HeroSectionWithBarbellAnimation = () => {
               justifyContent: 'center',
             }}
           >
-            {/* Updated Card for Future Performance Prediction */}
+            {/* Card for Future Performance Prediction */}
             <motion.div
               style={{
                 x: slideInEffect,
@@ -215,7 +217,7 @@ export const HeroSectionWithBarbellAnimation = () => {
               </Box>
             </motion.div>
   
-            {/* Updated Card for Estimating One Rep Max */}
+            {/* Card for Estimating One Rep Max */}
             <motion.div
               style={{
                 x: slideInEffect,
@@ -257,12 +259,11 @@ export const HeroSectionWithBarbellAnimation = () => {
     );
   };
   
-  
-  
-  
-  
-  
-  
+   /**
+   * HeroSectionWithSlideInAnimationRight component for fading and sliding in the hero section from the left.
+   *
+   * @returns {React.Element} - A styled hero section where the whole section fades in based on scroll.
+   */
   export const HeroSectionWithSlideInAnimationRight = () => {
     const ref = useRef(null);
   
@@ -385,16 +386,6 @@ export const HeroSectionWithBarbellAnimation = () => {
   };
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   /**
    * ContentSection component for showcasing different features or text content in a distinct section.
    *
@@ -417,7 +408,7 @@ export const HeroSectionWithBarbellAnimation = () => {
   );
   
   
-  /**
+   /**
    * HeroSectionWithSlideUpAnimation component for sliding up text content as the user scrolls.
    *
    * @param {Object} props - Props containing the image, title, subtitle, and button text.
@@ -426,17 +417,14 @@ export const HeroSectionWithBarbellAnimation = () => {
   export const HeroSectionWithSlideUpAnimation = () => {
     const ref = useRef(null);
   
-    // Use useScroll with ref to track the scroll progress of the text content
-    const { scrollYProgress } = useScroll({
+        const { scrollYProgress } = useScroll({
       target: ref,
       offset: ["start center", "end center"], // Adjust for when the animation starts and ends
     });
   
-    // Apply a transform to the text, sliding it up
-    const y = useTransform(scrollYProgress, [0, 0.5], ['100%', '0%']);  // Starts below and slides up
+        const y = useTransform(scrollYProgress, [0, 0.5], ['100%', '0%']);  // Starts below and slides up
     const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);   // Fade in effect
   
-    // Hardcoded values for the hero section
     const title = "Join The FitGraph Community";
     const subtitle = "Connect with other fitness enthusiasts and share your progress.";
     const buttonText = "Register Now";
@@ -448,7 +436,7 @@ export const HeroSectionWithBarbellAnimation = () => {
           position: 'relative',
           width: '100%',
           height: '80vh',
-          backgroundColor: '#1a1a1a',  // Slightly lighter black background
+          backgroundColor: '#1a1a1a', 
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -458,9 +446,9 @@ export const HeroSectionWithBarbellAnimation = () => {
       >
         <motion.div
           style={{
-            y,  // Slide up animation
-            opacity,  // Fade-in effect
-            position: 'relative',  // Position the text content
+            y, 
+            opacity,  
+            position: 'relative',  
             zIndex: 2,
           }}
         >
@@ -475,16 +463,16 @@ export const HeroSectionWithBarbellAnimation = () => {
             size="large" 
             sx={{ 
               mt: 3, 
-              background: 'linear-gradient(45deg, #ff9800 30%, #f57c00 90%)', // Gradient background
-              fontSize: '1.25rem', // Larger font size
-              fontWeight: 'bold', // Bold text
-              textTransform: 'uppercase', // Capitalize text
-              padding: '16px 32px', // Increase padding
-              boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)', // Add shadow for a 3D effect
+              background: 'linear-gradient(45deg, #ff9800 30%, #f57c00 90%)', 
+              fontSize: '1.25rem', 
+              fontWeight: 'bold', 
+              textTransform: 'uppercase', 
+              padding: '16px 32px', 
+              boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)', 
               '&:hover': { 
                 backgroundColor: '#e65100', 
-                boxShadow: '0px 12px 30px rgba(0, 0, 0, 0.3)', // Increase shadow on hover
-                transform: 'scale(1.05)', // Slightly grow the button on hover
+                boxShadow: '0px 12px 30px rgba(0, 0, 0, 0.3)', 
+                transform: 'scale(1.05)', 
                 transition: 'all 0.3s ease',
               },
             }}
@@ -492,15 +480,9 @@ export const HeroSectionWithBarbellAnimation = () => {
             {buttonText}
           </Button>
         </motion.div>
-  
-        {/* Optional: Dark overlay removed since the background is already black */}
       </motion.div>
     );
   };
-  
-  
-  
-  
   
   export const ShimmerTypography = () => {
     const ref = useRef(null);
@@ -535,26 +517,38 @@ export const HeroSectionWithBarbellAnimation = () => {
       </motion.div>
     );
   };
-  
-  export const FeatureSectionWithFadeIn = () => {
+
+
+/**
+ * FeatureSectionWithFadeIn component that fades in as the user scrolls.
+ *
+ * This component uses Framer Motion's `useScroll` and `useTransform` hooks to track the scroll position and apply a fade-in effect. 
+ * The section fades in from opacity 0 to 1 when the user scrolls into the view. The `ContentSection` component is used to display 
+ * the features with a specified background and text color.
+ * 
+ * @component
+ * @returns {React.Element} - A section containing feature content that fades in based on the user's scroll position.
+ * 
+ */
+export const FeatureSectionWithFadeIn = () => {
     const ref = useRef(null);
-  
+
     // Track the scroll position for this section
     const { scrollYProgress } = useScroll({
-      target: ref,
-      offset: ["start end", "end start"],  
+    target: ref,
+    offset: ["start end", "end start"],  
     });
-  
+
     // Transform scroll progress to opacity value (0 to 1)
     const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
-  
+
     return (
-      <motion.div ref={ref} style={{ opacity }}>
+    <motion.div ref={ref} style={{ opacity }}>
         <ContentSection
-          backgroundColor="#333"
-          textColor="#ffdd57"
-          content={<Features />}  
+        backgroundColor="#333"
+        textColor="#ffdd57"
+        content={<Features />}  
         />
-      </motion.div>
+    </motion.div>
     );
-  };
+};

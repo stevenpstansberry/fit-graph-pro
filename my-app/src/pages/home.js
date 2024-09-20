@@ -14,11 +14,10 @@
  */
 
 import React from 'react';
-import Features from '../components/Features';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import {  Box } from '@mui/material';
-import { HeroSectionWithBarbellAnimation, HeroSectionWithFadeInAnimation, HeroSectionWithSlideInAnimationLeft, HeroSectionWithSlideUpAnimation, FeatureSectionWithFadeIn, ContentSection, ShimmerTypography, HeroSectionWithSlideInAnimationRight } from '../components/HeroSections';
+import { BarbellScrollAnimationSection , HeroSectionWithFadeInAnimation, HeroSectionWithSlideInAnimationLeft, HeroSectionWithSlideUpAnimation, FeatureSectionWithFadeIn, ContentSection, ShimmerTypography, HeroSectionWithSlideInAnimationRight } from '../components/HeroSections';
 
 
 /**
@@ -35,7 +34,7 @@ function Home() {
       <Navbar />
 
       {/* Hero Section 1 with Barbell Scroll Animation */}
-      <HeroSectionWithBarbellAnimation />
+      <BarbellScrollAnimationSection  />
 
       {/* Feature Section 1 */}
       <ContentSection
