@@ -208,13 +208,11 @@ const HeroSectionWithFadeInAnimation = () => {
 const HeroSectionWithSlideInAnimationLeft = () => {  
   const ref = useRef(null);
 
-  // Use useScroll with ref to track the scroll progress of this specific section
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start center", "end center"], // Adjusted offsets for smoother in-out animation
+    offset: ["start center", "end center"], 
   });
 
-  // Slide the content in from the left and fade in
   const slideInEffect = useTransform(scrollYProgress, [0, 0.2], [-200, 0]);  
   const fadeInEffect = useTransform(scrollYProgress, [0, 0.2], [0, 1]);  
 
@@ -228,15 +226,15 @@ const HeroSectionWithSlideInAnimationLeft = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#e0e0e0',  // Background for contrast with the graph
+          backgroundColor: '#e0e0e0',
           overflow: 'hidden',
+          boxShadow: '0px 12px 30px rgba(0, 0, 0, 0.05)', // Subtle shadow for the section
         }}
       >
-        {/* Flex container to align the cards in a row */}
         <Box
           sx={{
             display: 'flex',
-            gap: '20px', // Adds spacing between the two sections
+            gap: '20px',
             alignItems: 'center',
             justifyContent: 'center',
           }}
@@ -244,36 +242,8 @@ const HeroSectionWithSlideInAnimationLeft = () => {
           {/* Updated Card for Future Performance Prediction */}
           <motion.div
             style={{
-              x: slideInEffect, // Use slideInEffect from useTransform
-              opacity: fadeInEffect, // Use fadeInEffect from useTransform
-            }}
-            transition={{ type: 'spring', stiffness: 50 }}  
-          >
-            <Box
-              sx={{
-                padding: '20px',
-                backgroundColor: '#ffffff',
-                borderRadius: '16px', 
-                boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)', 
-                textAlign: 'left',
-                maxWidth: '400px',
-                minHeight: '300px', // Set the minimum height to ensure consistent size
-              }}
-            >
-              <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: '#333' }}>
-                Predict Your Progress
-              </Typography>
-              <Typography variant="body1" sx={{ color: '#555' }}>
-                Enter your goal weight and let our advanced regression models analyze your workout data to forecast when you’ll hit your next PR. Track your progress with precision and see results in real-time.
-              </Typography>
-            </Box>
-          </motion.div>
-
-          {/* Updated Card for Estimating One Rep Max */}
-          <motion.div
-            style={{
-              x: slideInEffect, // Use slideInEffect from useTransform
-              opacity: fadeInEffect, // Use fadeInEffect from useTransform
+              x: slideInEffect,
+              opacity: fadeInEffect,
             }}
             transition={{ type: 'spring', stiffness: 50 }}  
           >
@@ -285,10 +255,53 @@ const HeroSectionWithSlideInAnimationLeft = () => {
                 boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)',
                 textAlign: 'left',
                 maxWidth: '400px',
-                minHeight: '300px', // Set the minimum height to ensure consistent size
+                minHeight: '300px',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: '0px 12px 30px rgba(0, 0, 0, 0.2)',
+                },
+                background: 'linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%)', // Gradient background
               }}
             >
-              <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: '#333' }}>
+              <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', fontSize: '1.8rem', letterSpacing: '0.5px', color: '#333' }}>
+                Predict Your Progress
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#555' }}>
+                Enter your goal weight and let our advanced regression models analyze your workout data to forecast when you’ll hit your next PR. Track your progress with precision and see results in real-time.
+              </Typography>
+              <Typography variant="body1" sx={{ mt: 2, color: '#555' }}>
+                With at least 50 sets logged, we'll give you an accurate estimate of when you’ll reach your goals based on data-driven insights.
+              </Typography>
+            </Box>
+          </motion.div>
+
+          {/* Updated Card for Estimating One Rep Max */}
+          <motion.div
+            style={{
+              x: slideInEffect,
+              opacity: fadeInEffect,
+            }}
+            transition={{ type: 'spring', stiffness: 50 }}  
+          >
+            <Box
+              sx={{
+                padding: '20px',
+                backgroundColor: '#ffffff',
+                borderRadius: '16px',
+                boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)',
+                textAlign: 'left',
+                maxWidth: '400px',
+                minHeight: '300px',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: '0px 12px 30px rgba(0, 0, 0, 0.2)',
+                },
+                background: 'linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%)',
+              }}
+            >
+              <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', fontSize: '1.8rem', letterSpacing: '0.5px', color: '#333' }}>
                 Calculate Your 1RM
               </Typography>
               <Typography variant="body1" sx={{ color: '#555' }}>
@@ -304,6 +317,7 @@ const HeroSectionWithSlideInAnimationLeft = () => {
     </motion.div>
   );
 };
+
 
 
 
