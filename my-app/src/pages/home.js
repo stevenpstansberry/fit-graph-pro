@@ -60,11 +60,7 @@ function Home() {
       <FeatureSectionWithFadeIn/>
 
       {/* Hero Section 3 */}
-      <HeroSection
-        image="https://via.placeholder.com/1920x1080"  // Placeholder image URL
-        title="Join The FitGraph Community"
-        subtitle="Connect with other fitness enthusiasts and share your progress."
-      />
+      <HeroSectionWithSlideUpAnimation/>
 
       {/* Footer Component */}
       <Footer />
@@ -470,49 +466,89 @@ const ContentSection = ({ backgroundColor, textColor, content }) => (
 
 
 /**
- * HeroSection component for displaying large, full-width hero images with text overlay.
+ * HeroSectionWithSlideUpAnimation component for sliding up text content as the user scrolls.
  *
  * @param {Object} props - Props containing the image, title, subtitle, and button text.
- * @returns {React.Element} - A styled hero section with background image and overlay text.
+ * @returns {React.Element} - A styled hero section with scroll-triggered slide-up animation for the text.
  */
-const HeroSection = ({ image, title, subtitle}) => (
-  <Box
-    sx={{
-      position: 'relative',
-      width: '100%',
-      height: '80vh',
-      backgroundImage: `url(${image})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      textAlign: 'center',
-      color: '#fff',
-    }}
-  >
-    <Box sx={{ position: 'relative', zIndex: 2, maxWidth: '80%' }}>
-      <Typography variant="h2" sx={{ mb: 2, fontWeight: 'bold' }}>
-        {title}
-      </Typography>
-      <Typography variant="h5" sx={{ mb: 4 }}>
-        {subtitle}
-      </Typography>
-    </Box>
-    {/* Optional: Dark overlay for better text contrast */}
-    <Box
-      sx={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
+const HeroSectionWithSlideUpAnimation = () => {
+  const ref = useRef(null);
+
+  // Use useScroll with ref to track the scroll progress of the text content
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start center", "end center"], // Adjust for when the animation starts and ends
+  });
+
+  // Apply a transform to the text, sliding it up
+  const y = useTransform(scrollYProgress, [0, 0.5], ['100%', '0%']);  // Starts below and slides up
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);   // Fade in effect
+
+  // Hardcoded values for the hero section
+  const title = "Join The FitGraph Community";
+  const subtitle = "Connect with other fitness enthusiasts and share your progress.";
+  const buttonText = "Register Now";
+
+  return (
+    <motion.div
+      ref={ref}
+      style={{
+        position: 'relative',
         width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 1,
+        height: '80vh',
+        backgroundColor: '#1a1a1a',  // Slightly lighter black background
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        color: '#fff',
       }}
-    />
-  </Box>
-);
+    >
+      <motion.div
+        style={{
+          y,  // Slide up animation
+          opacity,  // Fade-in effect
+          position: 'relative',  // Position the text content
+          zIndex: 2,
+        }}
+      >
+        <Typography variant="h2" sx={{ mb: 2, fontWeight: 'bold' }}>
+          {title}
+        </Typography>
+        <Typography variant="h5" sx={{ mb: 4 }}>
+          {subtitle}
+        </Typography>
+        <Button 
+          variant="contained" 
+          size="large" 
+          sx={{ 
+            mt: 3, 
+            background: 'linear-gradient(45deg, #ff9800 30%, #f57c00 90%)', // Gradient background
+            fontSize: '1.25rem', // Larger font size
+            fontWeight: 'bold', // Bold text
+            textTransform: 'uppercase', // Capitalize text
+            padding: '16px 32px', // Increase padding
+            boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)', // Add shadow for a 3D effect
+            '&:hover': { 
+              backgroundColor: '#e65100', 
+              boxShadow: '0px 12px 30px rgba(0, 0, 0, 0.3)', // Increase shadow on hover
+              transform: 'scale(1.05)', // Slightly grow the button on hover
+              transition: 'all 0.3s ease',
+            },
+          }}
+        >
+          {buttonText}
+        </Button>
+      </motion.div>
+
+      {/* Optional: Dark overlay removed since the background is already black */}
+    </motion.div>
+  );
+};
+
+
+
+
 
 const ShimmerTypography = () => {
   const ref = useRef(null);
