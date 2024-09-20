@@ -13,15 +13,11 @@
  * @author Steven Stansberry
  */
 
-import React, { useRef } from 'react';
+import React from 'react';
 import Features from '../components/Features';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import { Typography, Box, Container, Button, Grid } from '@mui/material';
-import { motion, useScroll, useTransform } from 'framer-motion'; 
-import barbellImage from '../assets/barbell.png';  
-import graphImage from '../assets/graph.png';  
-import heatmapImage from '../assets/heatmap.png';
+import {  Box } from '@mui/material';
 import { HeroSectionWithBarbellAnimation, HeroSectionWithFadeInAnimation, HeroSectionWithSlideInAnimationLeft, HeroSectionWithSlideUpAnimation, FeatureSectionWithFadeIn, ContentSection, ShimmerTypography, HeroSectionWithSlideInAnimationRight } from '../components/HeroSections';
 
 
