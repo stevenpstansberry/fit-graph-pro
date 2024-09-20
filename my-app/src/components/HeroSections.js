@@ -18,6 +18,7 @@ import barbellImage from "../assets/barbell.png";
 import graphImage from "../assets/graph.png";
 import heatmapImage from "../assets/heatmap.png";
 import Features from "./Features";
+import { Link } from "react-router-dom";
 
 /**
  * HeroSectionWithBarbellAnimation component for displaying a barbell that scales and spins based on scroll position.
@@ -469,8 +470,6 @@ export const HeroSectionWithSlideUpAnimation = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]); // Fade in effect
 
   const title = "Join The FitGraph Community";
-  const subtitle =
-    "Connect with other fitness enthusiasts and share your progress.";
   const buttonText = "Register Now";
 
   return (
@@ -499,30 +498,29 @@ export const HeroSectionWithSlideUpAnimation = () => {
         <Typography variant="h2" sx={{ mb: 2, fontWeight: "bold" }}>
           {title}
         </Typography>
-        <Typography variant="h5" sx={{ mb: 4 }}>
-          {subtitle}
-        </Typography>
-        <Button
-          variant="contained"
-          size="large"
-          sx={{
-            mt: 3,
-            background: "linear-gradient(45deg, #ff9800 30%, #f57c00 90%)",
-            fontSize: "1.25rem",
-            fontWeight: "bold",
-            textTransform: "uppercase",
-            padding: "16px 32px",
-            boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)",
-            "&:hover": {
-              backgroundColor: "#e65100",
-              boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.3)",
-              transform: "scale(1.05)",
-              transition: "all 0.3s ease",
-            },
-          }}
-        >
-          {buttonText}
-        </Button>
+        <Link to="/register" style={{ textDecoration: "none" }}>
+          <Button
+            variant="contained"
+            size="large"
+            sx={{
+              mt: 3,
+              background: "linear-gradient(45deg, #ff9800 30%, #f57c00 90%)",
+              fontSize: "1.25rem",
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              padding: "16px 32px",
+              boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)",
+              "&:hover": {
+                backgroundColor: "#e65100",
+                boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.3)",
+                transform: "scale(1.05)",
+                transition: "all 0.3s ease",
+              },
+            }}
+          >
+            {buttonText}
+          </Button>
+        </Link>
       </motion.div>
     </motion.div>
   );
