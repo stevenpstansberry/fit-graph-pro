@@ -332,81 +332,109 @@ const HeroSectionWithSlideInAnimationRight = () => {
     offset: ["start center", "end center"],
   });
 
-  const slideInEffect = useTransform(scrollYProgress, [0, 0.2], [200, 0]); 
-  const fadeInEffect = useTransform(scrollYProgress, [0, 0.2], [0, 1]);  
+  const slideInEffect = useTransform(scrollYProgress, [0, 0.2], [200, 0]);
+  const fadeInEffect = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
 
   return (
-    <motion.div ref={ref} style={{ height: '100vh', backgroundColor: '#f0f0f0', background: 'linear-gradient(180deg, #f4f4f4 0%, #e0e0e0 100%)' }}>
+    <motion.div
+      ref={ref}
+      style={{
+        height: "100vh",
+        backgroundColor: "#f0f0f0",
+        background: "linear-gradient(180deg, #f4f4f4 0%, #e0e0e0 100%)",
+      }}
+    >
       <Box
         sx={{
-          position: 'relative',
-          width: '100%',
-          height: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
+          position: "relative",
+          width: "100%",
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
         }}
       >
         {/* Flex container to center the content */}
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'column',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
           }}
         >
-          {/* Large Heatmap Card with Hover Effect */}
-          <Box
-            sx={{
-              width: '600px',
-              backgroundColor: '#ffffff',
-              borderRadius: '16px',
-              boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)',
-              overflow: 'hidden', 
-              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-              '&:hover': {
-                transform: 'scale(1.05)', 
-                boxShadow: '0px 12px 30px rgba(0, 0, 0, 0.2)',
-              },
+          {/* Heatmap Card with sliding and hover effect */}
+          <motion.div
+            style={{
+              x: slideInEffect,
+              opacity: fadeInEffect,
             }}
+            transition={{ type: "spring", stiffness: 50 }}
           >
-            <motion.img
-              src={heatmapImage}
-              alt="Workout Heatmap"
-              style={{
-                width: '100%', 
-                height: 'auto',
-                display: 'block', 
+            <Box
+              sx={{
+                width: "600px",
+                backgroundColor: "#ffffff",
+                borderRadius: "16px",
+                boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.1)",
+                overflow: "hidden",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                "&:hover": {
+                  transform: "scale(1.05)",
+                  boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.2)",
+                },
               }}
-              transition={{ type: 'spring', stiffness: 50 }}
-              initial={{ x: 200, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-            />
-          </Box>
+            >
+              <img
+                src={heatmapImage}
+                alt="Workout Heatmap"
+                style={{
+                  width: "100%", 
+                  height: "auto",
+                  display: "block", 
+                  borderRadius: "16px",
+                }}
+              />
+            </Box>
+          </motion.div>
 
           {/* Text content below the heatmap */}
           <motion.div
             style={{
-              x: slideInEffect, 
+              x: slideInEffect,
               opacity: fadeInEffect,
-              marginTop: '20px',
+              marginTop: "20px",
             }}
-            transition={{ type: 'spring', stiffness: 50 }}  
+            transition={{ type: "spring", stiffness: 50 }}
           >
             <Box
               sx={{
-                textAlign: 'center', 
-                maxWidth: '800px',
+                textAlign: "center",
+                maxWidth: "800px",
               }}
             >
-              <Typography variant="h3" sx={{ mb: 2, fontWeight: 'bold', fontSize: '2.5rem', color: '#333' }}>
+              <Typography
+                variant="h3"
+                sx={{
+                  mb: 2,
+                  fontWeight: "bold",
+                  fontSize: "2.5rem",
+                  color: "#333",
+                }}
+              >
                 Workout Heatmap
               </Typography>
-              <Typography variant="h6" sx={{ color: '#555', lineHeight: '1.6', fontSize: '1.2rem' }}>
-                Visualize your workout intensity with our body heatmap feature. 
-                It highlights which areas of your body have been worked the most, 
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "#555",
+                  lineHeight: "1.6",
+                  fontSize: "1.2rem",
+                }}
+              >
+                Visualize your workout intensity with our body heatmap feature. It
+                highlights which areas of your body have been worked the most,
                 helping you balance your workouts and avoid overtraining.
               </Typography>
             </Box>
@@ -416,6 +444,8 @@ const HeroSectionWithSlideInAnimationRight = () => {
     </motion.div>
   );
 };
+
+
 
 
 
