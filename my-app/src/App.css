@@ -65,3 +65,11 @@
   animation: fadeInFromCenter 2s ease-out forwards;
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
