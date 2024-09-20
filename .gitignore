@@ -25,7 +25,10 @@ notes/
 backend/node_modules/
 backend-calculate-future-performance/node_modules/
 my-app/.env
+frontend/.env
 my-app/node_modules/
+frontend/node_modules/
 my-app/src/util/ideas.md
+frontend/src/util/ideas.md
 test.md
 features.md
