@@ -23,7 +23,12 @@ yarn-debug.log*
 yarn-error.log*
 notes/
 backend/node_modules/
+backend/backend-auth/node_modules/
+
+
 backend-calculate-future-performance/node_modules/
+backend/backend-calculate-future-performance/node_modules/
+
 my-app/.env
 frontend/.env
 my-app/node_modules/
