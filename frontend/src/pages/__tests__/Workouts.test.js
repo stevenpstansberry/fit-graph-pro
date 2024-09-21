@@ -1,7 +1,12 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { render, screen, waitFor } from "@testing-library/react";
 import Workouts from "../Workouts";
+import { getSessionData, setSessionData } from "../../services/AuthService";
+import {
+  getAllWorkouts,
+  getAllSplits,
+} from "../../services/FitGraphAPIServices";
+import { MemoryRouter } from "react-router-dom";
 
 /**
  * Test suite for the `Workouts` component to verify tab switching functionality.
@@ -77,3 +82,14 @@ describe("Workouts Component Tab Switching", () => {
     expect(screen.getByText(/Heat Map/i)).toBeInTheDocument();
   });
 });
+
+// Mock the services and API functions
+jest.mock("../../services/AuthService", () => ({
+  getSessionData: jest.fn(),
+  setSessionData: jest.fn(),
+}));
+
+jest.mock("../../services/FitGraphAPIServices", () => ({
+  getAllWorkouts: jest.fn(),
+  getAllSplits: jest.fn(),
+}));
