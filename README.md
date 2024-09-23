@@ -23,11 +23,14 @@ Check out the live demo: [Link to demo]()
 
 ## Features
 - **Workout Tracking**: Log and track your workouts, including sets, reps, and weights.
+- **Custom Splits**: Create custom workout splits to quickly log workouts.
 - **Data Visualization**: Visualize your workout progress with interactive graphs.
 - **Heat Map**: See your workout intensity or frequency over time with a heat map.
 - **Performance Prediction**: Predict future workout performance using a linear regression model based on your historical data. Utulizes Epley's 1 Rep Max formula for calculating 1 rep max.
 - **User Authentication**: Secure user authentication using JSON Web Tokens (JWT).
 - **Cloud-Backed**: Serverless architecture with AWS Lambda, DynamoDB, and API Gateway for scalability and cost-effectiveness.
+- **User Profile**: Features a dashboard of recent workouts. Manage user account infomation, profile pictures, and other account settings. 
+
 
 ## Tech Stack
 ### Front-End:
