@@ -42,12 +42,10 @@ Check out the live demo: [Link to demo]()
 - **JWT Authentication**: Secure authentication flow using JSON Web Tokens handled via AWS Lambda and API Gateway.
 - **Amazon S3**: Scaleable and durable storage. Used to host webssite and manage profile pictures
 
-### Other Tools:
+- ## Key Libraries/Dependencies/ Tools
 - **AWS SDK**: To interact with AWS services.
 - **Axios**: For handling HTTP requests from the front-end.
-- **Recharts**: For graph visualization.
-
-- ## Key Libraries/Dependencies
+- **Recharts**: For graph visualization.  
 - **React-Router-Dom**: For handling SPA routing and navigation.
 - **Framer Motion**: For creating smooth animations and transitions.
 - **React Beautiful DnD**: For implementing drag-and-drop functionality.
@@ -58,21 +56,30 @@ Check out the live demo: [Link to demo]()
 
 This app uses a **serverless architecture** built on AWS, making it highly scalable and cost-efficient. Here's a high-level overview:
 
-1. **React Front-End**:
+- **React Front-End**:
    - A single-page application (SPA) built with React and Material UI for responsiveness and ease of use.
    - Interacts with the back-end via HTTP requests to AWS API Gateway.
 
-2. **AWS API Gateway**:
-   - Exposes RESTful API endpoints to handle requests such as logging workouts, retrieving workout history, and user authentication.
+- **AWS API Gateway**:
+   - Exposes RESTful API endpoints to handle requests such as logging workouts, retrieving workout history, user authentication, and other operations.
 
-3. **AWS Lambda**:
+- **AWS Lambda**:
    - Serverless functions to handle business logic, such as processing workout data, authenticating users, and interfacing with DynamoDB.
+   - Handles password reset functionality by generating unique reset pages with tokens and expiry dates.
 
-4. **DynamoDB**:
-   - A NoSQL database that stores user workout data and authentication tokens securely.
+- **DynamoDB**:
+   - A NoSQL database that securely stores user workout data, authentication tokens, and other application data.
 
-5. **JWT Authentication**:
-   - Ensures secure login and session management by generating and validating JWT tokens.
+- **Amazon Simple Notification Service (SNS)**:
+   - Utilized to handle the **Contact Page**, where users can send messages to the author. These messages are pushed to the author via SNS notifications.
+
+- **Amazon Simple Email Service (SES)**:
+   - Powers the fully-fledged **password reset system**. SES is used to send password reset emails containing a unique link for each user. Each link includes a **reset token** and **expiry date**, ensuring secure password recovery.
+
+- **JWT Authentication**:
+   - Ensures secure login and session management by generating and validating **JWT tokens**, managed via AWS Lambda and API Gateway.
+
+
   
 ## Setup and Installation
 - **Node.js** installed on your machine.
@@ -108,7 +115,7 @@ npm start
 This will run the app locally at http://localhost:3000 by default
 
 ## Future Improvements
-1. Nobile App via React Native
+1. Mobile App via React Native
 2. Social Features
 3. Enhanced prediction models
 4. Achievements / gamification system
