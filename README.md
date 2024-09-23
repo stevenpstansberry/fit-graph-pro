@@ -23,8 +23,13 @@ Check out the live demo: [Link to demo]()
 
 ## Features
 - **Workout Tracking**: Log and track your workouts, including sets, reps, and weights.
+  ![workout-card](./images/workout-card.png)
 
 - **Custom Splits**: Create custom workout splits to quickly log workouts.
+
+
+  ![splits](./images/splits.png)
+
 - **Data Visualization**: Visualize your workout progress with interactive graphs.
 ![Progress-Graph](./images/strengthchart.png)
   
