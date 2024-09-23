@@ -25,7 +25,7 @@ Check out the live demo: [Link to demo]()
 - **Workout Tracking**: Log and track your workouts, including sets, reps, and weights.
 - **Data Visualization**: Visualize your workout progress with interactive graphs.
 - **Heat Map**: See your workout intensity or frequency over time with a heat map.
-- **Performance Prediction**: Predict future workout performance using a linear regression model based on your historical data.
+- **Performance Prediction**: Predict future workout performance using a linear regression model based on your historical data. Utulizes Epley's 1 Rep Max formula for calculating 1 rep max.
 - **User Authentication**: Secure user authentication using JSON Web Tokens (JWT).
 - **Cloud-Backed**: Serverless architecture with AWS Lambda, DynamoDB, and API Gateway for scalability and cost-effectiveness.
 
@@ -58,7 +58,7 @@ Check out the live demo: [Link to demo]()
 This app uses a **serverless architecture** built on AWS, making it highly scalable and cost-efficient. Here's a high-level overview:
 
 - **React Front-End**:
-   - A single-page application (SPA) built with React and Material UI for responsiveness and ease of use.
+   - A multi-page application (SPA) built with React and Material UI for responsiveness and ease of use.
    - Interacts with the back-end via HTTP requests to AWS API Gateway.
 
 - **AWS API Gateway**:
@@ -84,7 +84,7 @@ This app uses a **serverless architecture** built on AWS, making it highly scala
   
 ## Setup and Installation
 - **Node.js** installed on your machine.
-- AWS account with access to **Lambda, API Gateway, and DynamoDB**.
+- AWS account with IAM privileges for utulized services 
 - **AWS CLI** or other means to configure AWS credentials.
   
 ### Clone the Repository
