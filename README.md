@@ -79,6 +79,17 @@ This app uses a **serverless architecture** built on AWS, making it highly scala
 
 - **JWT Authentication**:
    - Ensures secure login and session management by generating and validating **JWT tokens**, managed via AWS Lambda and API Gateway.
+ 
+## Testing and CI/CD Pipeline
+### Automated Testing with Jest:
+
+The app employs Jest for unit testing and component testing, ensuring that critical parts of the application function as expected.
+The Jest test suite covers both front-end components and back-end logic to maintain high code quality.
+CI/CD Integration with AWS CodePipeline:
+
+The project integrates a CI/CD pipeline using AWS CodePipeline, which is triggered upon each pull request (PR) to GitHub.
+Every approved PR triggers automated testing, where the Jest test suite runs to validate the new code changes. If all tests pass, the PR is merged, ensuring only thoroughly tested code reaches the production environment.
+This pipeline guarantees a continuous deployment process, keeping the application stable and enabling smooth integration of new features.
 
 
   
@@ -117,15 +128,13 @@ This will run the app locally at http://localhost:3000 by default
 
 ## Future Improvements
 1. Mobile App via React Native
-2. Social Features
-3. Enhanced prediction models
-4. Achievements / gamification system
+2. Social Features - friend system, share workouts, compete agaisnt friends
+3. Achievements / gamification system - badges, milestones
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details
 
 
-## Acknowledgments
 ## Acknowledgments
 
 This project uses **[react-body-highlighter](https://github.com/giavinh79/react-body-highlighter)** by [Giavinh79](https://github.com/giavinh79). This library provides an interactive body diagram for muscle tracking in fitness apps. Thank you!
