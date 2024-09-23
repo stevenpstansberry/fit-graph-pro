@@ -49,7 +49,7 @@ import {
 import WorkoutDetailsCard from "./WorkoutDetailsCard";
 import DateSelector from "./DateSelector";
 import TimeframeSelector from "./TimeframeSelector";
-import { getTitle } from "./shared-workout-components/util";
+import { getTitle, toTitleCase } from "./shared-workout-components/util";
 
 const monthNames = [
   "January",
@@ -314,7 +314,7 @@ const StrengthChart = ({
           >
             {exerciseLabels.map((label) => (
               <MenuItem key={label} value={label}>
-                {label}
+                {toTitleCase(label)}
               </MenuItem>
             ))}
           </Select>

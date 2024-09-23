@@ -10,9 +10,20 @@
  * @author Steven Stansberry
  */
 
-import React, { useState } from 'react';
-import { Typography, Box, Card, CardContent, CardActions, Button, IconButton, Grid, Collapse } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import React, { useState } from "react";
+import {
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  IconButton,
+  Grid,
+  Collapse,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { toTitleCase } from "../workout-components/shared-workout-components/util";
 
 /**
  * Component for displaying recent workouts with expandable details.
@@ -46,8 +57,14 @@ const RecentWorkouts = ({ recentWorkouts }) => {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small" color="primary" onClick={() => handleExpandClick(workout.workoutId)}>
-                  {expandedWorkout === workout.workoutId ? 'Hide Details' : 'View Details'}
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => handleExpandClick(workout.workoutId)}
+                >
+                  {expandedWorkout === workout.workoutId
+                    ? "Hide Details"
+                    : "View Details"}
                 </Button>
                 <IconButton
                   onClick={() => handleExpandClick(workout.workoutId)}
@@ -57,13 +74,24 @@ const RecentWorkouts = ({ recentWorkouts }) => {
                   <ExpandMoreIcon />
                 </IconButton>
               </CardActions>
-              <Collapse in={expandedWorkout === workout.workoutId} timeout="auto" unmountOnExit>
+              <Collapse
+                in={expandedWorkout === workout.workoutId}
+                timeout="auto"
+                unmountOnExit
+              >
                 <CardContent>
                   {workout.exercises.map((exercise, index) => (
                     <Box key={index} sx={{ mb: 2 }}>
-                      <Typography variant="subtitle1">{exercise.label} ({exercise.bodyPart})</Typography>
+                      <Typography variant="subtitle1">
+                        {toTitleCase(exercise.label)} (
+                        {toTitleCase(exercise.bodyPart)})
+                      </Typography>
                       {exercise.sets.map((set, setIndex) => (
-                        <Typography key={setIndex} variant="body2" color="textSecondary">
+                        <Typography
+                          key={setIndex}
+                          variant="body2"
+                          color="textSecondary"
+                        >
                           Set {setIndex + 1}: {set.weight} lbs x {set.reps} reps
                         </Typography>
                       ))}
