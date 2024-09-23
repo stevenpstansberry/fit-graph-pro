@@ -1,6 +1,13 @@
-# Workout Tracker Web App
+# Fit Graph Pro
 
-A fully-featured workout tracking static web application built with React, Material UI, and AWS cloud services. This app allows users to log their workouts, visualize their progress over time, and predict future performance based on past data. The back-end is powered by AWS, with secure user authentication implemented using JWT.
+## Project Overview
+
+A fully-featured **workout tracking web application** built using **React**, **Material UI**, and a **serverless architecture** powered by **AWS cloud services**. The application enables users to log workouts, visualize their progress through interactive graphs as well as body heatmap which will emphasize areas of the body worked by the user's logged exercises. Users are also able to predict future performance using a **linear regression model** based on historical data.
+
+The back-end leverages **RESTful APIs** hosted via **AWS API Gateway** to handle requests, with serverless logic managed by **AWS Lambda**. **User authentication** is securely implemented using **JWT (JSON Web Tokens)**, with the authentication flow handled through **AWS Lambda** and **API Gateway**, ensuring secure access to user data. The app also integrates third-party services like the **ExerciseDB API** to fetch and display comprehensive exercise information.
+
+The application's data is stored in **DynamoDB**, a scalable NoSQL database, and user-generated content, such as workouts and splits. The entire app is deployed using **AWS Route 53** for DNS management and hosted on **Amazon S3** for static file serving. A **CI/CD pipeline** is integrated using **AWS CodePipeline** with testing managed by the **React-Jest** test suite, ensuring continuous deployment and smooth integration of new features.
+
 
 ## Table of Contents
 - [Demo](#demo)
@@ -39,6 +46,13 @@ Check out the live demo: [Link to demo]()
 - **AWS SDK**: To interact with AWS services.
 - **Axios**: For handling HTTP requests from the front-end.
 - **Recharts**: For graph visualization.
+
+- ## Key Libraries/Dependencies
+- **React-Router-Dom**: For handling SPA routing and navigation.
+- **Framer Motion**: For creating smooth animations and transitions.
+- **React Beautiful DnD**: For implementing drag-and-drop functionality.
+- **exerciseDB API**: A public API used for fetching exercise data such as descriptions, videos, and workout tips.
+- **React Body Highlighter**: For interactive body muscle tracking and highlighting in workout-related interfaces (credits to **[react-body-highlighter](https://github.com/giavinh79/react-body-highlighter)**).
 
 ## Architecture
 
@@ -101,3 +115,9 @@ This will run the app locally at http://localhost:3000 by default
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details
+
+
+## Acknowledgments
+## Acknowledgments
+
+This project uses **[react-body-highlighter](https://github.com/giavinh79/react-body-highlighter)** by [Giavinh79](https://github.com/giavinh79). This library provides an interactive body diagram for muscle tracking in fitness apps. Thank you!
