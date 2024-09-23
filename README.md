@@ -36,11 +36,12 @@ Check out the live demo: [Link to demo]()
 - **Material UI**: UI component library for sleek and responsive designs.
   
 ### Back-End:
-- **AWS Lambda**: Serverless functions to handle backend logic and API endpoints.
+- **AWS Lambda**: Serverless functions to handle backend logic, powered by **Node.js** for efficient and scalable execution of JavaScript.
 - **API Gateway**: To expose RESTful APIs and manage requests.
+- **JWT Authentication**: Secure authentication flow using JSON Web Tokens handled via **Node.js** in AWS Lambda and API Gateway.
 - **DynamoDB**: NoSQL database for storing user data and workout logs.
-- **JWT Authentication**: Secure authentication flow using JSON Web Tokens handled via AWS Lambda and API Gateway.
-- **Amazon S3**: Scaleable and durable storage. Used to host webssite and manage profile pictures
+- **Amazon S3**: Scalable and durable storage used to host the website and manage profile pictures.
+
 
 - ## Key Libraries/Dependencies/ Tools
 - **AWS SDK**: To interact with AWS services.
