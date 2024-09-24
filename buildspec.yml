@@ -9,9 +9,10 @@ phases:
   build:
     commands:
       - echo Running frontend tests...
-      - npm test
-      - echo Building the frontend...
+      - DEBUG=true npm test -- --ci --runInBand --verbose --forceExit --testTimeout=10000 --detectOpenHandles
+      - echo Building frontend...
       - npm run build
+
 artifacts:
   files:
     - '**/*'
