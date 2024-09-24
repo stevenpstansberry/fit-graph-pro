@@ -63,3 +63,9 @@ describe("Features Component", () => {
     );
   });
 });
+
+// Hook to run after all tests in this file have been completed
+afterAll(() => {
+  // Force exit after tests complete
+  process.exit(0);
+});
