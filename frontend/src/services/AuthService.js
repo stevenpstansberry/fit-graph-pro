@@ -27,7 +27,6 @@ const AuthService = {
       console.log("No user found in session storage.");
       return null;
     } else {
-      console.log("User retrieved from session storage: " + user);
       return JSON.parse(user);
     }
   },
@@ -52,7 +51,6 @@ const AuthService = {
   setUserSession: (user, token) => {
     sessionStorage.setItem("user", JSON.stringify(user));
     sessionStorage.setItem("token", token);
-    console.log(sessionStorage);
   },
 
   /**
@@ -94,12 +92,8 @@ const AuthService = {
   getSessionData: (key) => {
     const data = sessionStorage.getItem(key);
     if (data === "undefined" || !data) {
-      console.log(`No data found in session storage for key: ${key}`);
       return null;
     } else {
-      console.log(
-        `Data retrieved from session storage for key: ${key}: ${data}`
-      );
       return JSON.parse(data);
     }
   },
@@ -112,9 +106,7 @@ const AuthService = {
    * @param {Object} value - The value to be saved in session storage.
    */
   setSessionData: (key, value) => {
-    console.log(`Saving data to session storage for key: ${key}`);
     sessionStorage.setItem(key, JSON.stringify(value));
-    console.log(`Data saved: ${JSON.stringify(value)}`);
   },
 
   /**

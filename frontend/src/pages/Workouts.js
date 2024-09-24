@@ -69,8 +69,6 @@ function Workouts() {
   const user = getUser();
   const username = user !== "undefined" && user ? user.username : "";
 
-  console.log(user);
-
   // State declarations
 
   // ======== Modal and Dialog States ========
