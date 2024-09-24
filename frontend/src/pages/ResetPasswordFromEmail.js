@@ -1,3 +1,19 @@
+/**
+ * @fileoverview Page component for resetting a user's password if they have forgotten it.
+ *
+ * @file src/pages/ResetPasswordFromEmail.js
+ *
+ * This page is uniquely generated via a link sent to the user's email address when they request a password reset.
+ * The user must provide a new password and confirm it to complete the password reset process.
+ *
+ *
+ * @component
+ * @returns {React.Element} - The rendered ResetPassword page component.
+ *
+ * @version 1.0.0
+ *
+ * @author Steven Stansberry
+ */
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
