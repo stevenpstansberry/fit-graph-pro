@@ -622,36 +622,34 @@ function WorkoutCard({
                 <Droppable droppableId="exercises">
                   {(provided) => (
                     <Box {...provided.droppableProps} ref={provided.innerRef}>
-                      {exercises.map(
-                        (exercise, index) => (
-                          console.log("EXERCISE: ", exercise),
-                          (
-                            <Draggable
-                              key={exercise.displayLabel}
-                              draggableId={exercise.displayLabel}
-                              index={index}
-                            >
-                              {(provided) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  <ExerciseSubcard
-                                    key={index}
-                                    exercise={exercise}
-                                    index={index}
-                                    removeExercise={removeExercise}
-                                    updateExerciseSets={updateExerciseSets}
-                                    allowWeightAndReps={
-                                      mode === "createWorkout"
-                                    }
-                                    showSnackbar={showSnackbar}
-                                  />
-                                </div>
-                              )}
-                            </Draggable>
-                          )
+                      {exercises.map((exercise, index) =>
+                        console.log(
+                          "EXERCISE: ",
+                          exercise
+                        )(
+                          <Draggable
+                            key={exercise.displayLabel}
+                            draggableId={exercise.displayLabel}
+                            index={index}
+                          >
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <ExerciseSubcard
+                                  key={index}
+                                  exercise={exercise}
+                                  index={index}
+                                  removeExercise={removeExercise}
+                                  updateExerciseSets={updateExerciseSets}
+                                  allowWeightAndReps={mode === "createWorkout"}
+                                  showSnackbar={showSnackbar}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
                         )
                       )}
                       {provided.placeholder}
