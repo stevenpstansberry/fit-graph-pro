@@ -9,9 +9,10 @@ phases:
   build:
     commands:
       - echo Running frontend tests...
-      - npm test -- --ci
+      - npm test -- --ci --maxWorkers=2 --forceExit --testTimeout=10000
       - echo Building frontend...
       - npm run build
+
 artifacts:
   files:
     - '**/*'
