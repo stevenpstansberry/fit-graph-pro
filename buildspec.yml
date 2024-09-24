@@ -9,7 +9,7 @@ phases:
   build:
     commands:
       - echo Running frontend tests...
-      - DEBUG=true npm test -- --ci --runInBand --verbose --forceExit --testTimeout=10000
+      - DEBUG=true npm test -- --ci --runInBand --verbose --forceExit --testTimeout=10000 --detectOpenHandles
       - echo Building frontend...
       - npm run build
 
