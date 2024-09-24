@@ -109,6 +109,7 @@ function Workouts() {
   // ======== Deletion States ========
   const [itemToDelete, setItemToDelete] = useState(null); // Stores the ID of the item to be deleted (workout or split)
   const [deleteType, setDeleteType] = useState(""); // Stores the type of item to be deleted ('workout' or 'split')
+  const [idToDelete, setIdToDelete] = useState(""); // Stores the ID of the item to be deleted
 
   // ======== Loading and UI States ========
   const [isLoading, setIsLoading] = useState(true); // Controls the loading state for data fetching or processing
@@ -290,18 +291,23 @@ function Workouts() {
         // Delete the workout from the backend
         await deleteWorkout(itemToDelete);
 
-        // Update state
+        // Log workout IDs to confirm their format
+        workoutHistory.forEach((workout) => {
+          console.log(`Workout ID in workoutHistory: ${workout.workoutId}`);
+        });
+
+        // Update state by filtering out the deleted workout
         const updatedWorkouts = workoutHistory.filter(
-          (workout) => workout.workoutId !== itemToDelete
+          (workout) => workout.workoutId !== idToDelete
         );
         setWorkoutHistory(updatedWorkouts);
 
-        // Update session storage
+        // Update session storage after deleting the workout
         const workoutsToStore = updatedWorkouts.map((workout) => ({
           ...workout,
-          date: workout.date.toISOString(), // Store date as a string in ISO format
+          date: workout.date.toISOString(), // Convert Date objects to strings
         }));
-        setSessionData("workouts", workoutsToStore); // Save to session storage
+        setSessionData("workouts", workoutsToStore); // Save the updated list to session storage
 
         // Show success Snackbar
         showSnackbar("Workout deleted successfully!", "success");
@@ -318,6 +324,8 @@ function Workouts() {
       try {
         // Delete the split from the backend
         await deleteSplit(itemToDelete);
+
+        console.log("Item to delete: ", itemToDelete);
 
         // Update state
         const updatedSplits = userSplits.filter(
@@ -348,6 +356,7 @@ function Workouts() {
    */
   const handleDeleteWorkout = (workout) => {
     setItemToDelete(workout);
+    setIdToDelete(workout.workoutId);
     setDeleteType("workout");
     setConfirmDialogOpen(true);
   };
