@@ -51,12 +51,11 @@ export const BarbellScrollAnimationSection = () => {
       <motion.img
         src={barbellImage}
         alt="Barbell Scroll Animation"
-        style={{
-          width: "150px", // Initial width of the barbell (small size)
-          height: "auto",
-        }}
         initial={{ scale: 0.5 }}
-        style={{ scale, rotate }}
+        style={{
+          scale,
+          rotate,
+        }}
       />
 
       {/* Text content overlaying the barbell */}

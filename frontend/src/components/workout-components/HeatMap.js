@@ -287,7 +287,6 @@ const HeatMap = ({
           padding: "8px 16px",
           borderRadius: "8px",
           boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-          marginBottom: 2,
         }}
       >
         {getTitle("heatmap", timeframe, selectedMonth, selectedYear)}
