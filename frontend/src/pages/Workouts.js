@@ -11,7 +11,7 @@
  */
 
 // Imports
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Typography,
   Button,
@@ -123,13 +123,6 @@ function Workouts() {
   const initialTabIndex = parseInt(searchParams.get("tabIndex")) || 0; // Gets 'tabIndex' from URL or defaults to 0
   const [tabIndex, setTabIndex] = useState(initialTabIndex); // Controls the active tab index
 
-  // Fetch from API using APIServices
-  useEffect(() => {
-    if (username) {
-      fetchWorkoutsAndSplits();
-    }
-  }, [username]);
-
   // Add Confetti Effect whenever a Workout is Added
   useEffect(() => {
     if (showConfetti) {
@@ -139,41 +132,9 @@ function Workouts() {
   }, [showConfetti]);
 
   /**
-   * Fetches workouts and splits for the user and updates state.
-   * Checks session storage first to avoid redundant API calls.
-   */
-  const fetchWorkoutsAndSplits = async () => {
-    setIsLoading(true); // Start loading for load icon
-    try {
-      // Attempt to retrieve from session storage first
-      const storedWorkouts = getSessionData("workouts");
-      const storedSplits = getSessionData("splits");
-
-      if (storedWorkouts) {
-        // Parse date strings back into Date objects
-        const parsedWorkouts = storedWorkouts.map((workout) => ({
-          ...workout,
-          date: new Date(workout.date), // Convert back to Date object
-        }));
-        setWorkoutHistory(parsedWorkouts);
-      } else {
-        await fetchWorkouts(); // Fetch from API if not found in session
-      }
-
-      if (storedSplits) {
-        setUserSplits(storedSplits);
-      } else {
-        await fetchSplits(); // Fetch from API if not found in session
-      }
-    } finally {
-      setIsLoading(false); // End loading for load icon
-    }
-  };
-
-  /**
    * Fetches workouts for the user and updates state.
    */
-  const fetchWorkouts = async () => {
+  const fetchWorkouts = useCallback(async () => {
     try {
       const data = await getAllWorkouts(username);
       console.log("Workouts API Response:", data);
@@ -205,12 +166,12 @@ function Workouts() {
     } catch (error) {
       console.error("Error fetching workouts:", error);
     }
-  };
+  }, [username]);
 
   /**
    * Fetches splits for the user and updates state.
    */
-  const fetchSplits = async () => {
+  const fetchSplits = useCallback(async () => {
     try {
       const data = await getAllSplits(username);
       console.log("Splits API Response:", data);
@@ -229,8 +190,47 @@ function Workouts() {
     } catch (error) {
       console.error("Error fetching splits:", error);
     }
-  };
+  }, [username]); // Include 'username' as a dependency
   console.log(userSplits);
+
+  /**
+   * Fetches workouts and splits for the user and updates state.
+   * Checks session storage first to avoid redundant API calls.
+   */
+  const fetchWorkoutsAndSplits = useCallback(async () => {
+    setIsLoading(true); // Start loading for load icon
+    try {
+      // Attempt to retrieve from session storage first
+      const storedWorkouts = getSessionData("workouts");
+      const storedSplits = getSessionData("splits");
+
+      if (storedWorkouts) {
+        // Parse date strings back into Date objects
+        const parsedWorkouts = storedWorkouts.map((workout) => ({
+          ...workout,
+          date: new Date(workout.date), // Convert back to Date object
+        }));
+        setWorkoutHistory(parsedWorkouts);
+      } else {
+        await fetchWorkouts(); // Fetch from API if not found in session
+      }
+
+      if (storedSplits) {
+        setUserSplits(storedSplits);
+      } else {
+        await fetchSplits(); // Fetch from API if not found in session
+      }
+    } finally {
+      setIsLoading(false); // End loading for load icon
+    }
+  }, [fetchWorkouts, fetchSplits]);
+
+  // Fetch from API using APIServices
+  useEffect(() => {
+    if (username) {
+      fetchWorkoutsAndSplits();
+    }
+  }, [username, fetchWorkoutsAndSplits]);
 
   /**
    * Handles tab change.

@@ -21,7 +21,7 @@
  * @Author Steven Stansberry
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   LineChart,
   Line,
@@ -150,81 +150,89 @@ const StrengthChart = ({
   }, [exerciseLabels, selectedExercise]);
 
   // Function to filter workout data based on the selected exercise
-  const getFilteredData = (workouts) => {
-    return workouts
-      .map((workout) => {
+  const getFilteredData = useCallback(
+    (workouts) => {
+      return workouts
+        .map((workout) => {
+          const exercise = workout.exercises.find(
+            (ex) => ex.label === selectedExercise
+          );
+          if (exercise) {
+            const totalWeight = exercise.sets.reduce(
+              (sum, set) => sum + parseInt(set.weight, 10),
+              0
+            );
+            const totalReps = exercise.sets.reduce(
+              (sum, set) => sum + parseInt(set.reps, 10),
+              0
+            );
+            return {
+              date: workout.date.toLocaleDateString(), // Format the date for X-axis
+              weight: totalWeight,
+              reps: totalReps,
+              workoutId: workout.workoutId, // Include workoutId for tooltip reference
+              workout: workout, // Include the full workout object for detailed view
+            };
+          }
+          return null;
+        })
+        .filter(Boolean); // Remove any null values
+    },
+    [selectedExercise] // Add selectedExercise as a dependency
+  );
+
+  // Function to calculate various statistics for the selected exercise
+  const calculateStats = useCallback(
+    (workouts) => {
+      let maxWeight = 0;
+      let maxReps = 0;
+      let totalVolume = 0;
+      let totalWeight = 0;
+      let totalSets = 0;
+      let workoutCount = 0;
+      let maxPredicted1RM = 0;
+
+      workouts.forEach((workout) => {
         const exercise = workout.exercises.find(
           (ex) => ex.label === selectedExercise
         );
         if (exercise) {
-          const totalWeight = exercise.sets.reduce(
-            (sum, set) => sum + parseInt(set.weight, 10),
-            0
-          );
-          const totalReps = exercise.sets.reduce(
-            (sum, set) => sum + parseInt(set.reps, 10),
-            0
-          );
-          return {
-            date: workout.date.toLocaleDateString(), // Format the date for X-axis
-            weight: totalWeight,
-            reps: totalReps,
-            workoutId: workout.workoutId, // Include workoutId for tooltip reference
-            workout: workout, // Include the full workout object for detailed view
-          };
+          workoutCount++;
+          exercise.sets.forEach((set) => {
+            const weight = parseInt(set.weight, 10);
+            const reps = parseInt(set.reps, 10);
+            maxWeight = Math.max(maxWeight, weight);
+            maxReps = Math.max(maxReps, reps);
+            totalVolume += weight * reps;
+            totalWeight += weight;
+            totalSets++;
+
+            // Calculate predicted 1RM for this set using Epley formula
+            const predicted1RM = weight * (1 + 0.0333 * reps);
+            maxPredicted1RM = Math.max(maxPredicted1RM, predicted1RM);
+          });
         }
-        return null;
-      })
-      .filter(Boolean); // Remove any null values
-  };
+      });
 
-  // Function to calculate various statistics for the selected exercise
-  const calculateStats = (workouts) => {
-    let maxWeight = 0;
-    let maxReps = 0;
-    let totalVolume = 0;
-    let totalWeight = 0;
-    let totalSets = 0;
-    let workoutCount = 0;
-    let maxPredicted1RM = 0;
+      const averageWeight = totalSets
+        ? (totalWeight / totalSets).toFixed(2)
+        : 0;
+      const averageVolumePerWorkout = workoutCount
+        ? (totalVolume / workoutCount).toFixed(2)
+        : 0;
 
-    workouts.forEach((workout) => {
-      const exercise = workout.exercises.find(
-        (ex) => ex.label === selectedExercise
-      );
-      if (exercise) {
-        workoutCount++;
-        exercise.sets.forEach((set) => {
-          const weight = parseInt(set.weight, 10);
-          const reps = parseInt(set.reps, 10);
-          maxWeight = Math.max(maxWeight, weight);
-          maxReps = Math.max(maxReps, reps);
-          totalVolume += weight * reps;
-          totalWeight += weight;
-          totalSets++;
-
-          // Calculate predicted 1RM for this set using Epley formula
-          const predicted1RM = weight * (1 + 0.0333 * reps);
-          maxPredicted1RM = Math.max(maxPredicted1RM, predicted1RM);
-        });
-      }
-    });
-
-    const averageWeight = totalSets ? (totalWeight / totalSets).toFixed(2) : 0;
-    const averageVolumePerWorkout = workoutCount
-      ? (totalVolume / workoutCount).toFixed(2)
-      : 0;
-
-    return {
-      maxWeight,
-      maxReps,
-      averageWeight,
-      totalVolume,
-      averageVolumePerWorkout,
-      workoutCount,
-      maxPredicted1RM: maxPredicted1RM.toFixed(2),
-    };
-  };
+      return {
+        maxWeight,
+        maxReps,
+        averageWeight,
+        totalVolume,
+        averageVolumePerWorkout,
+        workoutCount,
+        maxPredicted1RM: maxPredicted1RM.toFixed(2),
+      };
+    },
+    [selectedExercise] // Add selectedExercise as a dependency
+  );
 
   // Update display data and statistics based on timeframe and selected exercise
   useEffect(() => {
@@ -249,6 +257,8 @@ const StrengthChart = ({
     timeframe,
     selectedExercise,
     selectedYear,
+    calculateStats,
+    getFilteredData,
   ]);
 
   // Function to handle the change of selected exercise
