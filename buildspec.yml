@@ -3,13 +3,16 @@ version: 0.2
 phases:
   install:
     commands:
-      - echo Installing dependencies...
+      - echo Installing frontend dependencies...
+      - cd frontend
       - npm install
   build:
     commands:
-      - echo Running tests...
+      - echo Running frontend tests...
       - npm test
+      - echo Building the frontend...
+      - npm run build
 artifacts:
   files:
     - '**/*'
-  base-directory: build/  
+  base-directory: frontend/build/
