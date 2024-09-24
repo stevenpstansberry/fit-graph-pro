@@ -169,6 +169,9 @@ const ProfilePictureUpload = ({ open, handleClose, onUploadSuccess }) => {
               <Typography variant="h6" gutterBottom>
                 Upload Profile Picture
               </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Maximum file size: 5MB
+              </Typography>
 
               {/* Show a linear progress bar when uploading */}
               {uploading ? (
