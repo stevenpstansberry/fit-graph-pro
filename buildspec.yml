@@ -6,12 +6,12 @@ phases:
       - echo Installing frontend dependencies...
       - cd frontend
       - npm install
-build:
-  commands:
-    - echo Running frontend tests...
-    - npm test -- --ci
-    - echo Building frontend...
-    - npm run build
+  build:
+    commands:
+      - echo Running frontend tests...
+      - npm test -- --ci
+      - echo Building frontend...
+      - npm run build
 artifacts:
   files:
     - '**/*'
