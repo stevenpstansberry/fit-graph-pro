@@ -11,7 +11,7 @@
  */
 
 // Imports
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Typography,
   Button,
@@ -69,8 +69,6 @@ function Workouts() {
   const user = getUser();
   const username = user !== "undefined" && user ? user.username : "";
 
-  console.log(user);
-
   // State declarations
 
   // ======== Modal and Dialog States ========
@@ -109,6 +107,7 @@ function Workouts() {
   // ======== Deletion States ========
   const [itemToDelete, setItemToDelete] = useState(null); // Stores the ID of the item to be deleted (workout or split)
   const [deleteType, setDeleteType] = useState(""); // Stores the type of item to be deleted ('workout' or 'split')
+  const [idToDelete, setIdToDelete] = useState(""); // Stores the ID of the item to be deleted
 
   // ======== Loading and UI States ========
   const [isLoading, setIsLoading] = useState(true); // Controls the loading state for data fetching or processing
@@ -122,13 +121,6 @@ function Workouts() {
   const initialTabIndex = parseInt(searchParams.get("tabIndex")) || 0; // Gets 'tabIndex' from URL or defaults to 0
   const [tabIndex, setTabIndex] = useState(initialTabIndex); // Controls the active tab index
 
-  // Fetch from API using APIServices
-  useEffect(() => {
-    if (username) {
-      fetchWorkoutsAndSplits();
-    }
-  }, [username]);
-
   // Add Confetti Effect whenever a Workout is Added
   useEffect(() => {
     if (showConfetti) {
@@ -138,41 +130,9 @@ function Workouts() {
   }, [showConfetti]);
 
   /**
-   * Fetches workouts and splits for the user and updates state.
-   * Checks session storage first to avoid redundant API calls.
-   */
-  const fetchWorkoutsAndSplits = async () => {
-    setIsLoading(true); // Start loading for load icon
-    try {
-      // Attempt to retrieve from session storage first
-      const storedWorkouts = getSessionData("workouts");
-      const storedSplits = getSessionData("splits");
-
-      if (storedWorkouts) {
-        // Parse date strings back into Date objects
-        const parsedWorkouts = storedWorkouts.map((workout) => ({
-          ...workout,
-          date: new Date(workout.date), // Convert back to Date object
-        }));
-        setWorkoutHistory(parsedWorkouts);
-      } else {
-        await fetchWorkouts(); // Fetch from API if not found in session
-      }
-
-      if (storedSplits) {
-        setUserSplits(storedSplits);
-      } else {
-        await fetchSplits(); // Fetch from API if not found in session
-      }
-    } finally {
-      setIsLoading(false); // End loading for load icon
-    }
-  };
-
-  /**
    * Fetches workouts for the user and updates state.
    */
-  const fetchWorkouts = async () => {
+  const fetchWorkouts = useCallback(async () => {
     try {
       const data = await getAllWorkouts(username);
       console.log("Workouts API Response:", data);
@@ -204,12 +164,12 @@ function Workouts() {
     } catch (error) {
       console.error("Error fetching workouts:", error);
     }
-  };
+  }, [username]);
 
   /**
    * Fetches splits for the user and updates state.
    */
-  const fetchSplits = async () => {
+  const fetchSplits = useCallback(async () => {
     try {
       const data = await getAllSplits(username);
       console.log("Splits API Response:", data);
@@ -228,8 +188,47 @@ function Workouts() {
     } catch (error) {
       console.error("Error fetching splits:", error);
     }
-  };
+  }, [username]); // Include 'username' as a dependency
   console.log(userSplits);
+
+  /**
+   * Fetches workouts and splits for the user and updates state.
+   * Checks session storage first to avoid redundant API calls.
+   */
+  const fetchWorkoutsAndSplits = useCallback(async () => {
+    setIsLoading(true); // Start loading for load icon
+    try {
+      // Attempt to retrieve from session storage first
+      const storedWorkouts = getSessionData("workouts");
+      const storedSplits = getSessionData("splits");
+
+      if (storedWorkouts) {
+        // Parse date strings back into Date objects
+        const parsedWorkouts = storedWorkouts.map((workout) => ({
+          ...workout,
+          date: new Date(workout.date), // Convert back to Date object
+        }));
+        setWorkoutHistory(parsedWorkouts);
+      } else {
+        await fetchWorkouts(); // Fetch from API if not found in session
+      }
+
+      if (storedSplits) {
+        setUserSplits(storedSplits);
+      } else {
+        await fetchSplits(); // Fetch from API if not found in session
+      }
+    } finally {
+      setIsLoading(false); // End loading for load icon
+    }
+  }, [fetchWorkouts, fetchSplits]);
+
+  // Fetch from API using APIServices
+  useEffect(() => {
+    if (username) {
+      fetchWorkoutsAndSplits();
+    }
+  }, [username, fetchWorkoutsAndSplits]);
 
   /**
    * Handles tab change.
@@ -290,18 +289,23 @@ function Workouts() {
         // Delete the workout from the backend
         await deleteWorkout(itemToDelete);
 
-        // Update state
+        // Log workout IDs to confirm their format
+        workoutHistory.forEach((workout) => {
+          console.log(`Workout ID in workoutHistory: ${workout.workoutId}`);
+        });
+
+        // Update state by filtering out the deleted workout
         const updatedWorkouts = workoutHistory.filter(
-          (workout) => workout.workoutId !== itemToDelete
+          (workout) => workout.workoutId !== idToDelete
         );
         setWorkoutHistory(updatedWorkouts);
 
-        // Update session storage
+        // Update session storage after deleting the workout
         const workoutsToStore = updatedWorkouts.map((workout) => ({
           ...workout,
-          date: workout.date.toISOString(), // Store date as a string in ISO format
+          date: workout.date.toISOString(), // Convert Date objects to strings
         }));
-        setSessionData("workouts", workoutsToStore); // Save to session storage
+        setSessionData("workouts", workoutsToStore); // Save the updated list to session storage
 
         // Show success Snackbar
         showSnackbar("Workout deleted successfully!", "success");
@@ -318,6 +322,8 @@ function Workouts() {
       try {
         // Delete the split from the backend
         await deleteSplit(itemToDelete);
+
+        console.log("Item to delete: ", itemToDelete);
 
         // Update state
         const updatedSplits = userSplits.filter(
@@ -348,6 +354,7 @@ function Workouts() {
    */
   const handleDeleteWorkout = (workout) => {
     setItemToDelete(workout);
+    setIdToDelete(workout.workoutId);
     setDeleteType("workout");
     setConfirmDialogOpen(true);
   };

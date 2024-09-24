@@ -42,8 +42,6 @@ import { toTitleCase } from "./shared-workout-components/util";
  * @param {Array} workoutHistory - The user's workout history containing exercise data.
  */
 const FuturePrediction = ({ workoutHistory = [] }) => {
-  console.log("workout history: ", workoutHistory);
-
   // State variables
   const [goalWeight, setGoalWeight] = useState(""); // Goal weight input by user
   const [predictionResult, setPredictionResult] = useState(null); // Result of the prediction

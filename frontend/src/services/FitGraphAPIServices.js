@@ -30,12 +30,6 @@ const fitGraphProd = process.env.REACT_APP_FIT_GRAPH_PROD;
 const getFromAPI = async (endpoint, errorHandler) => {
   const url = `${fitGraphProd}${endpoint}`; // Construct the full URL
 
-  // Log the request details before making the request
-  console.log("Making GET request to:", url);
-  console.log("Request Headers:", {
-    "Content-Type": "application/json",
-  });
-
   try {
     const response = await axios.get(url, {
       headers: {
@@ -43,10 +37,6 @@ const getFromAPI = async (endpoint, errorHandler) => {
         "X-Api-Key": process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
       },
     });
-
-    // Log the response status and data
-    console.log("Response Status:", response.status);
-    console.log("Response Data:", response.data);
 
     return response.data;
   } catch (error) {
@@ -84,13 +74,6 @@ const getFromAPI = async (endpoint, errorHandler) => {
 const postToAPI = async (endpoint, data, errorHandler) => {
   const url = `${fitGraphProd}${endpoint}`; // Construct the full URL
 
-  // Log the request details before making the request
-  console.log("Making POST request to:", url);
-  console.log("Request Data:", data);
-  console.log("Request Headers:", {
-    "Content-Type": "application/json",
-  });
-
   try {
     const response = await axios.post(url, data, {
       headers: {
@@ -98,10 +81,6 @@ const postToAPI = async (endpoint, data, errorHandler) => {
         "X-Api-Key": process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
       },
     });
-
-    // Log the response status and data
-    console.log("Response Status:", response.status);
-    console.log("Response Data:", response.data);
 
     return response.data;
   } catch (error) {
@@ -139,13 +118,6 @@ const postToAPI = async (endpoint, data, errorHandler) => {
 const deleteToAPI = async (endpoint, data = {}, errorHandler) => {
   const url = `${fitGraphProd}${endpoint}`; // Construct the full URL
 
-  // Log the request details before making the request
-  console.log("Making DELETE request to:", url);
-  console.log("Request Data:", data); // Log the request data
-  console.log("Request Headers:", {
-    "Content-Type": "application/json",
-  });
-
   try {
     const response = await axios.delete(url, {
       headers: {
@@ -154,10 +126,6 @@ const deleteToAPI = async (endpoint, data = {}, errorHandler) => {
       },
       data: data, // Include the optional data in the request
     });
-
-    // Log the response status and data
-    console.log("Response Status:", response.status);
-    console.log("Response Data:", response.data);
 
     return response.data;
   } catch (error) {
@@ -195,13 +163,6 @@ const deleteToAPI = async (endpoint, data = {}, errorHandler) => {
 const putToAPI = async (endpoint, data, errorHandler) => {
   const url = `${fitGraphProd}${endpoint}`; // Construct the full URL
 
-  // Log the request details before making the request
-  console.log("Making PUT request to:", url);
-  console.log("Request Data:", data);
-  console.log("Request Headers:", {
-    "Content-Type": "application/json",
-  });
-
   try {
     const response = await axios.put(url, data, {
       headers: {
@@ -209,10 +170,6 @@ const putToAPI = async (endpoint, data, errorHandler) => {
         "X-Api-Key": process.env.REACT_APP_FIT_GRAPH_PROD_KEY,
       },
     });
-
-    // Log the response status and data
-    console.log("Response Status:", response.status);
-    console.log("Response Data:", response.data);
 
     return response.data;
   } catch (error) {
