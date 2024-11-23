@@ -1,111 +1,88 @@
-const Regression = require('ml-regression').SimpleLinearRegression;
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from datetime import datetime, timedelta
 
-/**
- * Parse the workout history to extract data points for the specified exercise.
- * 
- * @param {Array} workoutHistory - The list of workout sessions.
- * @param {string} exercise - The exercise label to filter on.
- * @returns {Object} - An object containing dates and weights arrays.
- */
-function parseWorkoutHistory(workoutHistory, exercise) {
-    const dates = [];
-    const weights = [];
+def parse_workout_history(workout_history, exercise):
+    """
+    Parse the workout history to extract dates and weights for a specific exercise.
 
-    workoutHistory.forEach(workout => {
-        const workoutDate = new Date(workout.date);
-        workout.exercises.forEach(ex => {
-            if (ex.label === exercise) {
-                ex.sets.forEach(set => {
-                    const weight = parseFloat(set.weight);
-                    dates.push(workoutDate);
-                    weights.push(weight);
-                });
-            }
-        });
-    });
+    Parameters:
+        workout_history (list): A list of workout sessions, each containing exercises and sets.
+        exercise (str): The exercise label to filter on.
 
-    return { dates, weights };
-}
+    Returns:
+        tuple: A tuple containing two lists:
+            - dates (list of datetime): Dates of the workouts.
+            - weights (list of float): Corresponding weights lifted for the specified exercise.
+    """
+    dates = []
+    weights = []
 
-/**
- * Predict when the user will achieve the goal weight using linear regression.
- * 
- * @param {Array} dates - Dates of past workouts.
- * @param {Array} weights - Weights lifted in those workouts.
- * @param {number} goalWeight - The target weight for the goal.
- * @returns {string} - Predicted date when the goal weight will be achieved.
- */
-function predictGoalAchievement(dates, weights, goalWeight) {
-    // Convert dates to days since the first workout
-    const startDate = Math.min(...dates);
-    const daysSinceStart = dates.map(date => (date - startDate) / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+    # Iterate through each workout session
+    for workout in workout_history:
+        # Convert the workout date string to a datetime object
+        workout_date = datetime.strptime(workout['date'], '%Y-%m-%d')
+        
+        # Look through exercises in the workout session
+        for ex in workout['exercises']:
+            # Check if the exercise matches the specified label
+            if ex['label'] == exercise:
+                # Extract weights from each set and associate with the workout date
+                for set_data in ex['sets']:
+                    weight = float(set_data['weight'])
+                    dates.append(workout_date)
+                    weights.append(weight)
+                    
+    return dates, weights
 
-    // Perform linear regression
-    const regression = new Regression(daysSinceStart, weights);
+def predict_goal_achievement(dates, weights, goal_weight):
+    """
+    Predict the date when a target weight will be achieved using linear regression.
 
-    // Predict the number of days needed to reach the goal weight
-    const targetDays = regression.predict(goalWeight);
+    Parameters:
+        dates (list of datetime): List of workout dates.
+        weights (list of float): Corresponding weights lifted on those dates.
+        goal_weight (float): The target weight to achieve.
 
+    Returns:
+        str: Predicted date (in YYYY-MM-DD format) when the goal weight will be achieved.
+    """
+    # Find the earliest workout date to use as the reference point
+    start_date = min(dates)
+    
+    # Convert workout dates into days since the reference date
+    days_since_start = [(date - start_date).days for date in dates]
 
-    // Calculate the estimated goal achievement date
-    const predictedDate = new Date(startDate + targetDays * 24 * 60 * 60 * 1000);
-    return predictedDate.toISOString().split('T')[0];
-}
+    # Prepare data for linear regression
+    # X represents the independent variable (days), y represents the dependent variable (weights)
+    X = np.array(days_since_start).reshape(-1, 1)  # Reshape for sklearn compatibility
+    y = np.array(weights)
+    
+    # Train a linear regression model on the data
+    model = LinearRegression().fit(X, y)
 
-/**
- * Lambda handler function to predict future performance.
- * 
- * @param {Object} event - The event object containing request data.
- * @param {Object} context - The context object (not used here).
- * @returns {Object} - Response object with status code and predicted date or error message.
- */
-exports.handler = async (event) => {
-    try {
-        // Parse request body
+    # Calculate the number of days needed to reach the goal weight
+    target_days = (goal_weight - model.intercept_) / model.coef_[0]
 
-        const body = JSON.parse(event.body);
+    # Calculate the corresponding date for the target weight
+    predicted_date = start_date + timedelta(days=target_days)
+    return predicted_date.strftime('%Y-%m-%d')
 
-        // Extract parameters from request
-        const { exercise, goalWeight, workoutHistory } = body;
+# Example usage
+workout_history = [
+    {'date': '2023-01-01', 'exercises': [{'label': 'Bench Press', 'sets': [{'weight': 50}, {'weight': 55}]}]},
+    {'date': '2023-01-15', 'exercises': [{'label': 'Bench Press', 'sets': [{'weight': 60}]}]},
+    {'date': '2023-02-01', 'exercises': [{'label': 'Bench Press', 'sets': [{'weight': 65}]}]}
+]
 
-        // Process workout history and perform prediction
-        const { dates, weights } = parseWorkoutHistory(workoutHistory, exercise);
-        if (!dates.length || !weights.length) {
-            return buildResponse(400, { error: 'No data found for the specified exercise.' });
-        }
+exercise = "Bench Press"  # The exercise for which we want to make predictions
+goal_weight = 80          # Target weight to predict when it will be achieved
 
-        const predictedDate = predictGoalAchievement(dates, weights, goalWeight);
+# Parse workout history to extract dates and weights for the specific exercise
+dates, weights = parse_workout_history(workout_history, exercise)
 
-        // Return the predicted date in the response
-        return buildResponse(200, { predictedDate });
+# Predict the date when the goal weight will be achieved
+predicted_date = predict_goal_achievement(dates, weights, goal_weight)
 
-    } catch (error) {
-        return buildResponse(500, { error: error.message });
-    }
-};
-
-/**
- * Builds a standardized HTTP response for AWS Lambda functions.
- * 
- * @function buildResponse
- * @param {number} statusCode - The HTTP status code of the response.
- * @param {Object} body - The body of the response.
- * @returns {Object} The formatted HTTP response object with headers.
- * 
- * @description
- * This function creates a standardized HTTP response object for AWS Lambda functions
- * that integrates with API Gateway. It includes CORS headers to allow cross-origin
- * requests, supporting a variety of HTTP methods and headers.
- */
-function buildResponse(statusCode, body) {
-    return {
-      statusCode: statusCode,
-      headers: {
-        'Access-Control-Allow-Origin': '*', 
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 
-        'Access-Control-Allow-Headers': 'Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    };
-  }
+# Print the predicted date
+print(f"Predicted date to reach {goal_weight}kg: {predicted_date}")
